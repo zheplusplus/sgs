@@ -1,5 +1,4 @@
 from core.src.game_control import GameControl
-from core.src.player import Player
 from core.src.event import EventList
 import core.src.card as card
 
@@ -7,6 +6,7 @@ from test_common import *
 import cards_gen
 import fake_card_pool
 import fake_players_control
+from fake_player import Player
 
 pc = fake_players_control.PlayersControl()
 gc = GameControl(EventList(), fake_card_pool.CardPool(cards_gen.generate([
