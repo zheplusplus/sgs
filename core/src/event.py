@@ -72,24 +72,44 @@ class DiscardCards(Event):
             'discard': cards_to_msg(self.cards),
         }]
 
-class UseCards(Event):
+class UseCardsForPlayers(Event):
     user = None
-    target = None
+    targets = []
     action = ''
     cards = []
 
-    def __init__(self, user, target, action, cards):
+    def __init__(self, user, targets, action, cards):
         self.user = user
-        self.target = target
+        self.targets = targets
         self.action = action
         self.cards = cards
 
     def as_log(self):
         return [{
             'user': self.user.player_id,
-            'target': self.target.player_id,
+            'targets': map(lambda p: p.player_id, self.targets),
             'action': self.action,
             'use': cards_to_msg(self.cards),
+        }]
+
+class UseCardsForCard(Event):
+    user = None
+    target = None
+    action = ''
+    cards_used = []
+
+    def __init__(self, user, target, action, cards_used):
+        self.user = user
+        self.target = target
+        self.action = action
+        self.cards_used = cards_used
+
+    def as_log(self):
+        return [{
+            'user': self.user.player_id,
+            'target': self.target.card_id,
+            'action': self.action,
+            'use': cards_to_msg(self.cards_used),
         }]
 
 class ShowCards(Event):

@@ -29,3 +29,6 @@ class GameControl:
     def discard_cards(self, player, cards):
         self.card_pool.discard(cards)
         self.events.add(event.DiscardCards(player, cards))
+
+    def player_act(self, args):
+        pass
