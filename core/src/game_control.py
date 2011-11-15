@@ -30,5 +30,14 @@ class GameControl:
         self.card_pool.discard(cards)
         self.events.add(event.DiscardCards(player, cards))
 
+    def use_cards_for_player(self, user, targets, action, cards):
+        pass
+
     def player_act(self, args):
+        pass
+
+    def push_frame(self, frame):
+        pass
+
+    def query_token_by_id(self, player_id):
         pass

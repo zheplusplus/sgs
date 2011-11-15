@@ -1,3 +1,5 @@
+import fake_frames
+
 STARTDEAL = 4
 ROUNDDEAL = 2
 
@@ -23,7 +25,7 @@ class Player:
         self.get_cards(game_control, ROUNDDEAL)
 
     def using_cards_stage(self, game_control):
-        pass
+        game_control.push_frame(fake_frames.UsingCard(game_control, self))
 
     def discarding_cards_stage(self, game_control):
         cards = self.cards[:2]
