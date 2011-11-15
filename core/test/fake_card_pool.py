@@ -3,11 +3,11 @@ import core.src.card as card
 class CardPool:
     discarded = []
     cards = []
-
     current_cid = 0
 
     def __init__(self):
         self.discarded = []
+        self.cards = []
         self.current_cid = 0
 
         self.cards = [
@@ -82,7 +82,7 @@ class CardPool:
         self.cards = self.cards[cnt:]
         return result
 
-    def discard(self, cards):        
+    def discard(self, cards):
         self.discarded.extend(cards)
 
     def reshuffle(self):

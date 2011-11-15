@@ -16,16 +16,16 @@ class GameControl:
             player.start(self)
 
     def next_round(self):
-        self.players_control.get_current_player().round(self)
+        self.players_control.current_player().round(self)
 
     def get_events(self, token, prev_event_id):
         return self.events.serialize(token, prev_event_id)
 
-    def deal_event(self, player, cnt):
+    def deal_cards(self, player, cnt):
         cards = self.card_pool.deal(cnt)
         self.events.add(event.DealCards(player, cards))
         return cards
 
-    def discard_event(self, player, cards):
+    def discard_cards(self, player, cards):
         self.card_pool.discard(cards)
         self.events.add(event.DiscardCards(player, cards))

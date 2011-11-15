@@ -14,17 +14,17 @@ class Player:
         self.cards = []
 
     def start(self, game_control):
-        self.deal(game_control, STARTDEAL)
+        self.get_cards(game_control, STARTDEAL)
 
     def round(self, game_control):
-        self.deal(game_control, ROUNDDEAL)
-        self.discard(game_control)
+        self.get_cards(game_control, ROUNDDEAL)
+        self.discard_cards(game_control)
 
-    def deal(self, game_control, cnt):
-        cards = game_control.deal_event(self, cnt)
+    def get_cards(self, game_control, cnt):
+        cards = game_control.deal_cards(self, cnt)
         self.cards.extend(cards)
 
-    def discard(self, game_control):
+    def discard_cards(self, game_control):
         cards = self.cards[:2]
         self.cards = self.cards[len(cards):]
-        game_control.discard_event(self, cards)
+        game_control.discard_cards(self, cards)
