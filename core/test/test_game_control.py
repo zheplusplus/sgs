@@ -1,13 +1,32 @@
 from core.src.game_control import GameControl
 from core.src.player import Player
 from core.src.event import EventList
-from test_common import *
 import core.src.card as card
+
+from test_common import *
+import cards_gen
 import fake_card_pool
 import fake_players_control
 
 pc = fake_players_control.PlayersControl()
-gc = GameControl(EventList(), fake_card_pool.CardPool(), pc)
+gc = GameControl(EventList(), fake_card_pool.CardPool(cards_gen.generate([
+            cards_gen.CardInfo('slash', 1, card.SPADE),
+            cards_gen.CardInfo('slash', 2, card.SPADE),
+            cards_gen.CardInfo('slash', 3, card.SPADE),
+            cards_gen.CardInfo('slash', 4, card.SPADE),
+            cards_gen.CardInfo('slash', 5, card.SPADE),
+            cards_gen.CardInfo('slash', 6, card.SPADE),
+            cards_gen.CardInfo('slash', 7, card.SPADE),
+            cards_gen.CardInfo('slash', 8, card.SPADE),
+            cards_gen.CardInfo('slash', 9, card.SPADE),
+            cards_gen.CardInfo('slash', 10, card.SPADE),
+            cards_gen.CardInfo('slash', 11, card.SPADE),
+            cards_gen.CardInfo('slash', 12, card.SPADE),
+            cards_gen.CardInfo('slash', 13, card.SPADE),
+            cards_gen.CardInfo('dodge', 1, card.HEART),
+            cards_gen.CardInfo('dodge', 2, card.HEART),
+            cards_gen.CardInfo('dodge', 3, card.HEART),
+    ])), pc)
 players = [Player(6, 0), Player(24, 1), Player(1729, 2)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
