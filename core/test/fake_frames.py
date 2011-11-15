@@ -2,7 +2,7 @@ import core.src.ret_code
 
 #FIX there is no giving up yet...
 
-class UsingCard:
+class UseCards:
     game_control = None
     player = None
     interface_map = {}
@@ -56,7 +56,7 @@ class UsingCard:
     def duel(self, args):
         pass
 
-class ShowCard:
+class ShowCards:
     game_control = None
     player_id = 0
     player_token = 0
@@ -69,7 +69,7 @@ class ShowCard:
     def react(self, args):
         pass
 
-class DiscardCard:
+class DiscardCards:
     game_control = None
     player_token = 0
     cards_filter = None

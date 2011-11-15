@@ -27,8 +27,8 @@ class GameControl:
         return cards
 
     def discard_cards(self, player, cards):
-        self.card_pool.discard(cards)
-        self.events.add(event.DiscardCards(player, cards))
+        self.events.add(
+                event.DiscardCards(player, self.card_pool.discard(cards)))
 
     def use_cards_for_player(self, user, targets, action, cards):
         pass

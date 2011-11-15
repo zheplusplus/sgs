@@ -8,14 +8,6 @@ class CardPool:
         self.cards = cards
         self.current_cid = 0
 
-    def cardGen(self, name, suit, rank):
-        return card.Card(self.idGen(), name, suit, rank)
-
-    def idGen(self):
-        cid = self.current_cid
-        self.current_cid += 1
-        return cid
-
     def deal(self, cnt):
         if len(self.cards) < cnt:
             self.reshuffle()
@@ -25,8 +17,10 @@ class CardPool:
         self.cards = self.cards[cnt:]
         return result
 
-    def discard(self, cards):
-        self.discarded.extend(cards)
+    def discard(self, cards_ids):
+        # FIX: takes ids of cards
+        #      returns cards
+        pass
 
     def reshuffle(self):
         self.cards.extend(self.discarded)
