@@ -1,4 +1,3 @@
-
 class PlayersControl:
     players = []
     current_pid = 0
