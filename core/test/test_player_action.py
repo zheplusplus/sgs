@@ -40,7 +40,7 @@ assert_eq(ret_code.OK, result['code'])
 '''
 p0_events = gc.get_events(players[0].token, last_event_id)
 assert_eq(1, len(p0_event))
-if True: # just indent for a nice appearance, card list verifying
+if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['user'])
     assert_eq(1, len(event['targets']))
@@ -60,7 +60,7 @@ assert_eq(ret_code.OK, result['code'])
 '''
 p0_events = gc.get_events(players[0].token, last_event_id)
 assert_eq(1, len(p0_event))
-if True: # just indent for a nice appearance, card list verifying
+if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[1].player_id, event['player_id'])
     assert_eq(1, len(event['show']))
@@ -77,7 +77,7 @@ assert_eq(ret_code.OK, result['code'])
 '''
 p0_events = gc.get_events(players[0].token, last_event_id)
 assert_eq(2, len(p0_event))
-if True: # just indent for a nice appearance, card list verifying
+if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['player_id'])
     assert_eq(1, len(event['discard']))

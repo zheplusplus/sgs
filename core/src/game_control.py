@@ -14,12 +14,22 @@ class GameControl:
     def start(self):
         for player in self.players_control.players:
             player.start(self)
+        self.next_round()
 
     def next_round(self):
         self.players_control.current_player().round(self)
 
     def get_events(self, token, prev_event_id):
         return self.events.serialize(token, prev_event_id)
+
+    def player_act(self, args):
+        pass
+
+    def push_frame(self, frame):
+        pass
+
+    def pop_frame(self):
+        pass
 
     def deal_cards(self, player, cnt):
         cards = self.card_pool.deal(cnt)
@@ -34,15 +44,6 @@ class GameControl:
         pass
 
     def damage(self, victim, damage, category):
-        pass
-
-    def player_act(self, args):
-        pass
-
-    def push_frame(self, frame):
-        pass
-
-    def pop_frame(self):
         pass
 
     def query_player_by_id(self, player_id):

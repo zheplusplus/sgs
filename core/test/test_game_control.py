@@ -6,7 +6,7 @@ from test_common import *
 import cards_gen
 import fake_card_pool
 import fake_players_control
-from fake_player import Player
+import fake_player
 
 pc = fake_players_control.PlayersControl()
 gc = GameControl(EventList(), fake_card_pool.CardPool(cards_gen.generate([
@@ -26,14 +26,27 @@ gc = GameControl(EventList(), fake_card_pool.CardPool(cards_gen.generate([
             cards_gen.CardInfo('dodge', 1, card.HEART),
             cards_gen.CardInfo('dodge', 2, card.HEART),
             cards_gen.CardInfo('dodge', 3, card.HEART),
-    ])), pc)
-players = [Player(6, 0), Player(24, 1), Player(1729, 2)]
+     ])), pc)
+players = [fake_player.Player(6, 0), fake_player.Player(24, 1),
+           fake_player.Player(1729, 2)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
-gc.next_round()
-pc.next_player()
-gc.next_round()
-pc.next_player()
+gc.player_act({
+        'token': players[0].token,
+        'action': 'give up',
+    })
+gc.player_act({
+        'token': players[0].token,
+        'discard': [0, 1],
+    })
+gc.player_act({
+        'token': players[1].token,
+        'action': 'give up',
+    })
+gc.player_act({
+        'token': players[0].token,
+        'discard': [4, 5],
+    })
 
 events = gc.events.as_log()
 assert_eq(7, len(events))

@@ -12,15 +12,4 @@ class Player:
         pass
 
     def round(self, game_control):
-        self.getting_cards_stage(game_control)
-        self.using_cards_stage(game_control)
-        self.discarding_cards_stage(game_control)
-
-    def getting_cards_stage(self, game_control):
-        pass
-
-    def using_cards_stage(self, game_control):
-        pass
-
-    def discarding_cards_stage(self, game_control):
         pass
