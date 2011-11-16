@@ -33,11 +33,20 @@ class GameControl:
     def use_cards_for_player(self, user, targets, action, cards):
         pass
 
+    def damage(self, victim, damage, category):
+        pass
+
     def player_act(self, args):
         pass
 
     def push_frame(self, frame):
         pass
 
-    def query_token_by_id(self, player_id):
+    def pop_frame(self):
+        pass
+
+    def query_player_by_id(self, player_id):
+        pass
+
+    def query_player_by_token(self, player_token):
         pass
