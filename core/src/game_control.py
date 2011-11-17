@@ -32,20 +32,22 @@ class GameControl:
         pass
 
     def deal_cards(self, player, cnt):
-        cards = self.card_pool.deal(cnt)
-        self.events.add(event.DealCards(player, cards))
-        return cards
+        self.events.add(
+                event.DealCards(player, self.card_pool.deal(player, cnt)))
 
     def discard_cards(self, player, cards_ids):
         cards = self.card_pool.cards_by_ids(cards_ids)
-        self.card_pool.discard(cards)
         self.events.add(event.DiscardCards(player, cards))
+        self.card_pool.discard(cards)
 
-    def show_cards(self, player, cards):
-        pass
+    def use_cards_for_player(self, user, targets, action, cards_ids):
+        cards = self.card_pool.cards_by_ids(cards_ids)
+        self.events.add(event.UseCardsForPlayers(user, targets, action, cards))
+        self.card_pool.discard(cards)
 
-    def use_cards_for_player(self, user, targets, action, cards):
-        pass
+    def show_cards(self, player, cards_ids):
+        self.events.add(
+                event.ShowCards(player, self.card_pool.cards_by_ids(cards_ids)))
 
     def damage(self, victim, damage, category):
         pass

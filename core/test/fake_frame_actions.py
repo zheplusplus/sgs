@@ -30,9 +30,9 @@ def fire_attack_discard_same_suit(game_control, args):
         return len(cards) == 1 and suit == cards[0].suit
     # FIX: the arguments map may not be like this
     game_control.push_frame(
-        frames.DiscardCards(game_control, args['user'].token,
-                            lambda c: discard_filter(c.suit, args['cards']),
-                            fire_attack_done))
+            frames.DiscardCards(game_control, args['user'].token,
+                                lambda c: discard_filter(c.suit, args['cards']),
+                                fire_attack_done))
 
 def fire_attack_done(game_control, args):
     # FIX: the arguments map may not be like this

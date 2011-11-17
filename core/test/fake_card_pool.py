@@ -10,17 +10,19 @@ class CardPool:
         self.current_cid = 0
         self.id_to_card = { c.card_id: c for c in cards }
 
-    def deal(self, cnt):
+    def deal(self, player, cnt):
         if len(self.cards) < cnt:
             self.reshuffle()
         if len(self.cards) < cnt:
             cnt = len(self.cards)
         result = self.cards[:cnt]
         self.cards = self.cards[cnt:]
+        [c.set_owner(player) for c in cards]
         return result
 
     def discard(self, cards):
         discarded.extend(cards)
+        [c.set_owner(None) for c in cards]
 
     def cards_by_ids(self, cards_ids):
         return map(lambda card_id: self.id_to_card[card_id], cards_ids)

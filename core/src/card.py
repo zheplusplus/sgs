@@ -15,3 +15,7 @@ class Card:
         self.name = name
         self.rank = rank
         self.suit = suit
+        self.owner_or_nil = None
+
+    def set_owner(self, owner):
+        self.owner_or_nil = owner
