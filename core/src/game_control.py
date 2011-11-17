@@ -36,9 +36,10 @@ class GameControl:
         self.events.add(event.DealCards(player, cards))
         return cards
 
-    def discard_cards(self, player, cards):
-        self.events.add(
-                event.DiscardCards(player, self.card_pool.discard(cards)))
+    def discard_cards(self, player, cards_ids):
+        cards = self.card_pool.cards_by_ids(cards_ids)
+        self.card_pool.discard(cards)
+        self.events.add(event.DiscardCards(player, cards))
 
     def show_cards(self, player, cards):
         pass
