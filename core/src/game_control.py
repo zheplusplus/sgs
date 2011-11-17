@@ -40,6 +40,9 @@ class GameControl:
         self.events.add(
                 event.DiscardCards(player, self.card_pool.discard(cards)))
 
+    def show_cards(self, player, cards):
+        pass
+
     def use_cards_for_player(self, user, targets, action, cards):
         pass
 

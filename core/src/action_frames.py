@@ -11,6 +11,7 @@ class FrameBase:
     def done(self, result):
         self.game_control.pop_frame()
         self.on_result(game_control, result)
+        return { 'code': ret_code.OK }
 
 class UseCards(FrameBase):
     player = None
@@ -20,7 +21,7 @@ class UseCards(FrameBase):
         FrameBase.__init__(self, game_control, on_result)
         self.player = player
         self.interface_map = interface_map
-        self.interface_map['give up'] = lambda gc, p, args: self.done({})
+        self.interface_map['give up'] = lambda gc, p, a, args: self.done({})
 
     def react(self, args):
         try:
@@ -53,20 +54,55 @@ class ShowCards(FrameBase):
         self.cards_filter = cards_filter
 
     def react(self, args):
-        pass
+        try:
+            token = args['token']
+            if token != self.player.token:
+                return {
+                           'code': ret_code.BAD_REQUEST,
+                           'reason': ret_code.PLAYER_FORBID,
+                       }
+            cards = args['cards']
+            if not cards_filter(cards):
+                return {
+                           'code': ret_code.BAD_REQUEST,
+                           'reason': ret_code.WRONG_ARG,
+                       }
+            self.game_control.show_cards(self.player, cards)
+            return self.done(cards)
+        except KeyError, e:
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_MISSING_ARG % str(e),
+                   }
 
 class DiscardCards(FrameBase):
-    player_token = 0
+    player = None
     cards_filter = None
-    may_give_up = False
 
-    def __init__(self, game_control, player_token, cards_filter, may_give_up,
-                 on_result):
+    def __init__(self, game_control, player, cards_filter, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.game_control = game_control
-        self.player_token = player_token
+        self.player = player
         self.cards_filter = cards_filter
-        self.may_give_up = may_give_up
 
     def react(self, args):
-        pass
+        try:
+            token = args['token']
+            if token != self.player.token:
+                return {
+                           'code': ret_code.BAD_REQUEST,
+                           'reason': ret_code.PLAYER_FORBID,
+                       }
+            cards = args['cards']
+            if not cards_filter(cards):
+                return {
+                           'code': ret_code.BAD_REQUEST,
+                           'reason': ret_code.WRONG_ARG,
+                       }
+            self.game_control.discard_cards(self.player, cards)
+            return self.done(cards)
+        except KeyError, e:
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_MISSING_ARG % str(e),
+                   }
