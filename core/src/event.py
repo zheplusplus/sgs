@@ -131,7 +131,7 @@ class Damage(Event):
     damage = 0
     category = ''
 
-    def __init__(self, victim, damage, category='normal'):
+    def __init__(self, victim, damage, category):
         self.victim = victim
         self.damage = damage
         self.category = category

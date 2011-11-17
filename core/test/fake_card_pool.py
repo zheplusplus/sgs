@@ -17,11 +17,11 @@ class CardPool:
             cnt = len(self.cards)
         result = self.cards[:cnt]
         self.cards = self.cards[cnt:]
-        [c.set_owner(player) for c in cards]
+        [c.set_owner(player) for c in result]
         return result
 
     def discard(self, cards):
-        discarded.extend(cards)
+        self.discarded.extend(cards)
         [c.set_owner(None) for c in cards]
 
     def cards_by_ids(self, cards_ids):

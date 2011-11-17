@@ -50,7 +50,7 @@ class GameControl:
                 event.ShowCards(player, self.card_pool.cards_by_ids(cards_ids)))
 
     def damage(self, victim, damage, category):
-        pass
+        self.events.add(event.Damage(victim, damage, category))
 
     def query_player_by_id(self, player_id):
         pass
