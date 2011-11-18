@@ -1,13 +1,14 @@
-import core.src.ret_code
+import core.src.ret_code as ret_code
 import core.src.action_frames as frames
 
 def get_using_cards_interface_map():
     return { 'fire attack': fire_attack }
 
-def fire_attack(game_control, player, args):
-    targets = args['targets']
+def fire_attack(game_control, args):
+    targets_ids = args['targets']
     cards = args['cards']
-    if 1 != len(targets):
+    user = game_control.player_by_token(args['token'])
+    if 1 != len(targets_ids):
         return {
                    'code': ret_code.BAD_REQUEST,
                    'reason': ret_code.WRONG_ARG,
@@ -17,25 +18,28 @@ def fire_attack(game_control, player, args):
                    'code': ret_code.BAD_REQUEST,
                    'reason': ret_code.WRONG_ARG,
                }
-    # FIX: there should have been other checks
-    game_control.cards_used(user_token, targets, args['action'], cards)
-    game_control.push_frame(frames.ShowCard(game_control, targets[0]),
-                            fire_attack_discard_same_suit)
+    target = game_control.player_by_id(targets_ids[0])
+    game_control.use_cards_for_player(user, targets_ids, args['action'], cards)
+    on_result = lambda gc, a: fire_attack_discard_same_suit(gc, user, target, a)
+    game_control.push_frame(frames.ShowCards(game_control, target,
+                                             lambda c: len(c) == 1,
+                                             on_result))
     return { 'code': ret_code.OK }
 
-def fire_attack_discard_same_suit(game_control, args):
-    def discard_filter(suit, cards):
+def fire_attack_discard_same_suit(game_control, player, target, args):
+    show_suit = game_control.cards_by_ids(args['cards'])[0].suit
+    def discard_filter(cards_ids):
+        cards = game_control.cards_by_ids(cards_ids)
         if len(cards) == 0:
             return True
-        return len(cards) == 1 and suit == cards[0].suit
-    # FIX: the arguments map may not be like this
+        return len(cards) == 1 and cards[0].suit == show_suit
     game_control.push_frame(
-            frames.DiscardCards(game_control, args['user'].token,
-                                lambda c: discard_filter(c.suit, args['cards']),
-                                fire_attack_done))
+            frames.DiscardCards(game_control, player, discard_filter,
+                                lambda gc, a: fire_attack_done(gc, target, a)))
 
-def fire_attack_done(game_control, args):
-    # FIX: the arguments map may not be like this
-    if len(args['cards']) > 0:
-        game_control.discard_cards(args['user'], args['cards'])
-        game_control.damage(args['target'], 1, 'fire')
+def fire_attack_done(game_control, target, args):
+    cards_ids = args['discard']
+    if len(cards_ids) > 0:
+        game_control.discard_cards(game_control.player_by_token(args['token']),
+                                   cards_ids)
+        game_control.damage(target, 1, 'fire')

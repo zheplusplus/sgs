@@ -36,9 +36,7 @@ class Player:
                                     self.cards_discarded))
 
     def cards_discarded(self, game_control, args):
-        # FIX arguments map may not be like this
-        discarded = args['cards']
-        game_control.discard_cards(self, discarded)
+        game_control.discard_cards(self, args['discard'])
         game_control.next_round()
 
     def get_cards(self, game_control, cnt):

@@ -78,16 +78,16 @@ class UseCardsForPlayers(Event):
     action = ''
     cards = []
 
-    def __init__(self, user, targets, action, cards):
+    def __init__(self, user, targets_ids, action, cards):
         self.user = user
-        self.targets = targets
+        self.targets_ids = targets_ids
         self.action = action
         self.cards = cards
 
     def as_log(self):
         return [{
             'user': self.user.player_id,
-            'targets': map(lambda p: p.player_id, self.targets),
+            'targets': self.targets_ids,
             'action': self.action,
             'use': cards_to_msg(self.cards),
         }]

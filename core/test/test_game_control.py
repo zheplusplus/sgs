@@ -1,5 +1,6 @@
 from core.src.game_control import GameControl
 from core.src.event import EventList
+from core.src.action_stack import ActionStack
 import core.src.card as card
 
 from test_common import *
@@ -26,30 +27,32 @@ gc = GameControl(EventList(), fake_card_pool.CardPool(cards_gen.generate([
             cards_gen.CardInfo('dodge', 1, card.HEART),
             cards_gen.CardInfo('dodge', 2, card.HEART),
             cards_gen.CardInfo('dodge', 3, card.HEART),
-     ])), pc)
+            cards_gen.CardInfo('dodge', 4, card.HEART),
+            cards_gen.CardInfo('dodge', 5, card.HEART),
+     ])), pc, ActionStack())
 players = [fake_player.Player(6, 0), fake_player.Player(24, 1),
            fake_player.Player(1729, 2)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
-gc.player_act({
-        'token': players[0].token,
-        'action': 'give up',
-    })
-gc.player_act({
-        'token': players[0].token,
-        'discard': [0, 1],
-    })
-gc.player_act({
-        'token': players[1].token,
-        'action': 'give up',
-    })
-gc.player_act({
-        'token': players[0].token,
-        'discard': [4, 5],
-    })
+assert_eq(200, gc.player_act({
+                                 'token': players[0].token,
+                                 'action': 'give up',
+                             })['code'])
+assert_eq(200, gc.player_act({
+                                 'token': players[0].token,
+                                 'discard': [0, 1],
+                             })['code'])
+assert_eq(200, gc.player_act({
+                                 'token': players[1].token,
+                                 'action': 'give up',
+                             })['code'])
+assert_eq(200, gc.player_act({
+                                 'token': players[1].token,
+                                 'discard': [4, 5],
+                             })['code'])
 
 events = gc.events.as_log()
-assert_eq(7, len(events))
+assert_eq(8, len(events))
 
 # game started and 4 cards dealt to each player
 assert_eq(0, events[0]['player_id'])
@@ -158,9 +161,22 @@ if True: # just indent for a nice appearance, card list verifying
     assert_eq('slash', cards[1]['name'])
     assert_eq(6, cards[1]['rank'])
     assert_eq(card.SPADE, cards[1]['suit'])
+# player 2's round, beginning only
+assert_eq(2, events[7]['player_id'])
+assert_eq(2, len(events[7]['get']))
+if True: # just indent for a nice appearance, card list verifying
+    cards = events[7]['get']
+    assert_eq(16, cards[0]['id'])
+    assert_eq('dodge', cards[0]['name'])
+    assert_eq(4, cards[0]['rank'])
+    assert_eq(card.HEART, cards[0]['suit'])
+    assert_eq(17, cards[1]['id'])
+    assert_eq('dodge', cards[1]['name'])
+    assert_eq(5, cards[1]['rank'])
+    assert_eq(card.HEART, cards[1]['suit'])
 
 player0_events = gc.get_events(players[0].token, 0)
-assert_eq(7, len(player0_events))
+assert_eq(8, len(player0_events))
 # game started
 assert_eq(events[0]['player_id'], player0_events[0]['player_id'])
 assert_eq(events[0]['get'], player0_events[0]['get'])
@@ -178,9 +194,12 @@ assert_eq(events[5]['player_id'], player0_events[5]['player_id'])
 assert_eq(2, player0_events[5]['get'])
 assert_eq(events[6]['player_id'], player0_events[6]['player_id'])
 assert_eq(events[6]['discard'], player0_events[6]['discard'])
+# player 2's round
+assert_eq(events[7]['player_id'], player0_events[7]['player_id'])
+assert_eq(2, player0_events[5]['get'])
 
 player1_events = gc.get_events(players[1].token, 0)
-assert_eq(7, len(player1_events))
+assert_eq(8, len(player1_events))
 # game started
 assert_eq(events[0]['player_id'], player1_events[0]['player_id'])
 assert_eq(4, player1_events[0]['get'])
@@ -198,9 +217,12 @@ assert_eq(events[5]['player_id'], player1_events[5]['player_id'])
 assert_eq(events[5]['get'], player1_events[5]['get'])
 assert_eq(events[6]['player_id'], player1_events[6]['player_id'])
 assert_eq(events[6]['discard'], player1_events[6]['discard'])
+# player 2's round
+assert_eq(events[7]['player_id'], player1_events[7]['player_id'])
+assert_eq(2, player1_events[7]['get'])
 
 player2_events = gc.get_events(players[2].token, 0)
-assert_eq(7, len(player2_events))
+assert_eq(8, len(player2_events))
 # game started
 assert_eq(events[0]['player_id'], player2_events[0]['player_id'])
 assert_eq(4, player2_events[0]['get'])
@@ -218,9 +240,12 @@ assert_eq(events[5]['player_id'], player2_events[5]['player_id'])
 assert_eq(2, player2_events[5]['get'])
 assert_eq(events[6]['player_id'], player2_events[6]['player_id'])
 assert_eq(events[6]['discard'], player2_events[6]['discard'])
+# player 2's round
+assert_eq(events[7]['player_id'], player2_events[7]['player_id'])
+assert_eq(events[7]['get'], player2_events[7]['get'])
 
 player2_events_after_2 = gc.get_events(players[2].token, 2)
-assert_eq(5, len(player2_events_after_2))
+assert_eq(6, len(player2_events_after_2))
 # game started
 assert_eq(events[2]['player_id'], player2_events_after_2[0]['player_id'])
 assert_eq(events[2]['get'], player2_events_after_2[0]['get'])
@@ -234,3 +259,6 @@ assert_eq(events[5]['player_id'], player2_events_after_2[3]['player_id'])
 assert_eq(2, player2_events_after_2[3]['get'])
 assert_eq(events[6]['player_id'], player2_events_after_2[4]['player_id'])
 assert_eq(events[6]['discard'], player2_events_after_2[4]['discard'])
+# player 2's round
+assert_eq(events[7]['player_id'], player2_events_after_2[5]['player_id'])
+assert_eq(events[7]['get'], player2_events_after_2[5]['get'])
