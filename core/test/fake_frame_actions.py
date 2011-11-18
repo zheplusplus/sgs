@@ -22,8 +22,7 @@ def fire_attack(game_control, args):
     game_control.use_cards_for_player(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: fire_attack_discard_same_suit(gc, user, target, a)
     game_control.push_frame(frames.ShowCards(game_control, target,
-                                             lambda c: len(c) == 1,
-                                             on_result))
+                                             lambda c: len(c) == 1, on_result))
     return { 'code': ret_code.OK }
 
 def fire_attack_discard_same_suit(game_control, player, target, args):
