@@ -2,10 +2,6 @@ from card import Card
 import event
 
 class GameControl:
-    events = None
-    players_control = None
-    card_pool = None
-
     def __init__(self, event_list, card_pool, players_control, action_stack):
         self.events = event_list
         self.players_control = players_control

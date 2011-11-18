@@ -1,7 +1,4 @@
 class PlayersControl:
-    players = []
-    current_pid = 0
-
     def __init__(self):
         self.players = []
         self.current_pid = 0

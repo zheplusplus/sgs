@@ -1,9 +1,6 @@
 import ret_code
 
 class FrameBase:
-    game_control = None
-    on_result = None
-
     def __init__(self, game_control, on_result):
         self.game_control = game_control
         self.on_result = on_result
@@ -14,8 +11,6 @@ class FrameBase:
         return { 'code': ret_code.OK }
 
 class UseCards(FrameBase):
-    interface_map = {}
-
     def __init__(self, game_control, player, interface_map, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.player = player
@@ -43,9 +38,6 @@ class UseCards(FrameBase):
                    }
 
 class ShowCards(FrameBase):
-    player = None
-    cards_filter = None
-
     def __init__(self, game_control, player, cards_filter, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.player = player
@@ -74,9 +66,6 @@ class ShowCards(FrameBase):
                    }
 
 class DiscardCards(FrameBase):
-    player = None
-    cards_filter = None
-
     def __init__(self, game_control, player, cards_filter, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.game_control = game_control

@@ -1,10 +1,6 @@
 import core.src.card as card
 
 class CardInfo:
-    name = ''
-    rank = 0
-    suit = 0
-
     def __init__(self, name, rank, suit):
         self.name = name
         self.rank = rank

@@ -1,9 +1,4 @@
 class CardPool:
-    discarded = []
-    cards = []
-    current_cid = 0
-    id_to_card = {}
-
     def __init__(self, cards):
         self.discarded = []
         self.cards = cards

@@ -5,11 +5,6 @@ CLUB = 3
 DIAMOND = 4
 
 class Card:
-    card_id = 0
-    name = ''
-    rank = 0
-    suit = 0
-
     def __init__(self, card_id, name, rank, suit):
         self.card_id = card_id
         self.name = name
