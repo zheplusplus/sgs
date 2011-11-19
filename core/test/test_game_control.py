@@ -4,31 +4,30 @@ from core.src.action_stack import ActionStack
 import core.src.card as card
 
 from test_common import *
-import cards_gen
-import fake_card_pool
+import test_data
 import fake_players_control
 import fake_player
 
 pc = fake_players_control.PlayersControl()
-gc = GameControl(EventList(), fake_card_pool.CardPool(cards_gen.generate([
-            cards_gen.CardInfo('slash', 1, card.SPADE),
-            cards_gen.CardInfo('slash', 2, card.SPADE),
-            cards_gen.CardInfo('slash', 3, card.SPADE),
-            cards_gen.CardInfo('slash', 4, card.SPADE),
-            cards_gen.CardInfo('slash', 5, card.SPADE),
-            cards_gen.CardInfo('slash', 6, card.SPADE),
-            cards_gen.CardInfo('slash', 7, card.SPADE),
-            cards_gen.CardInfo('slash', 8, card.SPADE),
-            cards_gen.CardInfo('slash', 9, card.SPADE),
-            cards_gen.CardInfo('slash', 10, card.SPADE),
-            cards_gen.CardInfo('slash', 11, card.SPADE),
-            cards_gen.CardInfo('slash', 12, card.SPADE),
-            cards_gen.CardInfo('slash', 13, card.SPADE),
-            cards_gen.CardInfo('dodge', 1, card.HEART),
-            cards_gen.CardInfo('dodge', 2, card.HEART),
-            cards_gen.CardInfo('dodge', 3, card.HEART),
-            cards_gen.CardInfo('dodge', 4, card.HEART),
-            cards_gen.CardInfo('dodge', 5, card.HEART),
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+            test_data.CardInfo('slash', 1, card.SPADE),
+            test_data.CardInfo('slash', 2, card.SPADE),
+            test_data.CardInfo('slash', 3, card.SPADE),
+            test_data.CardInfo('slash', 4, card.SPADE),
+            test_data.CardInfo('slash', 5, card.SPADE),
+            test_data.CardInfo('slash', 6, card.SPADE),
+            test_data.CardInfo('slash', 7, card.SPADE),
+            test_data.CardInfo('slash', 8, card.SPADE),
+            test_data.CardInfo('slash', 9, card.SPADE),
+            test_data.CardInfo('slash', 10, card.SPADE),
+            test_data.CardInfo('slash', 11, card.SPADE),
+            test_data.CardInfo('slash', 12, card.SPADE),
+            test_data.CardInfo('slash', 13, card.SPADE),
+            test_data.CardInfo('dodge', 1, card.HEART),
+            test_data.CardInfo('dodge', 2, card.HEART),
+            test_data.CardInfo('dodge', 3, card.HEART),
+            test_data.CardInfo('dodge', 4, card.HEART),
+            test_data.CardInfo('dodge', 5, card.HEART),
      ])), pc, ActionStack())
 players = [fake_player.Player(6, 0), fake_player.Player(24, 1),
            fake_player.Player(1729, 2)]

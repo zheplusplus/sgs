@@ -1,4 +1,5 @@
 import core.src.action_frames as frames
+from player_using_cards import get_using_cards_interface_map
 
 STARTDEAL = 4
 ROUNDDEAL = 2
@@ -20,7 +21,8 @@ class Player:
 
     def using_cards_stage(self, game_control):
         game_control.push_frame(
-                frames.UseCards(game_control, self, {},
+                frames.UseCards(game_control, self,
+                                get_using_cards_interface_map(),
                                 lambda gc, _: self.discarding_cards_stage(gc)))
 
     def discarding_cards_stage(self, game_control):

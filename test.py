@@ -1,3 +1,3 @@
 import core.test.test_game_control
-import core.test.test_player_action
+import ext.test.test_fire_attack
 print 'Test finished.'

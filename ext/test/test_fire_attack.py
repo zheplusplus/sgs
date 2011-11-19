@@ -3,25 +3,24 @@ from core.src.event import EventList
 from core.src.action_stack import ActionStack
 import core.src.card as card
 import core.src.ret_code as ret_code
+from ext.src.players_control import PlayersControl
+from ext.src.player import Player
 
 from test_common import *
-import cards_gen
-import fake_card_pool
-import fake_players_control
-from fake_player import Player
+import test_data
 
-pc = fake_players_control.PlayersControl()
-gc = GameControl(EventList(), fake_card_pool.CardPool(cards_gen.generate([
-            cards_gen.CardInfo('slash', 1, card.SPADE),
-            cards_gen.CardInfo('fire attack', 2, card.HEART),
-            cards_gen.CardInfo('dodge', 3, card.DIAMOND),
-            cards_gen.CardInfo('fire attack', 4, card.HEART),
-            cards_gen.CardInfo('slash', 5, card.CLUB),
-            cards_gen.CardInfo('fire attack', 6, card.HEART),
-            cards_gen.CardInfo('dodge', 7, card.DIAMOND),
-            cards_gen.CardInfo('dodge', 8, card.DIAMOND),
-            cards_gen.CardInfo('slash', 9, card.SPADE),
-            cards_gen.CardInfo('slash', 10, card.SPADE),
+pc = PlayersControl()
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+            test_data.CardInfo('slash', 1, card.SPADE),
+            test_data.CardInfo('fire attack', 2, card.HEART),
+            test_data.CardInfo('dodge', 3, card.DIAMOND),
+            test_data.CardInfo('fire attack', 4, card.HEART),
+            test_data.CardInfo('slash', 5, card.CLUB),
+            test_data.CardInfo('fire attack', 6, card.HEART),
+            test_data.CardInfo('dodge', 7, card.DIAMOND),
+            test_data.CardInfo('dodge', 8, card.DIAMOND),
+            test_data.CardInfo('slash', 9, card.SPADE),
+            test_data.CardInfo('slash', 10, card.SPADE),
      ])), pc, ActionStack())
 players = [Player(91, 0), Player(1729, 1)]
 map(lambda p: pc.add_player(p), players)
