@@ -88,3 +88,178 @@ if True: # just indent for a nice appearance, card list verifying
     assert_eq(1, event['damage'])
     assert_eq('fire', event['category'])
 p1_events = gc.get_events(players[1].token, last_event_id)
+last_event_id += 2
+
+result = gc.player_act({
+        'token': players[0].token,
+        'action': 'fire attack',
+        'targets': [players[1].player_id],
+        'cards': [0],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+result = gc.player_act({
+        'token': players[0].token,
+        'action': 'fire attack',
+        'targets': [players[1].player_id],
+        'cards': [5],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+result = gc.player_act({
+        'token': players[0].token,
+        'action': 'fire attack',
+        'targets': [players[1].player_id],
+        'cards': [],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+result = gc.player_act({
+        'token': players[0].token,
+        'action': 'fire attack',
+        'cards': [3],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_MISSING_ARG % "'targets'",
+          }, result)
+result = gc.player_act({
+        'token': players[1].token,
+        'action': 'fire attack',
+        'targets': [players[1].player_id],
+        'cards': [3],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_PLAYER_FORBID,
+          }, result)
+result = gc.player_act({
+        'token': players[0].token,
+        'action': 'fire attack',
+        'targets': [players[1].player_id],
+        'cards': [1],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+
+result = gc.player_act({
+        'token': players[0].token,
+        'action': 'fire attack',
+        'targets': [players[1].player_id],
+        'cards': [3],
+    })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+        'token': players[0].token,
+        'show': [3],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_PLAYER_FORBID,
+          }, result)
+result = gc.player_act({
+        'token': players[1].token,
+        'show': [3],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+result = gc.player_act({
+        'token': players[1].token,
+        'show': [5, 6],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+result = gc.player_act({
+        'token': players[1].token,
+        'show': [],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+
+result = gc.player_act({
+        'token': players[1].token,
+        'show': [6],
+    })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+        'token': players[1].token,
+        'discard': [6],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_PLAYER_FORBID,
+          }, result)
+result = gc.player_act({
+        'token': players[0].token,
+        'discard': [1],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+result = gc.player_act({
+        'token': players[0].token,
+        'discard': [0],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+result = gc.player_act({
+        'token': players[0].token,
+        'discard': [2],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+result = gc.player_act({
+        'token': players[0].token,
+        'discard': [0, 2],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG,
+          }, result)
+result = gc.player_act({
+        'token': players[0].token,
+        'discard': [],
+    })
+assert_eq(ret_code.OK, result['code'])
+
+p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(2, len(p0_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('fire attack', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('fire attack', event['use'][0]['name'])
+    assert_eq(4, event['use'][0]['rank'])
+    assert_eq(card.HEART, event['use'][0]['suit'])
+if True: # just indent for a nice appearance
+    event = p0_events[1]
+    assert_eq(players[1].player_id, event['player_id'])
+    assert_eq(1, len(event['show']))
+    assert_eq('dodge', event['show'][0]['name'])
+    assert_eq(7, event['show'][0]['rank'])
+    assert_eq(card.DIAMOND, event['show'][0]['suit'])
+p1_events = gc.get_events(players[1].token, last_event_id)

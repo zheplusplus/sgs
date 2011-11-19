@@ -38,8 +38,7 @@ class GameControl:
         self.events.add(event.DiscardCards(player, cards))
         self.card_pool.discard(cards)
 
-    def use_cards_for_player(self, user, targets_ids, action, cards_ids):
-        cards = self.card_pool.cards_by_ids(cards_ids)
+    def use_cards_for_player(self, user, targets_ids, action, cards):
         self.events.add(event.UseCardsForPlayers(user, targets_ids, action,
                                                  cards))
         self.card_pool.discard(cards)
