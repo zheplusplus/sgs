@@ -52,8 +52,7 @@ last_event_id += 1
 
 result = gc.player_act({
         'token': players[1].token,
-        'action': 'show',
-        'cards': [6],
+        'show': [6],
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)

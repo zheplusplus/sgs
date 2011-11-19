@@ -26,7 +26,7 @@ def fire_attack(game_control, args):
     return { 'code': ret_code.OK }
 
 def fire_attack_discard_same_suit(game_control, player, target, args):
-    show_suit = game_control.cards_by_ids(args['cards'])[0].suit
+    show_suit = game_control.cards_by_ids(args['show'])[0].suit
     def discard_filter(cards_ids):
         cards = game_control.cards_by_ids(cards_ids)
         if len(cards) == 0:
