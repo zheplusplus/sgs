@@ -5,14 +5,9 @@ STARTDEAL = 4
 ROUNDDEAL = 2
 
 class Player:
-    token = 0
-    player_id = 0
-    cards = []
-
     def __init__(self, token, pid):
         self.token = token
         self.player_id = pid
-        self.cards = []
 
     def start(self, game_control):
         self.get_cards(game_control, STARTDEAL)
@@ -38,12 +33,8 @@ class Player:
                                     self.cards_discarded))
 
     def cards_discarded(self, game_control, args):
-        # FIX arguments map may not be like this
-        discarded = args['cards']
-        self.cards = filter(lambda c: not c.card_id in discarded, self.cards)
-        game_control.discard_cards(self, discarded)
+        game_control.discard_cards(self, args['discard'])
         game_control.next_round()
 
     def get_cards(self, game_control, cnt):
-        cards = game_control.deal_cards(self, cnt)
-        self.cards.extend(cards)
+        game_control.deal_cards(self, cnt)

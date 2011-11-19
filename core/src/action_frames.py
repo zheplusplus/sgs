@@ -1,27 +1,21 @@
 import ret_code
 
 class FrameBase:
-    game_control = None
-    on_result = None
-
     def __init__(self, game_control, on_result):
         self.game_control = game_control
         self.on_result = on_result
 
     def done(self, result):
         self.game_control.pop_frame()
-        self.on_result(game_control, result)
+        self.on_result(self.game_control, result)
         return { 'code': ret_code.OK }
 
 class UseCards(FrameBase):
-    player = None
-    interface_map = {}
-
     def __init__(self, game_control, player, interface_map, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.player = player
         self.interface_map = interface_map
-        self.interface_map['give up'] = lambda gc, p, a, args: self.done({})
+        self.interface_map['give up'] = lambda gc, a: self.done({})
 
     def react(self, args):
         try:
@@ -29,15 +23,14 @@ class UseCards(FrameBase):
             if token != self.player.token:
                 return {
                            'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.PLAYER_FORBID,
+                           'reason': ret_code.BR_PLAYER_FORBID,
                        }
             if not args['action'] in self.interface_map:
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.INCORRECT_INTERFACE,
                        }
-            return self.interface_map[args['action']](self.game_control,
-                                                      self.player, args)
+            return self.interface_map[args['action']](self.game_control, args)
         except KeyError, e:
             return {
                        'code': ret_code.BAD_REQUEST,
@@ -45,12 +38,9 @@ class UseCards(FrameBase):
                    }
 
 class ShowCards(FrameBase):
-    player = None
-    cards_filter = None
-
-    def __init__(self, game_control, player_id, cards_filter, on_result):
+    def __init__(self, game_control, player, cards_filter, on_result):
         FrameBase.__init__(self, game_control, on_result)
-        self.player = game_control.query_player_by_id(player_id)
+        self.player = player
         self.cards_filter = cards_filter
 
     def react(self, args):
@@ -59,16 +49,16 @@ class ShowCards(FrameBase):
             if token != self.player.token:
                 return {
                            'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.PLAYER_FORBID,
+                           'reason': ret_code.BR_PLAYER_FORBID,
                        }
             cards = args['cards']
-            if not cards_filter(cards):
+            if not self.cards_filter(cards):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.WRONG_ARG,
                        }
             self.game_control.show_cards(self.player, cards)
-            return self.done(cards)
+            return self.done(args)
         except KeyError, e:
             return {
                        'code': ret_code.BAD_REQUEST,
@@ -76,9 +66,6 @@ class ShowCards(FrameBase):
                    }
 
 class DiscardCards(FrameBase):
-    player = None
-    cards_filter = None
-
     def __init__(self, game_control, player, cards_filter, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.game_control = game_control
@@ -91,16 +78,14 @@ class DiscardCards(FrameBase):
             if token != self.player.token:
                 return {
                            'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.PLAYER_FORBID,
+                           'reason': ret_code.BR_PLAYER_FORBID,
                        }
-            cards = args['cards']
-            if not cards_filter(cards):
+            if not self.cards_filter(args['discard']):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.WRONG_ARG,
                        }
-            self.game_control.discard_cards(self.player, cards)
-            return self.done(cards)
+            return self.done(args)
         except KeyError, e:
             return {
                        'code': ret_code.BAD_REQUEST,

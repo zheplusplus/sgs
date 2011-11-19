@@ -6,8 +6,6 @@ class Event:
         return []
 
 class EventList:
-    events = []
-
     def __init__(self):
         self.events = []
 
@@ -37,9 +35,6 @@ def cards_to_msg_include_id(cards):
                                    }], cards, [])
 
 class DealCards(Event):
-    player = None
-    cards = []
-
     def __init__(self, player, cards):
         self.player = player
         self.cards = cards
@@ -59,9 +54,6 @@ class DealCards(Event):
         }]
 
 class DiscardCards(Event):
-    player = None
-    cards = []
-
     def __init__(self, player, cards):
         self.player = player
         self.cards = cards
@@ -73,31 +65,21 @@ class DiscardCards(Event):
         }]
 
 class UseCardsForPlayers(Event):
-    user = None
-    targets = []
-    action = ''
-    cards = []
-
-    def __init__(self, user, targets, action, cards):
+    def __init__(self, user, targets_ids, action, cards):
         self.user = user
-        self.targets = targets
+        self.targets_ids = targets_ids
         self.action = action
         self.cards = cards
 
     def as_log(self):
         return [{
             'user': self.user.player_id,
-            'targets': map(lambda p: p.player_id, self.targets),
+            'targets': self.targets_ids,
             'action': self.action,
             'use': cards_to_msg(self.cards),
         }]
 
 class UseCardsForCard(Event):
-    user = None
-    target = None
-    action = ''
-    cards_used = []
-
     def __init__(self, user, target, action, cards_used):
         self.user = user
         self.target = target
@@ -113,9 +95,6 @@ class UseCardsForCard(Event):
         }]
 
 class ShowCards(Event):
-    player = None
-    cards = []
-
     def __init__(self, player, cards):
         self.player = player
         self.cards = cards
@@ -127,11 +106,7 @@ class ShowCards(Event):
         }]
 
 class Damage(Event):
-    victim = None
-    damage = 0
-    category = ''
-
-    def __init__(self, victim, damage, category='normal'):
+    def __init__(self, victim, damage, category):
         self.victim = victim
         self.damage = damage
         self.category = category
