@@ -6,17 +6,17 @@ def get_using_cards_interface_map():
 
 def fire_attack(game_control, args):
     targets_ids = args['targets']
-    cards = args['cards']
+    cards = game_control.cards_by_ids(args['cards'])
     user = game_control.player_by_token(args['token'])
     if 1 != len(targets_ids):
         return {
                    'code': ret_code.BAD_REQUEST,
-                   'reason': ret_code.WRONG_ARG,
+                   'reason': ret_code.BR_WRONG_ARG,
                }
-    if 1 != len(cards) and 'fire attack' != cards[0].name:
+    if 1 != len(cards) or 'fire attack' != cards[0].name:
         return {
                    'code': ret_code.BAD_REQUEST,
-                   'reason': ret_code.WRONG_ARG,
+                   'reason': ret_code.BR_WRONG_ARG,
                }
     target = game_control.player_by_id(targets_ids[0])
     game_control.use_cards_for_player(user, targets_ids, args['action'], cards)
@@ -26,7 +26,7 @@ def fire_attack(game_control, args):
     return { 'code': ret_code.OK }
 
 def fire_attack_discard_same_suit(game_control, player, target, args):
-    show_suit = game_control.cards_by_ids(args['cards'])[0].suit
+    show_suit = game_control.cards_by_ids(args['show'])[0].suit
     def discard_filter(cards_ids):
         cards = game_control.cards_by_ids(cards_ids)
         if len(cards) == 0:
