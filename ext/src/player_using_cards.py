@@ -1,8 +1,15 @@
 import core.src.ret_code as ret_code
 import core.src.action_frames as frames
+import interface_sabotage
+import interface_duel
 
-def get_using_cards_interface_map():
-    return { 'fire attack': fire_attack }
+def get_using_cards_interface_map(card_name):
+    cards_interface_map = {
+                'fire attack': { 'fire attack': fire_attack },
+                'duel': { 'duel': interface_duel.duel },
+                'sabotage': { 'sabotage': interface_sabotage.sabotage }
+    }
+    return cards_interface_map[card_name]
 
 def fire_attack(game_control, args):
     targets_ids = args['targets']

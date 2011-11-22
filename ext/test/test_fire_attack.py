@@ -26,6 +26,7 @@ players = [Player(91, 0), Player(1729, 1)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
+players[0].using_card_by_name(gc, 'fire attack')
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
 result = gc.player_act({
