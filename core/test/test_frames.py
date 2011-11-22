@@ -53,8 +53,6 @@ assert_eq({
           }, result)
 result = None
 response = use_cards_frm.react({
-<<<<<<< .merge_file_a06316
-=======
                                    'action': 'test',
                                    'cards': [0],
                                })
@@ -73,7 +71,6 @@ assert_eq({
           }, response)
 assert_eq(None, result)
 response = use_cards_frm.react({
->>>>>>> .merge_file_a10220
                                    'token': 0,
                                    'action': 'test',
                                    'cards': [0],
@@ -116,15 +113,12 @@ assert_eq({
               'show': [0],
           }, result)
 result = None
-<<<<<<< .merge_file_a06316
-=======
 response = show_card_frm.react({ 'token': 10 })
 assert_eq({
               'code': 400,
               'reason': ret_code.BR_MISSING_ARG % "'show'",
           }, response)
 assert_eq(None, result)
->>>>>>> .merge_file_a10220
 response = show_card_frm.react({
                                    'token': 0,
                                    'show': [0],
@@ -184,15 +178,12 @@ assert_eq({
               'discard': [],
           }, result)
 result = None
-<<<<<<< .merge_file_a06316
-=======
 response = discard_card_frm.react({ 'token': 10 })
 assert_eq({
               'code': 400,
               'reason': ret_code.BR_MISSING_ARG % "'discard'",
           }, response)
 assert_eq(None, result)
->>>>>>> .merge_file_a10220
 response = discard_card_frm.react({
                                       'token': 0,
                                       'discard': [0],

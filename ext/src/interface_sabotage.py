@@ -1,4 +1,4 @@
-from core.src.action_frames as frames
+import core.src.action_frames as frames
 
 def sabotage(game_control, args):
     targets_ids = args['target']
@@ -17,20 +17,20 @@ def sabotage(game_control, args):
     target = game_control.player_by_id(targets_ids[0])
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: sabotage_handout_slash(game_control, user, target, a)
-    game_control.push_frame(frames.HandoutCards(game_control, target, 
+    game_control.push_frame(frames.PlayCards(game_control, target, 
                                                 lambda c: len(c) == 1 and c.name == 'slash',
-                                                on_result)
+                                                on_result))
     
-def sabotage_handout_slash(game_control, player, target, args):
-    hanout_name = game_control.cards_by_ids(args['handout'])[0].name
-    def handout_filter(cards_ids):
+def sabotage_play_slash(game_control, player, target, args):
+    hanout_name = game_control.cards_by_ids(args['play'])[0].name
+    def play_filter(cards_ids):
         cards = game_control.cards_by_ids(cards_ids)
         if len(cards) == 0:
             return True
         return len(cards) == 1 and cards[0].name == 'slash'
     game_control.push_frame(
-            frames.HandoutCards(game_control, player, handout_filter,
-                                lambda gc, a: fire_attack_done(gc, target, a)))
+            frames.PlayCards(game_control, player, play_filter,
+                                lambda gc, a: sabotage_play_slash(gc, target, a)))
     
 def sabotage_done(game_control, target, args):
     game_control.damage(target, 1, 'sabotage')

@@ -21,20 +21,15 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('dodge', 8, card.DIAMOND),
             test_data.CardInfo('slash', 9, card.SPADE),
             test_data.CardInfo('slash', 10, card.SPADE),
-<<<<<<< .merge_file_a05128
-=======
             test_data.CardInfo('dodge', 11, card.HEART),
             test_data.CardInfo('dodge', 12, card.DIAMOND),
->>>>>>> .merge_file_a08888
      ])), pc, ActionStack())
 players = [Player(91, 0), Player(1729, 1)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
-<<<<<<< .merge_file_a05128
 players[0].using_card_by_name(gc, 'fire attack')
-=======
->>>>>>> .merge_file_a08888
+
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
 result = gc.player_act({
@@ -78,10 +73,6 @@ last_event_id += 1
 
 result = gc.player_act({
         'token': players[0].token,
-<<<<<<< .merge_file_a05128
-        'action': 'discard',
-=======
->>>>>>> .merge_file_a08888
         'discard': [2],
     })
 assert_eq(ret_code.OK, result['code'])
@@ -275,8 +266,6 @@ if True: # just indent for a nice appearance
     assert_eq(7, event['show'][0]['rank'])
     assert_eq(card.DIAMOND, event['show'][0]['suit'])
 p1_events = gc.get_events(players[1].token, last_event_id)
-<<<<<<< .merge_file_a05128
-=======
 last_event_id += 2
 
 result = gc.player_act({
@@ -354,4 +343,3 @@ if True: # just indent for a nice appearance, check cards
     assert_eq(12, cards[1]['rank'])
     assert_eq(card.DIAMOND, cards[1]['suit'])
     assert_eq(11, cards[1]['id'])
->>>>>>> .merge_file_a08888

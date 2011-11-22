@@ -51,7 +51,6 @@ class DealCards(Event):
         return [{
             'player_id': self.player.player_id,
             'get': cards_to_msg_include_id(self.cards),
-<<<<<<< .merge_file_a09860
         }]
 
 class DiscardCards(Event):
@@ -80,51 +79,6 @@ class UseCardsForPlayers(Event):
             'use': cards_to_msg(self.cards),
         }]
 
-class UseCardsForCard(Event):
-    def __init__(self, user, target, action, cards_used):
-        self.user = user
-        self.target = target
-        self.action = action
-        self.cards_used = cards_used
-
-    def as_log(self):
-        return [{
-            'user': self.user.player_id,
-            'target': self.target.card_id,
-            'action': self.action,
-            'use': cards_to_msg(self.cards_used),
-        }]
-
-=======
-        }]
-
-class DiscardCards(Event):
-    def __init__(self, player, cards):
-        self.player = player
-        self.cards = cards
-
-    def as_log(self):
-        return [{
-            'player_id': self.player.player_id,
-            'discard': cards_to_msg(self.cards),
-        }]
-
-class UseCardsForPlayers(Event):
-    def __init__(self, user, targets_ids, action, cards):
-        self.user = user
-        self.targets_ids = targets_ids
-        self.action = action
-        self.cards = cards
-
-    def as_log(self):
-        return [{
-            'user': self.user.player_id,
-            'targets': self.targets_ids,
-            'action': self.action,
-            'use': cards_to_msg(self.cards),
-        }]
-
->>>>>>> .merge_file_a01820
 class ShowCards(Event):
     def __init__(self, player, cards):
         self.player = player

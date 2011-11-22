@@ -116,9 +116,8 @@ class DiscardCards(FrameBase):
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_MISSING_ARG % str(e),
                    }
-<<<<<<< .merge_file_a02752
 
-class HandoutCards(FrameBase):
+class PlayCards(FrameBase):
     def __init__(self, game_control, player, cards_filter, on_result):
         FramBase.__init__(self, game_control, on_result)
         self.player = player
@@ -128,18 +127,18 @@ class HandoutCards(FrameBase):
     def react(self, args):
         try:
             token = args['token']
-            if token != self.player.token
+            if token != self.player.token:
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_PLAYER_FORBID,
                        }
-            if not self.cards_filter(args['handout']):
+            if not self.cards_filter(args['play']):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_WRONG_ARG,
                        }
             if not check_owner(self.player,
-                               self.game_control.cards_by_ids(args['handout'])):
+                               self.game_control.cards_by_ids(args['play'])):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_WRONG_ARG,
@@ -150,5 +149,3 @@ class HandoutCards(FrameBase):
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_MISSING_ARG % str(e),
                    }
-=======
->>>>>>> .merge_file_a08844
