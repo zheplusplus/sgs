@@ -71,7 +71,6 @@ last_event_id += 1
 
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'discard',
         'discard': [2],
     })
 assert_eq(ret_code.OK, result['code'])
