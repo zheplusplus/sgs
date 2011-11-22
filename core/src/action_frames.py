@@ -116,6 +116,7 @@ class DiscardCards(FrameBase):
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_MISSING_ARG % str(e),
                    }
+<<<<<<< .merge_file_a02752
 
 class HandoutCards(FrameBase):
     def __init__(self, game_control, player, cards_filter, on_result):
@@ -149,3 +150,5 @@ class HandoutCards(FrameBase):
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_MISSING_ARG % str(e),
                    }
+=======
+>>>>>>> .merge_file_a08844

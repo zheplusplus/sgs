@@ -1,5 +1,6 @@
 import core.src.ret_code as ret_code
 import core.src.action_frames as frames
+<<<<<<< .merge_file_a08684
 import interface_sabotage
 import interface_duel
 
@@ -10,6 +11,11 @@ def get_using_cards_interface_map(card_name):
                 'sabotage': { 'sabotage': interface_sabotage.sabotage }
     }
     return cards_interface_map[card_name]
+=======
+
+def get_using_cards_interface_map():
+    return { 'fire attack': fire_attack }
+>>>>>>> .merge_file_a05260
 
 def fire_attack(game_control, args):
     targets_ids = args['targets']
