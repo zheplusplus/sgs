@@ -123,7 +123,7 @@ class PlayCards(FrameBase):
         self.player = player
         self.game_control = game_control
         self.cards_filter = cards_filter
-        
+
     def react(self, args):
         try:
             token = args['token']

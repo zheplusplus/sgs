@@ -20,7 +20,10 @@ class Player:
         self.get_cards(game_control, ROUNDDEAL)
 
     def using_cards_stage(self, game_control):
-        pass
+        game_control.push_frame(
+                frames.UseCards(game_control, self,
+                                get_using_cards_interface_map(),
+                                lambda gc, _: self.discarding_cards_stage(gc)))
 
     def discarding_cards_stage(self, game_control):
         def discard_filter(cards):
@@ -35,9 +38,3 @@ class Player:
 
     def get_cards(self, game_control, cnt):
         game_control.deal_cards(self, cnt)
-        
-    def using_card_by_name(self, game_control, card_name):
-        game_control.push_frame(
-                frames.UseCards(game_control, self,
-                                get_using_cards_interface_map(card_name),
-                                lambda gc, _: self.discarding_cards_stage(gc)))
