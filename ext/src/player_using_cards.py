@@ -4,12 +4,11 @@ import interface_sabotage
 import core.src.action_frames as frames
 
 def get_using_cards_interface_map():
-    cards_interface_map = {
-                'fire attack': fire_attack,
-                'duel': interface_duel.duel,
-                'sabotage': interface_sabotage.sabotage,
-    }
-    return cards_interface_map
+    return {
+               'fire attack': fire_attack,
+               'duel': interface_duel.duel,
+               'sabotage': interface_sabotage.sabotage,
+           }
 
 def fire_attack(game_control, args):
     targets_ids = args['targets']

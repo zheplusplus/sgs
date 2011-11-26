@@ -17,9 +17,10 @@ def duel(game_control, args):
     target = game_control.player_by_id(targets_ids[0])
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: duel_play_slash(game_control, user, target, a)
-    game_control.push_frame(frames.PlayCards(game_control, target,
-                                                lambda c: len(c) == 1 and c.name == 'slash',
-                                                on_result))
+    game_control.push_frame(
+            frames.PlayCards(game_control, target,
+                             lambda c: len(c) == 1 and c.name == 'slash',
+                             on_result))
 
 def duel_play_slash(game_control, player, target, args):
     hanout_name = game_control.cards_by_ids(args['play'])[0].name
@@ -30,7 +31,7 @@ def duel_play_slash(game_control, player, target, args):
         return len(cards) == 1 and cards[0].name == 'slash'
     game_control.push_frame(
             frames.PlayCards(game_control, player, play_filter,
-                                lambda gc, a: duel_play_slash(gc, target, a)))
+                             lambda gc, a: duel_play_slash(gc, target, a)))
 
 def duel_done(game_control, target, args):
     game_control.damage(target, 1, 'duel')
