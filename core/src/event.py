@@ -79,6 +79,17 @@ class UseCardsForPlayers(Event):
             'use': cards_to_msg(self.cards),
         }]
 
+class PlayCards(Event):
+    def __init__(self, player, cards):
+        self.player = player
+        self.cards = cards
+
+    def as_log(self):
+        return [{
+            'player': self.player.player_id,
+            'play': cards_to_msg(self.cards),
+        }]
+
 class ShowCards(Event):
     def __init__(self, player, cards):
         self.player = player

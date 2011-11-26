@@ -15,12 +15,15 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('fire attack', 2, card.HEART),
             test_data.CardInfo('dodge', 3, card.DIAMOND),
             test_data.CardInfo('fire attack', 4, card.HEART),
+
             test_data.CardInfo('slash', 5, card.CLUB),
             test_data.CardInfo('fire attack', 6, card.HEART),
             test_data.CardInfo('dodge', 7, card.DIAMOND),
             test_data.CardInfo('dodge', 8, card.DIAMOND),
+
             test_data.CardInfo('slash', 9, card.SPADE),
             test_data.CardInfo('slash', 10, card.SPADE),
+
             test_data.CardInfo('dodge', 11, card.HEART),
             test_data.CardInfo('dodge', 12, card.DIAMOND),
      ])), pc, ActionStack())
@@ -83,7 +86,7 @@ if True: # just indent for a nice appearance
     assert_eq('dodge', event['discard'][0]['name'])
     assert_eq(3, event['discard'][0]['rank'])
     assert_eq(card.DIAMOND, event['discard'][0]['suit'])
-if True: # just indent for a nice appearance, card list verifying
+if True: # just indent for a nice appearance
     event = p0_events[1]
     assert_eq(players[1].player_id, event['victim'])
     assert_eq(1, event['damage'])

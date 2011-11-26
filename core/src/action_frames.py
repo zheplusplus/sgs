@@ -119,7 +119,7 @@ class DiscardCards(FrameBase):
 
 class PlayCards(FrameBase):
     def __init__(self, game_control, player, cards_filter, on_result):
-        FramBase.__init__(self, game_control, on_result)
+        FrameBase.__init__(self, game_control, on_result)
         self.player = player
         self.game_control = game_control
         self.cards_filter = cards_filter

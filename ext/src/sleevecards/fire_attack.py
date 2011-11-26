@@ -16,7 +16,7 @@ def fire_attack(game_control, args):
                    'reason': ret_code.BR_WRONG_ARG,
                }
     target = game_control.player_by_id(targets_ids[0])
-    game_control.use_cards_for_player(user, targets_ids, args['action'], cards)
+    game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: discard_same_suit(gc, user, target, a)
     game_control.push_frame(frames.ShowCards(game_control, target,
                                              lambda c: len(c) == 1, on_result))
