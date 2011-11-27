@@ -47,6 +47,11 @@ class GameControl:
         self.events.add(
                 event.ShowCards(player, self.card_pool.cards_by_ids(cards_ids)))
 
+    def play_cards(self, player, cards_ids):
+        cards = self.card_pool.cards_by_ids(cards_ids)
+        self.events.add(event.PlayCards(player, cards))
+        self.card_pool.discard(cards)
+
     def damage(self, victim, damage, category):
         self.events.add(event.Damage(victim, damage, category))
 
