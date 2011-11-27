@@ -1,4 +1,5 @@
 from card import Card
+import ret_code
 import event
 
 class GameControl:
@@ -21,7 +22,13 @@ class GameControl:
         return self.events.serialize(token, prev_event_id)
 
     def player_act(self, args):
-        return self.action_stack.call(args)
+        try:
+            return self.action_stack.call(args)
+        except KeyError, e:
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_MISSING_ARG % e.message,
+                   }
 
     def push_frame(self, frame):
         self.action_stack.push(frame)

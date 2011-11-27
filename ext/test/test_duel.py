@@ -214,7 +214,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.MISSING_ARG % "'token'",
+              'reason': ret_code.MISSING_ARG % 'token',
           }, result)
 
 result = gc.player_act({
@@ -222,7 +222,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.MISSING_ARG % "'play'",
+              'reason': ret_code.MISSING_ARG % 'play',
           }, result)
 
 result = gc.player_act({

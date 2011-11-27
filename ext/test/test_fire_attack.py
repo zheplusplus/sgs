@@ -131,7 +131,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % "'targets'",
+              'reason': ret_code.BR_MISSING_ARG % 'targets',
           }, result)
 result = gc.player_act({
         'token': players[1].token,
@@ -275,7 +275,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % "'action'",
+              'reason': ret_code.BR_MISSING_ARG % 'action',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -296,7 +296,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % "'discard'",
+              'reason': ret_code.BR_MISSING_ARG % 'discard',
           }, result)
 result = gc.player_act({
         'token': players[0].token,

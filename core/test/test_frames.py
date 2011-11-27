@@ -52,24 +52,23 @@ assert_eq({
               'cards': [0],
           }, result)
 result = None
-response = use_cards_frm.react({
-                                   'action': 'test',
-                                   'cards': [0],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_MISSING_ARG % "'token'",
-          }, response)
+try:
+    response = use_cards_frm.react({
+                                       'action': 'test',
+                                       'cards': [0],
+                                   })
+    assert False
+except KeyError, e:
+    assert_eq('token', e.message)
 assert_eq(None, result)
-response = use_cards_frm.react({
-                                   'token': 10,
-                                   'cards': [0],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_MISSING_ARG % "'action'",
-          }, response)
-assert_eq(None, result)
+try:
+    response = use_cards_frm.react({
+                                       'token': 10,
+                                       'cards': [0],
+                                   })
+    assert False
+except KeyError, e:
+    assert_eq('action', e.message)
 response = use_cards_frm.react({
                                    'token': 0,
                                    'action': 'test',
@@ -113,11 +112,11 @@ assert_eq({
               'show': [0],
           }, result)
 result = None
-response = show_card_frm.react({ 'token': 10 })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_MISSING_ARG % "'show'",
-          }, response)
+try:
+    response = show_card_frm.react({ 'token': 10 })
+    assert False
+except KeyError, e:
+    assert_eq('show', e.message)
 assert_eq(None, result)
 response = show_card_frm.react({
                                    'token': 0,
@@ -178,11 +177,11 @@ assert_eq({
               'discard': [],
           }, result)
 result = None
-response = discard_card_frm.react({ 'token': 10 })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_MISSING_ARG % "'discard'",
-          }, response)
+try:
+    response = discard_card_frm.react({ 'token': 10 })
+    assert False
+except KeyError, e:
+    assert_eq('discard', e.message)
 assert_eq(None, result)
 response = discard_card_frm.react({
                                       'token': 0,
