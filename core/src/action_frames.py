@@ -113,6 +113,7 @@ class PlayCards(FrameBase):
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_PLAYER_FORBID,
                    }
+        cards = args['play']
         if not self.cards_filter(args['play']):
             return {
                        'code': ret_code.BAD_REQUEST,
@@ -124,4 +125,6 @@ class PlayCards(FrameBase):
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_WRONG_ARG,
                    }
+        if len(cards) > 0:
+            self.game_control.play_cards(self.player, cards)
         return self.done(args)

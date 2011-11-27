@@ -38,6 +38,7 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['user'])
@@ -57,6 +58,7 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[1].player_id, event['player'])
@@ -73,6 +75,7 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['player'])
@@ -89,9 +92,10 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
-    assert_eq(players[1].player_id, event['victim'])
+    assert_eq(players[0].player_id, event['victim'])
     assert_eq(1, event['damage'])
     assert_eq('normal', event['category'])
 p1_events = gc.get_events(players[1].token, last_event_id)
@@ -160,6 +164,7 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['user'])
@@ -214,7 +219,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.MISSING_ARG % 'token',
+              'reason': ret_code.BR_MISSING_ARG % 'token',
           }, result)
 
 result = gc.player_act({
@@ -222,7 +227,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.MISSING_ARG % 'play',
+              'reason': ret_code.BR_MISSING_ARG % 'play',
           }, result)
 
 result = gc.player_act({
@@ -231,6 +236,7 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[1].player_id, event['player'])
@@ -247,9 +253,10 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
-    assert_eq(players[0].player_id, event['victim'])
+    assert_eq(players[1].player_id, event['victim'])
     assert_eq(1, event['damage'])
     assert_eq('normal', event['category'])
 p1_events = gc.get_events(players[1].token, last_event_id)
@@ -263,6 +270,7 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['user'])
@@ -282,6 +290,7 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[1].player_id, event['victim'])
