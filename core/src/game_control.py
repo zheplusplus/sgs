@@ -29,6 +29,11 @@ class GameControl:
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_MISSING_ARG % e.message,
                    }
+        except ValueError, e:
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_WRONG_ARG,
+                   }
 
     def push_frame(self, frame):
         self.action_stack.push(frame)
@@ -70,3 +75,6 @@ class GameControl:
 
     def player_by_token(self, player_token):
         return self.players_control.get_by_token(player_token)
+
+    def player_has_cards(self, player):
+        return self.card_pool.player_has_cards(player)

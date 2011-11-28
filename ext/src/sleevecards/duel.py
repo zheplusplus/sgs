@@ -1,6 +1,10 @@
 import core.src.action_frames as frames
 import core.src.ret_code as ret_code
 
+def as_target(source, target, game_control):
+    forbid_target_self(source, target)
+    pass
+
 def duel(game_control, args):
     targets_ids = args['targets']
     if 1 != len(targets_ids):
