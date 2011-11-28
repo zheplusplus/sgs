@@ -8,10 +8,7 @@ def as_target(source, target, game_control):
 def duel(game_control, args):
     targets_ids = args['targets']
     if 1 != len(targets_ids):
-        return {
-                   'code': ret_code.BAD_REQUEST,
-                   'reason': ret_code.BR_WRONG_ARG,
-               }
+        raise ValueError('wrong targets')
     player = game_control.player_by_token(args['token'])
     if targets_ids[0] == player.player_id:
         raise ValueError('wrong player')
