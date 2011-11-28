@@ -40,6 +40,7 @@ def fake_action(gc, a):
 
 use_cards_frm = frames.UseCards(make_gc(), player, { 'test': fake_action },
                                 on_result_f)
+assert_eq([player], use_cards_frm.allowed_players())
 response = use_cards_frm.react({
                                    'token': 10,
                                    'action': 'test',
@@ -54,30 +55,12 @@ assert_eq({
 result = None
 try:
     response = use_cards_frm.react({
-                                       'action': 'test',
-                                       'cards': [0],
-                                   })
-    assert False
-except KeyError, e:
-    assert_eq('token', e.message)
-assert_eq(None, result)
-try:
-    response = use_cards_frm.react({
                                        'token': 10,
                                        'cards': [0],
                                    })
     assert False
 except KeyError, e:
     assert_eq('action', e.message)
-response = use_cards_frm.react({
-                                   'token': 0,
-                                   'action': 'test',
-                                   'cards': [0],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_PLAYER_FORBID,
-          }, response)
 assert_eq(None, result)
 response = use_cards_frm.react({
                                    'token': 10,
@@ -89,19 +72,20 @@ assert_eq({
               'reason': ret_code.BR_INCORRECT_INTERFACE,
           }, response)
 assert_eq(None, result)
-response = use_cards_frm.react({
-                                   'token': 10,
-                                   'action': 'test',
-                                   'cards': [1],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+try:
+    response = use_cards_frm.react({
+                                       'token': 10,
+                                       'action': 'test',
+                                       'cards': [1],
+                                   })
+    assert False
+except ValueError:
+    pass
 assert_eq(None, result)
 
 show_card_frm = frames.ShowCards(make_gc(), player, lambda c: len(c) == 1,
                                  on_result_f)
+assert_eq([player], show_card_frm.allowed_players())
 response = show_card_frm.react({
                                    'token': 10,
                                    'show': [0],
@@ -117,15 +101,6 @@ try:
     assert False
 except KeyError, e:
     assert_eq('show', e.message)
-assert_eq(None, result)
-response = show_card_frm.react({
-                                   'token': 0,
-                                   'show': [0],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_PLAYER_FORBID,
-          }, response)
 assert_eq(None, result)
 response = show_card_frm.react({
                                    'token': 10,
@@ -145,18 +120,19 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG,
           }, response)
 assert_eq(None, result)
-response = show_card_frm.react({
-                                   'token': 10,
-                                   'show': [1],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+try:
+    response = show_card_frm.react({
+                                       'token': 10,
+                                       'show': [1],
+                                   })
+    assert False
+except ValueError:
+    pass
 assert_eq(None, result)
 
 discard_card_frm = frames.DiscardCards(make_gc(), player, lambda c: len(c) < 2,
                                        on_result_f)
+assert_eq([player], discard_card_frm.allowed_players())
 response = discard_card_frm.react({
                                       'token': 10,
                                       'discard': [0],
@@ -184,15 +160,6 @@ except KeyError, e:
     assert_eq('discard', e.message)
 assert_eq(None, result)
 response = discard_card_frm.react({
-                                      'token': 0,
-                                      'discard': [0],
-                                  })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_PLAYER_FORBID,
-          }, response)
-assert_eq(None, result)
-response = discard_card_frm.react({
                                       'token': 10,
                                       'discard': [0, 2],
                                   })
@@ -201,12 +168,12 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG,
           }, response)
 assert_eq(None, result)
-response = discard_card_frm.react({
-                                      'token': 10,
-                                      'discard': [1],
-                                  })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+try:
+    response = discard_card_frm.react({
+                                          'token': 10,
+                                          'discard': [1],
+                                      })
+    assert False
+except ValueError:
+    pass
 assert_eq(None, result)

@@ -1,26 +1,25 @@
 import core.src.ret_code as ret_code
 import core.src.action_frames as frames
+from ext.src.target_checking_common import forbid_target_no_card
   
+def as_target(source, target, game_control):
+    forbid_target_no_card(target, game_control)
+    on_result = lambda gc, a: discard_same_suit(gc, source, target, a)
+    game_control.push_frame(frames.ShowCards(game_control, target,
+                                             lambda c: len(c) == 1, on_result))
+    return { 'code': ret_code.OK }
+
 def fire_attack(game_control, args):
     targets_ids = args['targets']
     cards = game_control.cards_by_ids(args['cards'])
     user = game_control.player_by_token(args['token'])
     if 1 != len(targets_ids):
-        return {
-                   'code': ret_code.BAD_REQUEST,
-                   'reason': ret_code.BR_WRONG_ARG,
-               }
+        raise ValueError('wrong targets')
     if 1 != len(cards) or 'fire attack' != cards[0].name:
-        return {
-                   'code': ret_code.BAD_REQUEST,
-                   'reason': ret_code.BR_WRONG_ARG,
-               }
+        raise ValueError('wrong card')
     target = game_control.player_by_id(targets_ids[0])
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
-    on_result = lambda gc, a: discard_same_suit(gc, user, target, a)
-    game_control.push_frame(frames.ShowCards(game_control, target,
-                                             lambda c: len(c) == 1, on_result))
-    return { 'code': ret_code.OK }
+    return target.as_target(user, 'fire attack', game_control)
 
 def discard_same_suit(game_control, player, target, args):
     show_suit = game_control.cards_by_ids(args['show'])[0].suit

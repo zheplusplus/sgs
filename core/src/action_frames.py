@@ -13,8 +13,7 @@ class FrameBase:
 def check_owner(owner, cards):
     for c in cards:
         if owner != c.owner_or_nil:
-            return False
-    return True
+            raise ValueError('not own this card')
 
 class UseCards(FrameBase):
     def __init__(self, game_control, player, interface_map, on_result):
@@ -23,25 +22,18 @@ class UseCards(FrameBase):
         self.interface_map = interface_map
         self.interface_map['give up'] = lambda gc, a: self.done({})
 
+    def allowed_players(self):
+        return [self.player]
+
     def react(self, args):
-            token = args['token']
-            if token != self.player.token:
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_PLAYER_FORBID,
-                       }
             if not args['action'] in self.interface_map:
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_INCORRECT_INTERFACE,
                        }
-            if 'cards' in args and not check_owner(
-                                self.player,
-                                self.game_control.cards_by_ids(args['cards'])):
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_WRONG_ARG,
-                       }
+            if 'cards' in args:
+                check_owner(self.player,
+                            self.game_control.cards_by_ids(args['cards']))
             return self.interface_map[args['action']](self.game_control, args)
 
 class ShowCards(FrameBase):
@@ -50,25 +42,18 @@ class ShowCards(FrameBase):
         self.player = player
         self.cards_filter = cards_filter
 
+    def allowed_players(self):
+        return [self.player]
+
     def react(self, args):
-            token = args['token']
-            if token != self.player.token:
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_PLAYER_FORBID,
-                       }
             cards = args['show']
             if not self.cards_filter(cards):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_WRONG_ARG,
                        }
-            if not check_owner(self.player,
-                               self.game_control.cards_by_ids(args['show'])):
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_WRONG_ARG,
-                       }
+            check_owner(self.player,
+                        self.game_control.cards_by_ids(args['show']))
             self.game_control.show_cards(self.player, cards)
             return self.done(args)
 
@@ -79,24 +64,17 @@ class DiscardCards(FrameBase):
         self.player = player
         self.cards_filter = cards_filter
 
+    def allowed_players(self):
+        return [self.player]
+
     def react(self, args):
-            token = args['token']
-            if token != self.player.token:
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_PLAYER_FORBID,
-                       }
             if not self.cards_filter(args['discard']):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_WRONG_ARG,
                        }
-            if not check_owner(self.player,
-                               self.game_control.cards_by_ids(args['discard'])):
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_WRONG_ARG,
-                       }
+            check_owner(self.player,
+                        self.game_control.cards_by_ids(args['discard']))
             return self.done(args)
 
 class PlayCards(FrameBase):
@@ -106,25 +84,18 @@ class PlayCards(FrameBase):
         self.game_control = game_control
         self.cards_filter = cards_filter
 
+    def allowed_players(self):
+        return [self.player]
+
     def react(self, args):
-            token = args['token']
-            if token != self.player.token:
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_PLAYER_FORBID,
-                       }
             cards = args['play']
             if not self.cards_filter(args['play']):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_WRONG_ARG,
                        }
-            if not check_owner(self.player,
-                               self.game_control.cards_by_ids(args['play'])):
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_WRONG_ARG,
-                       }
+            check_owner(self.player,
+                        self.game_control.cards_by_ids(args['play']))
             if len(cards) > 0:
                 self.game_control.play_cards(self.player, cards)
             return self.done(args)

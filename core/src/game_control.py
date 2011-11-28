@@ -23,11 +23,22 @@ class GameControl:
 
     def player_act(self, args):
         try:
+            if not args['token'] in map(
+                    lambda p: p.token, self.action_stack.allowed_players()):
+                return {
+                           'code': ret_code.BAD_REQUEST,
+                           'reason': ret_code.BR_PLAYER_FORBID,
+                       }
             return self.action_stack.call(args)
         except KeyError, e:
             return {
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_MISSING_ARG % e.message,
+                   }
+        except ValueError, e:
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_WRONG_ARG,
                    }
 
     def push_frame(self, frame):
@@ -70,3 +81,6 @@ class GameControl:
 
     def player_by_token(self, player_token):
         return self.players_control.get_by_token(player_token)
+
+    def player_has_cards(self, player):
+        return self.card_pool.player_has_cards(player)
