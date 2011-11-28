@@ -84,3 +84,6 @@ class GameControl:
 
     def player_has_cards(self, player):
         return self.card_pool.player_has_cards(player)
+
+    def get_all_players(self):
+        return self.players_control.players

@@ -95,7 +95,7 @@ p0_events = gc.get_events(players[0].token, last_event_id)
 assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
-    assert_eq(players[0].player_id, event['victim'])
+    assert_eq(players[1].player_id, event['victim'])
     assert_eq(1, event['damage'])
     assert_eq('normal', event['category'])
 p1_events = gc.get_events(players[1].token, last_event_id)
@@ -256,7 +256,7 @@ p0_events = gc.get_events(players[0].token, last_event_id)
 assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
-    assert_eq(players[1].player_id, event['victim'])
+    assert_eq(players[0].player_id, event['victim'])
     assert_eq(1, event['damage'])
     assert_eq('normal', event['category'])
 p1_events = gc.get_events(players[1].token, last_event_id)
