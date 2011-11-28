@@ -89,15 +89,15 @@ assert_eq({
               'reason': ret_code.BR_INCORRECT_INTERFACE,
           }, response)
 assert_eq(None, result)
-response = use_cards_frm.react({
-                                   'token': 10,
-                                   'action': 'test',
-                                   'cards': [1],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+try:
+    response = use_cards_frm.react({
+                                       'token': 10,
+                                       'action': 'test',
+                                       'cards': [1],
+                                   })
+    assert False
+except ValueError:
+    pass
 assert_eq(None, result)
 
 show_card_frm = frames.ShowCards(make_gc(), player, lambda c: len(c) == 1,
@@ -145,14 +145,14 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG,
           }, response)
 assert_eq(None, result)
-response = show_card_frm.react({
-                                   'token': 10,
-                                   'show': [1],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+try:
+    response = show_card_frm.react({
+                                       'token': 10,
+                                       'show': [1],
+                                   })
+    assert False
+except ValueError:
+    pass
 assert_eq(None, result)
 
 discard_card_frm = frames.DiscardCards(make_gc(), player, lambda c: len(c) < 2,
@@ -201,12 +201,12 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG,
           }, response)
 assert_eq(None, result)
-response = discard_card_frm.react({
-                                      'token': 10,
-                                      'discard': [1],
-                                  })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+try:
+    response = discard_card_frm.react({
+                                          'token': 10,
+                                          'discard': [1],
+                                      })
+    assert False
+except ValueError:
+    pass
 assert_eq(None, result)
