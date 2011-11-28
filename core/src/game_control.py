@@ -23,6 +23,12 @@ class GameControl:
 
     def player_act(self, args):
         try:
+            if not args['token'] in map(
+                    lambda p: p.token, self.action_stack.allowed_players()):
+                return {
+                           'code': ret_code.BAD_REQUEST,
+                           'reason': ret_code.BR_PLAYER_FORBID,
+                       }
             return self.action_stack.call(args)
         except KeyError, e:
             return {

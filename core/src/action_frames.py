@@ -22,13 +22,10 @@ class UseCards(FrameBase):
         self.interface_map = interface_map
         self.interface_map['give up'] = lambda gc, a: self.done({})
 
+    def allowed_players(self):
+        return [self.player]
+
     def react(self, args):
-            token = args['token']
-            if token != self.player.token:
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_PLAYER_FORBID,
-                       }
             if not args['action'] in self.interface_map:
                 return {
                            'code': ret_code.BAD_REQUEST,
@@ -45,13 +42,10 @@ class ShowCards(FrameBase):
         self.player = player
         self.cards_filter = cards_filter
 
+    def allowed_players(self):
+        return [self.player]
+
     def react(self, args):
-            token = args['token']
-            if token != self.player.token:
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_PLAYER_FORBID,
-                       }
             cards = args['show']
             if not self.cards_filter(cards):
                 return {
@@ -70,13 +64,10 @@ class DiscardCards(FrameBase):
         self.player = player
         self.cards_filter = cards_filter
 
+    def allowed_players(self):
+        return [self.player]
+
     def react(self, args):
-            token = args['token']
-            if token != self.player.token:
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_PLAYER_FORBID,
-                       }
             if not self.cards_filter(args['discard']):
                 return {
                            'code': ret_code.BAD_REQUEST,
@@ -93,13 +84,10 @@ class PlayCards(FrameBase):
         self.game_control = game_control
         self.cards_filter = cards_filter
 
+    def allowed_players(self):
+        return [self.player]
+
     def react(self, args):
-            token = args['token']
-            if token != self.player.token:
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_PLAYER_FORBID,
-                       }
             cards = args['play']
             if not self.cards_filter(args['play']):
                 return {

@@ -2,9 +2,6 @@ class Event:
     def serialize(self, player_token):
         return self.as_log()
 
-    def as_log(self):
-        return []
-
 class EventList:
     def __init__(self):
         self.events = []
