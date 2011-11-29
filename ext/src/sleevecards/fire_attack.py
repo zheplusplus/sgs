@@ -6,13 +6,12 @@ def fire_attack(game_control, args):
     targets_ids = args['targets']
     cards = game_control.cards_by_ids(args['cards'])
     user = game_control.player_by_token(args['token'])
-    if 1 != len(targets_ids):
-        raise ValueError('wrong targets')
-    if 1 != len(cards) or 'fire attack' != cards[0].name:
-        raise ValueError('wrong card')
+    checking.only_one_target(targets_ids)
+    checking.only_one_card_named_as(cards, 'fire attack')
     target = game_control.player_by_id(targets_ids[0])
-    game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     checking.forbid_target_no_card(target, game_control)
+
+    game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: discard_same_suit(gc, user, target, a)
     game_control.push_frame(frames.ShowCards(game_control, target,
                                              lambda c: len(c) == 1, on_result))

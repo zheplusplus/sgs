@@ -1,19 +1,20 @@
 import core.src.action_frames as frames
 import core.src.ret_code as ret_code
+import ext.src.common_checking as checking
 
 def sabotage(game_control, args):
     targets_ids = args['targets']
-    if 1 != len(targets_ids):
-        raise ValueError('wrong target')
-    player = game_control.player_by_token(args['token'])
-    target = game_control.player_by_id(targets_ids[0])
-    as_target(player, target, game_control)
+    user = game_control.player_by_token(args['token'])
     cards = game_control.cards_by_ids(args['cards'])
-    if 1 != len(cards) or 'sabotage' != cards[0].name:
-        raise ValueError('wrong card')
-    game_control.use_cards_for_players(player, targets_ids, args['action'], cards)
+    checking.only_one_target(targets_ids)
+    target = game_control.player_by_id(targets_ids[0])
+    checking.only_one_card_named_as(cards, 'sabotage')
+    checking.forbid_target_self(user, target)
+    checking.forbid_target_no_card(target, game_control)
+
+    game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     targets = game_control.get_all_players()
-    on_result = lambda gc, a: flawless_defense(game_control, player, targets, a)
+    on_result = lambda gc, a: flawless_defense(game_control, user, targets, a)
     def play_filter(cards_ids):
         cards = game_control.cards_by_ids(cards_ids)
         if len(cards) == 0:

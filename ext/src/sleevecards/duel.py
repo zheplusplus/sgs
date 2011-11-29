@@ -1,5 +1,6 @@
 import core.src.action_frames as frames
 import core.src.ret_code as ret_code
+import ext.src.common_checking as checking
 
 def as_target(source, target, game_control):
     forbid_target_self(source, target)
@@ -7,16 +8,13 @@ def as_target(source, target, game_control):
 
 def duel(game_control, args):
     targets_ids = args['targets']
-    if 1 != len(targets_ids):
-        raise ValueError('wrong targets')
-    player = game_control.player_by_token(args['token'])
-    if targets_ids[0] == player.player_id:
-        raise ValueError('wrong player')
-    cards = game_control.cards_by_ids(args['cards'])
-    if 1 != len(cards) or 'duel' != cards[0].name:
-        raise ValueError('wrong card')
     user = game_control.player_by_token(args['token'])
+    cards = game_control.cards_by_ids(args['cards'])
+    checking.only_one_target(targets_ids)
     target = game_control.player_by_id(targets_ids[0])
+    checking.forbid_target_self(user, target)
+    checking.only_one_card_named_as(cards, 'duel')
+
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: play_slash(game_control, user, target, a)
     def play_filter(cards_ids):
