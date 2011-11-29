@@ -1,11 +1,5 @@
-import ext.src.target_checking_common as checking
 import core.src.action_frames as frames
 import core.src.ret_code as ret_code
-
-def as_target(source, target, game_control):
-    checking.forbid_target_no_card(target, game_control)
-    checking.forbid_target_self(source, target)
-    pass
 
 def sabotage(game_control, args):
     targets_ids = args['targets']

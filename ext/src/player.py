@@ -1,6 +1,5 @@
 import core.src.action_frames as frames
 from player_using_cards import get_using_cards_interface_map
-from player_as_target import target_mapping
 
 STARTDEAL = 4
 ROUNDDEAL = 2
@@ -9,7 +8,6 @@ class Player:
     def __init__(self, token, pid):
         self.token = token
         self.player_id = pid
-        self.target_mapping = target_mapping()
 
     def start(self, game_control):
         self.get_cards(game_control, STARTDEAL)
@@ -40,6 +38,3 @@ class Player:
 
     def get_cards(self, game_control, cnt):
         game_control.deal_cards(self, cnt)
-
-    def as_target(self, source, action, game_control):
-        return self.target_mapping[action](source, self, game_control)
