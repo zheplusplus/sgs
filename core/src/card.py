@@ -22,8 +22,23 @@ class Card:
     def using(self):
         self.status = IN_USE
 
-    def used(self):
+    def restore(self):
         self.status = NORMAL
 
-    def free(self):
+    def available(self):
         return self.status != IN_USE
+
+class StatusRestore:
+    def __init__(self, cards):
+        self.cards = cards
+
+    def __exit__(self, etype, eobj, tb):
+        [c.restore() for c in self.cards]
+        return False
+
+class InUseStatusRestore(StatusRestore):
+    def __init__(self, cards):
+        StatusRestore.__init__(self, cards)
+
+    def __enter__(self):
+        [c.using() for c in self.cards]

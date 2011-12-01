@@ -15,6 +15,11 @@ def check_owner(owner, cards):
         if owner != c.owner_or_nil:
             raise ValueError('not own this card')
 
+def check_available(cards):
+    for c in cards:
+        if not c.available():
+            raise ValueError('card not available')
+
 class UseCards(FrameBase):
     def __init__(self, game_control, player, interface_map, on_result):
         FrameBase.__init__(self, game_control, on_result)
@@ -31,10 +36,15 @@ class UseCards(FrameBase):
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_INCORRECT_INTERFACE,
                        }
-            if 'cards' in args:
-                check_owner(self.player,
-                            self.game_control.cards_by_ids(args['cards']))
-            return self.interface_map[args['action']](self.game_control, args)
+            if not 'cards' in args:
+                args['cards'] = []
+            cards = self.game_control.cards_by_ids(args['cards'])
+            check_owner(self.player, cards)
+            check_available(cards)
+            import card
+            with card.InUseStatusRestore(cards):
+                return self.interface_map[args['action']](self.game_control,
+                                                          args)
 
 class ShowCards(FrameBase):
     def __init__(self, game_control, player, cards_filter, on_result):
@@ -52,8 +62,7 @@ class ShowCards(FrameBase):
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_WRONG_ARG,
                        }
-            check_owner(self.player,
-                        self.game_control.cards_by_ids(args['show']))
+            check_owner(self.player, self.game_control.cards_by_ids(cards))
             self.game_control.show_cards(self.player, cards)
             return self.done(args)
 
@@ -68,13 +77,13 @@ class DiscardCards(FrameBase):
         return [self.player]
 
     def react(self, args):
-            if not self.cards_filter(args['discard']):
+            cards = args['discard']
+            if not self.cards_filter(cards):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_WRONG_ARG,
                        }
-            check_owner(self.player,
-                        self.game_control.cards_by_ids(args['discard']))
+            check_owner(self.player, self.game_control.cards_by_ids(cards))
             return self.done(args)
 
 class PlayCards(FrameBase):
@@ -94,8 +103,7 @@ class PlayCards(FrameBase):
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_WRONG_ARG,
                        }
-            check_owner(self.player,
-                        self.game_control.cards_by_ids(args['play']))
+            check_owner(self.player, self.game_control.cards_by_ids(cards))
             if len(cards) > 0:
                 self.game_control.play_cards(self.player, cards)
             return self.done(args)
