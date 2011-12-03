@@ -134,9 +134,11 @@ if True: # just indent for a nice appearance, card list verifying
     assert_eq('slash', cards[0]['name'])
     assert_eq(1, cards[0]['rank'])
     assert_eq(card.SPADE, cards[0]['suit'])
+    assert_eq(0, cards[0]['id'])
     assert_eq('slash', cards[1]['name'])
     assert_eq(2, cards[1]['rank'])
     assert_eq(card.SPADE, cards[1]['suit'])
+    assert_eq(1, cards[1]['id'])
 # player 1's round
 assert_eq(1, events[5]['player_id'])
 assert_eq(2, len(events[5]['get']))
@@ -157,8 +159,10 @@ if True: # just indent for a nice appearance, card list verifying
     assert_eq('slash', cards[0]['name'])
     assert_eq(5, cards[0]['rank'])
     assert_eq(card.SPADE, cards[0]['suit'])
+    assert_eq(4, cards[0]['id'])
     assert_eq('slash', cards[1]['name'])
     assert_eq(6, cards[1]['rank'])
+    assert_eq(5, cards[1]['id'])
     assert_eq(card.SPADE, cards[1]['suit'])
 # player 2's round, beginning only
 assert_eq(2, events[7]['player_id'])
@@ -192,7 +196,14 @@ assert_eq(events[4]['discard'], player0_events[4]['discard'])
 assert_eq(events[5]['player_id'], player0_events[5]['player_id'])
 assert_eq(2, player0_events[5]['get'])
 assert_eq(events[6]['player_id'], player0_events[6]['player_id'])
-assert_eq(events[6]['discard'], player0_events[6]['discard'])
+if True: # just indent for a nice appearance, card list verifying
+    cards = player0_events[6]['discard']
+    assert_eq('slash', cards[0]['name'])
+    assert_eq(5, cards[0]['rank'])
+    assert_eq(card.SPADE, cards[0]['suit'])
+    assert_eq('slash', cards[1]['name'])
+    assert_eq(6, cards[1]['rank'])
+    assert_eq(card.SPADE, cards[1]['suit'])
 # player 2's round
 assert_eq(events[7]['player_id'], player0_events[7]['player_id'])
 assert_eq(2, player0_events[5]['get'])
@@ -210,7 +221,14 @@ assert_eq(4, player1_events[2]['get'])
 assert_eq(events[3]['player_id'], player1_events[3]['player_id'])
 assert_eq(2, player1_events[3]['get'])
 assert_eq(events[4]['player_id'], player1_events[4]['player_id'])
-assert_eq(events[4]['discard'], player1_events[4]['discard'])
+if True: # just indent for a nice appearance, card list verifying
+    cards = player1_events[4]['discard']
+    assert_eq('slash', cards[0]['name'])
+    assert_eq(1, cards[0]['rank'])
+    assert_eq(card.SPADE, cards[0]['suit'])
+    assert_eq('slash', cards[1]['name'])
+    assert_eq(2, cards[1]['rank'])
+    assert_eq(card.SPADE, cards[1]['suit'])
 # player 1's round
 assert_eq(events[5]['player_id'], player1_events[5]['player_id'])
 assert_eq(events[5]['get'], player1_events[5]['get'])
@@ -233,12 +251,26 @@ assert_eq(events[2]['get'], player2_events[2]['get'])
 assert_eq(events[3]['player_id'], player2_events[3]['player_id'])
 assert_eq(2, player2_events[3]['get'])
 assert_eq(events[4]['player_id'], player2_events[4]['player_id'])
-assert_eq(events[4]['discard'], player2_events[4]['discard'])
+if True: # just indent for a nice appearance, card list verifying
+    cards = player2_events[4]['discard']
+    assert_eq('slash', cards[0]['name'])
+    assert_eq(1, cards[0]['rank'])
+    assert_eq(card.SPADE, cards[0]['suit'])
+    assert_eq('slash', cards[1]['name'])
+    assert_eq(2, cards[1]['rank'])
+    assert_eq(card.SPADE, cards[1]['suit'])
 # player 1's round
 assert_eq(events[5]['player_id'], player2_events[5]['player_id'])
 assert_eq(2, player2_events[5]['get'])
 assert_eq(events[6]['player_id'], player2_events[6]['player_id'])
-assert_eq(events[6]['discard'], player2_events[6]['discard'])
+if True: # just indent for a nice appearance, card list verifying
+    cards = player2_events[6]['discard']
+    assert_eq('slash', cards[0]['name'])
+    assert_eq(5, cards[0]['rank'])
+    assert_eq(card.SPADE, cards[0]['suit'])
+    assert_eq('slash', cards[1]['name'])
+    assert_eq(6, cards[1]['rank'])
+    assert_eq(card.SPADE, cards[1]['suit'])
 # player 2's round
 assert_eq(events[7]['player_id'], player2_events[7]['player_id'])
 assert_eq(events[7]['get'], player2_events[7]['get'])
@@ -252,12 +284,26 @@ assert_eq(events[2]['get'], player2_events_after_2[0]['get'])
 assert_eq(events[3]['player_id'], player2_events_after_2[1]['player_id'])
 assert_eq(2, player2_events_after_2[1]['get'])
 assert_eq(events[4]['player_id'], player2_events_after_2[2]['player_id'])
-assert_eq(events[4]['discard'], player2_events_after_2[2]['discard'])
+if True: # just indent for a nice appearance, card list verifying
+    cards = player2_events_after_2[2]['discard']
+    assert_eq('slash', cards[0]['name'])
+    assert_eq(1, cards[0]['rank'])
+    assert_eq(card.SPADE, cards[0]['suit'])
+    assert_eq('slash', cards[1]['name'])
+    assert_eq(2, cards[1]['rank'])
+    assert_eq(card.SPADE, cards[1]['suit'])
 # player 1's round
 assert_eq(events[5]['player_id'], player2_events_after_2[3]['player_id'])
 assert_eq(2, player2_events_after_2[3]['get'])
 assert_eq(events[6]['player_id'], player2_events_after_2[4]['player_id'])
-assert_eq(events[6]['discard'], player2_events_after_2[4]['discard'])
+if True: # just indent for a nice appearance, card list verifying
+    cards = player2_events_after_2[4]['discard']
+    assert_eq('slash', cards[0]['name'])
+    assert_eq(5, cards[0]['rank'])
+    assert_eq(card.SPADE, cards[0]['suit'])
+    assert_eq('slash', cards[1]['name'])
+    assert_eq(6, cards[1]['rank'])
+    assert_eq(card.SPADE, cards[1]['suit'])
 # player 2's round
 assert_eq(events[7]['player_id'], player2_events_after_2[5]['player_id'])
 assert_eq(events[7]['get'], player2_events_after_2[5]['get'])

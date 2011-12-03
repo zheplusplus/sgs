@@ -344,14 +344,31 @@ if True: # just indent for a nice appearance
         assert_eq('slash', cards[0]['name'])
         assert_eq(1, cards[0]['rank'])
         assert_eq(card.SPADE, cards[0]['suit'])
+        assert_eq(0, cards[0]['id'])
+        assert_eq('slash', cards[1]['name'])
+        assert_eq(9, cards[1]['rank'])
+        assert_eq(card.SPADE, cards[1]['suit'])
+        assert_eq(8, cards[1]['id'])
+    event = p0_events[1]
+    assert_eq(players[1].player_id, event['player_id'])
+    assert_eq(2, event['get'])
+p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(2, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(players[0].player_id, event['player_id'])
+    assert_eq(2, len(event['discard']))
+    if True: # just indent for a nice appearance, check cards
+        cards = event['discard']
+        assert_eq('slash', cards[0]['name'])
+        assert_eq(1, cards[0]['rank'])
+        assert_eq(card.SPADE, cards[0]['suit'])
         assert_eq('slash', cards[1]['name'])
         assert_eq(9, cards[1]['rank'])
         assert_eq(card.SPADE, cards[1]['suit'])
     event = p0_events[1]
     assert_eq(players[1].player_id, event['player_id'])
     assert_eq(2, event['get'])
-p1_events = gc.get_events(players[1].token, last_event_id)
-assert_eq(p0_events[0], p1_events[0])
 event = p1_events[1]
 assert_eq(players[1].player_id, event['player_id'])
 if True: # just indent for a nice appearance, check cards
@@ -415,7 +432,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [7],
+                           'cards': [5],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -561,7 +578,7 @@ result = gc.player_act({
                            'token': players[0].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [7],
+                           'cards': [2],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
