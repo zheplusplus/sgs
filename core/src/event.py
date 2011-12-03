@@ -76,12 +76,22 @@ class UseCardsForPlayers(Event):
         self.action = action
         self.cards = cards
 
-    def as_log(self):
+    def serialize(self, player_token):
+        if player_token == self.user.token:
+            return self.as_log()
         return [{
             'user': self.user.player_id,
             'targets': self.targets_ids,
             'action': self.action,
             'use': cards_to_msg(self.cards),
+        }]
+
+    def as_log(self):
+        return [{
+            'user': self.user.player_id,
+            'targets': self.targets_ids,
+            'action': self.action,
+            'use': cards_to_msg_include_id(self.cards),
         }]
 
 class PlayCards(Event):

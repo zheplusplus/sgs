@@ -52,7 +52,19 @@ if True: # just indent for a nice appearance
     assert_eq('fire attack', event['use'][0]['name'])
     assert_eq(2, event['use'][0]['rank'])
     assert_eq(card.HEART, event['use'][0]['suit'])
+    assert_eq(1, event['use'][0]['id'])
 p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(1, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p1_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('fire attack', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('fire attack', event['use'][0]['name'])
+    assert_eq(2, event['use'][0]['rank'])
+    assert_eq(card.HEART, event['use'][0]['suit'])
 last_event_id += 1
 
 result = gc.player_act({
@@ -70,6 +82,7 @@ if True: # just indent for a nice appearance
     assert_eq(7, event['show'][0]['rank'])
     assert_eq(card.DIAMOND, event['show'][0]['suit'])
 p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(p0_events, p1_events)
 last_event_id += 1
 
 result = gc.player_act({
@@ -78,9 +91,19 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
+p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(2, len(p0_events))
+assert_eq(2, len(p1_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
+    assert_eq(players[0].player_id, event['player_id'])
+    assert_eq(1, len(event['discard']))
+    assert_eq('dodge', event['discard'][0]['name'])
+    assert_eq(3, event['discard'][0]['rank'])
+    assert_eq(card.DIAMOND, event['discard'][0]['suit'])
+    assert_eq(2, event['discard'][0]['id'])
+if True: # just indent for a nice appearance
+    event = p1_events[0]
     assert_eq(players[0].player_id, event['player_id'])
     assert_eq(1, len(event['discard']))
     assert_eq('dodge', event['discard'][0]['name'])
@@ -91,7 +114,7 @@ if True: # just indent for a nice appearance
     assert_eq(players[1].player_id, event['victim'])
     assert_eq(1, event['damage'])
     assert_eq('fire', event['category'])
-p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(p0_events[1], p1_events[1])
 last_event_id += 2
 
 result = gc.player_act({
@@ -268,9 +291,22 @@ result = gc.player_act({
 assert_eq(ret_code.OK, result['code'])
 
 p0_events = gc.get_events(players[0].token, last_event_id)
+p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(2, len(p0_events))
+assert_eq(2, len(p1_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('fire attack', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('fire attack', event['use'][0]['name'])
+    assert_eq(4, event['use'][0]['rank'])
+    assert_eq(card.HEART, event['use'][0]['suit'])
+    assert_eq(3, event['use'][0]['id'])
+if True: # just indent for a nice appearance
+    event = p1_events[0]
     assert_eq(players[0].player_id, event['user'])
     assert_eq(1, len(event['targets']))
     assert_eq(players[1].player_id, event['targets'][0])
@@ -286,7 +322,7 @@ if True: # just indent for a nice appearance
     assert_eq('dodge', event['show'][0]['name'])
     assert_eq(7, event['show'][0]['rank'])
     assert_eq(card.DIAMOND, event['show'][0]['suit'])
-p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(p0_events[1], p1_events[1])
 last_event_id += 2
 
 result = gc.player_act({
@@ -494,7 +530,19 @@ if True: # just indent for a nice appearance
     assert_eq('fire attack', event['use'][0]['name'])
     assert_eq(2, event['use'][0]['rank'])
     assert_eq(card.DIAMOND, event['use'][0]['suit'])
+    assert_eq(1, event['use'][0]['id'])
 p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(1, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p1_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[0].player_id, event['targets'][0])
+    assert_eq('fire attack', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('fire attack', event['use'][0]['name'])
+    assert_eq(2, event['use'][0]['rank'])
+    assert_eq(card.DIAMOND, event['use'][0]['suit'])
 last_event_id += 1
 
 result = gc.player_act({
@@ -521,6 +569,7 @@ if True: # just indent for a nice appearance
     assert_eq(3, event['show'][0]['rank'])
     assert_eq(card.HEART, event['show'][0]['suit'])
 p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(p0_events, p1_events)
 last_event_id += 1
 
 assert_eq(ret_code.OK, gc.player_act({
@@ -529,9 +578,19 @@ assert_eq(ret_code.OK, gc.player_act({
                                      })['code'])
 
 p0_events = gc.get_events(players[0].token, last_event_id)
+p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(2, len(p0_events))
+assert_eq(2, len(p1_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
+    assert_eq(players[0].player_id, event['player_id'])
+    assert_eq(1, len(event['discard']))
+    assert_eq('fire attack', event['discard'][0]['name'])
+    assert_eq(4, event['discard'][0]['rank'])
+    assert_eq(card.HEART, event['discard'][0]['suit'])
+    assert_eq(3, event['discard'][0]['id'])
+if True: # just indent for a nice appearance
+    event = p1_events[0]
     assert_eq(players[0].player_id, event['player_id'])
     assert_eq(1, len(event['discard']))
     assert_eq('fire attack', event['discard'][0]['name'])
@@ -542,7 +601,7 @@ if True: # just indent for a nice appearance
     assert_eq(players[0].player_id, event['victim'])
     assert_eq(1, event['damage'])
     assert_eq('fire', event['category'])
-p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(p0_events[1], p1_events[1])
 last_event_id += 1
 
 assert_eq(ret_code.OK, gc.player_act({

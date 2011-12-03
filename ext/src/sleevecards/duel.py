@@ -2,10 +2,6 @@ import core.src.action_frames as frames
 import core.src.ret_code as ret_code
 import ext.src.common_checking as checking
 
-def as_target(source, target, game_control):
-    forbid_target_self(source, target)
-    pass
-
 def duel(game_control, args):
     targets_ids = args['targets']
     user = game_control.player_by_token(args['token'])
