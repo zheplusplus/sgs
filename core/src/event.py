@@ -99,10 +99,18 @@ class PlayCards(Event):
         self.player = player
         self.cards = cards
 
-    def as_log(self):
+    def serialize(self, player_token):
+        if player_token == self.player.token:
+            return self.as_log()
         return [{
             'player': self.player.player_id,
             'play': cards_to_msg(self.cards),
+        }]
+
+    def as_log(self):
+        return [{
+            'player': self.player.player_id,
+            'play': cards_to_msg_include_id(self.cards),
         }]
 
 class ShowCards(Event):
