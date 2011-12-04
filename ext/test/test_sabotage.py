@@ -69,8 +69,19 @@ for i in range(0, 3):
         assert_eq('sabotage', event['use'][0]['name'])
         assert_eq(i + 1, event['use'][0]['rank'])
         assert_eq(card.SPADE, event['use'][0]['suit'])
+        assert_eq(i, event['use'][0]['id'])
     p1_events = gc.get_events(players[1].token, last_event_id)
-    assert_eq(p0_events, p1_events)
+    assert_eq(1, len(p1_events))
+    if True: # just indent for a nice appearance
+        event = p1_events[0]
+        assert_eq(players[0].player_id, event['user'])
+        assert_eq(1, len(event['targets']))
+        assert_eq(players[1].player_id, event['targets'][0])
+        assert_eq('sabotage', event['action'])
+        assert_eq(1, len(event['use']))
+        assert_eq('sabotage', event['use'][0]['name'])
+        assert_eq(i + 1, event['use'][0]['rank'])
+        assert_eq(card.SPADE, event['use'][0]['suit'])
     last_event_id += 1
 
     result = gc.player_act({
@@ -246,10 +257,19 @@ if True: # just indent for a nice appearance
     assert_eq('sabotage', event['action'])
     assert_eq(1, len(event['use']))
     assert_eq('sabotage', event['use'][0]['name'])
-    assert_eq(i + 1, event['use'][0]['rank'])
+    assert_eq(4, event['use'][0]['rank'])
     assert_eq(card.SPADE, event['use'][0]['suit'])
-last_event_id += 1
-assert_eq(p0_events[0], p1_events[0])
+    assert_eq(3, event['use'][0]['id'])
+if True: # just indent for a nice appearance
+    event = p1_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('sabotage', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('sabotage', event['use'][0]['name'])
+    assert_eq(4, event['use'][0]['rank'])
+    assert_eq(card.SPADE, event['use'][0]['suit'])
 
 if True: # just indent for a nice appearance
     event = p0_events[1]
@@ -258,12 +278,12 @@ if True: # just indent for a nice appearance
     assert_eq(1, len(event['cards']))
     check_random_sabotage_card(event['cards'][0], False)
 if True: # just indent for a nice appearance
-    event = p0_events[1]
+    event = p1_events[1]
     assert_eq(players[1].player_id, event['player'])
     assert_eq('cards', event['type'])
     assert_eq(1, len(event['cards']))
     check_random_sabotage_card(event['cards'][0], True)
-last_event_id += 1
+last_event_id += 2
 
 sabotage_rank_accumulate += p0_events[1]['cards'][0]['rank']
 assert_eq(5 + 6 + 7 + 8, sabotage_rank_accumulate)
