@@ -50,13 +50,13 @@ class DealCards(Event):
         if player_token == self.player.token:
             return self.as_log()
         return {
-            'player_id': self.player.player_id,
+            'player': self.player.player_id,
             'get': len(self.cards),
         }
 
     def _as_log(self):
         return {
-            'player_id': self.player.player_id,
+            'player': self.player.player_id,
             'get': cards_to_msg_include_id(self.cards),
         }
 
@@ -69,13 +69,13 @@ class DiscardCards(Event):
         if player_token == self.player.token:
             return self.as_log()
         return {
-            'player_id': self.player.player_id,
+            'player': self.player.player_id,
             'discard': cards_to_msg(self.cards),
         }
 
     def _as_log(self):
         return {
-            'player_id': self.player.player_id,
+            'player': self.player.player_id,
             'discard': cards_to_msg_include_id(self.cards),
         }
 
@@ -130,7 +130,7 @@ class ShowCards(Event):
 
     def _as_log(self):
         return {
-            'player_id': self.player.player_id,
+            'player': self.player.player_id,
             'show': cards_to_msg(self.cards),
         }
 
