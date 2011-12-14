@@ -31,20 +31,19 @@ class UseCards(FrameBase):
         return [self.player]
 
     def react(self, args):
-            if not args['action'] in self.interface_map:
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_INCORRECT_INTERFACE,
-                       }
-            if not 'cards' in args:
-                args['cards'] = []
-            cards = self.game_control.cards_by_ids(args['cards'])
-            check_owner(self.player, cards)
-            check_available(cards)
-            import card
-            with card.InUseStatusRestore(cards):
-                return self.interface_map[args['action']](self.game_control,
-                                                          args)
+        if not args['action'] in self.interface_map:
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_INCORRECT_INTERFACE,
+                   }
+        if not 'cards' in args:
+            args['cards'] = []
+        cards = self.game_control.cards_by_ids(args['cards'])
+        check_owner(self.player, cards)
+        check_available(cards)
+        import card
+        with card.InUseStatusRestore(cards):
+            return self.interface_map[args['action']](self.game_control, args)
 
 class ShowCards(FrameBase):
     def __init__(self, game_control, player, cards_filter, on_result):
@@ -56,15 +55,15 @@ class ShowCards(FrameBase):
         return [self.player]
 
     def react(self, args):
-            cards = args['show']
-            if not self.cards_filter(cards):
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_WRONG_ARG,
-                       }
-            check_owner(self.player, self.game_control.cards_by_ids(cards))
-            self.game_control.show_cards(self.player, cards)
-            return self.done(args)
+        cards = args['show']
+        if not self.cards_filter(cards):
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_WRONG_ARG,
+                   }
+        check_owner(self.player, self.game_control.cards_by_ids(cards))
+        self.game_control.show_cards(self.player, cards)
+        return self.done(args)
 
 class DiscardCards(FrameBase):
     def __init__(self, game_control, player, cards_filter, on_result):
@@ -76,14 +75,14 @@ class DiscardCards(FrameBase):
         return [self.player]
 
     def react(self, args):
-            cards = args['discard']
-            if not self.cards_filter(cards):
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_WRONG_ARG,
-                       }
-            check_owner(self.player, self.game_control.cards_by_ids(cards))
-            return self.done(args)
+        cards = args['discard']
+        if not self.cards_filter(cards):
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_WRONG_ARG,
+                   }
+        check_owner(self.player, self.game_control.cards_by_ids(cards))
+        return self.done(args)
 
 class PlayCards(FrameBase):
     def __init__(self, game_control, player, cards_filter, on_result):
@@ -95,16 +94,16 @@ class PlayCards(FrameBase):
         return [self.player]
 
     def react(self, args):
-            cards = args['play']
-            if not self.cards_filter(args['play']):
-                return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_WRONG_ARG,
-                       }
-            check_owner(self.player, self.game_control.cards_by_ids(cards))
-            if len(cards) > 0:
-                self.game_control.play_cards(self.player, cards)
-            return self.done(args)
+        cards = args['play']
+        if not self.cards_filter(args['play']):
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_WRONG_ARG,
+                   }
+        check_owner(self.player, self.game_control.cards_by_ids(cards))
+        if len(cards) > 0:
+            self.game_control.play_cards(self.player, cards)
+        return self.done(args)
 
 class AcceptMessage(FrameBase):
     def __init__(self, game_control, players, msg_key, allowed_msgs, on_result):
