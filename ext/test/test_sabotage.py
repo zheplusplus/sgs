@@ -227,7 +227,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'not own this card',
           }, result)
 
 result = gc.player_act({
@@ -259,7 +259,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'forbid target self',
           }, result)
 
 result = gc.player_act({
@@ -270,7 +270,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong targets count',
           }, result)
 
 result = gc.player_act({
@@ -281,7 +281,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong targets count',
           }, result)
 
 result = gc.player_act({
@@ -292,7 +292,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
 
 result = gc.player_act({
@@ -303,7 +303,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
 
 result = gc.player_act({
@@ -408,5 +408,5 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'forbid target no card',
           }, result)

@@ -83,7 +83,10 @@ except ValueError:
     pass
 assert_eq(None, result)
 
-show_card_frm = frames.ShowCards(make_gc(), player, lambda c: len(c) == 1,
+def show_card_check(cards):
+    if len(cards) != 1:
+        raise ValueError('need one card only')
+show_card_frm = frames.ShowCards(make_gc(), player, show_card_check,
                                  on_result_f)
 assert_eq([player], show_card_frm.allowed_players())
 response = show_card_frm.react({
@@ -102,24 +105,27 @@ try:
 except KeyError, e:
     assert_eq('show', e.message)
 assert_eq(None, result)
-response = show_card_frm.react({
-                                   'token': 10,
-                                   'show': [0, 2],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+
+try:
+    response = show_card_frm.react({
+                                       'token': 10,
+                                       'show': [0, 2],
+                                   })
+    assert False
+except ValueError, e:
+    assert_eq('need one card only', e.message)
 assert_eq(None, result)
-response = show_card_frm.react({
-                                   'token': 10,
-                                   'show': [],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+
+try:
+    response = show_card_frm.react({
+                                       'token': 10,
+                                       'show': [],
+                                   })
+    assert False
+except ValueError, e:
+    assert_eq('need one card only', e.message)
 assert_eq(None, result)
+
 try:
     response = show_card_frm.react({
                                        'token': 10,
@@ -130,7 +136,10 @@ except ValueError:
     pass
 assert_eq(None, result)
 
-discard_card_frm = frames.DiscardCards(make_gc(), player, lambda c: len(c) < 2,
+def discard_card_check(cards):
+    if 1 < len(cards):
+        raise ValueError('number of cards more than 1')
+discard_card_frm = frames.DiscardCards(make_gc(), player, discard_card_check,
                                        on_result_f)
 assert_eq([player], discard_card_frm.allowed_players())
 response = discard_card_frm.react({
@@ -159,15 +168,17 @@ try:
 except KeyError, e:
     assert_eq('discard', e.message)
 assert_eq(None, result)
-response = discard_card_frm.react({
-                                      'token': 10,
-                                      'discard': [0, 2],
-                                  })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+
+try:
+    response = discard_card_frm.react({
+                                          'token': 10,
+                                          'discard': [0, 2],
+                                      })
+    assert False
+except ValueError, e:
+    assert_eq('number of cards more than 1', e.message)
 assert_eq(None, result)
+
 try:
     response = discard_card_frm.react({
                                           'token': 10,

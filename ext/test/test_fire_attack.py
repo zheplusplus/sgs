@@ -125,7 +125,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -135,7 +135,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'not own this card',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -145,7 +145,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -174,7 +174,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'not own this card',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -184,7 +184,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong targets count',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -194,7 +194,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong targets count',
           }, result)
 
 result = gc.player_act({
@@ -219,7 +219,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'not own this card',
           }, result)
 result = gc.player_act({
         'token': players[1].token,
@@ -227,7 +227,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'need exactly one card'
           }, result)
 result = gc.player_act({
         'token': players[1].token,
@@ -235,7 +235,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'need exactly one card',
           }, result)
 
 result = gc.player_act({
@@ -258,7 +258,8 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG %
+                                        'need exactly one card of same suit',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -266,7 +267,8 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG %
+                                        'need exactly one card of same suit',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -274,7 +276,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'not own this card',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -282,7 +284,8 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG %
+                                        'need exactly one card of same suit',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -345,7 +348,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'must discard 2 cards',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -360,7 +363,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'not own this card',
           }, result)
 
 result = gc.player_act({
@@ -472,7 +475,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'forbid target no card',
           }, result)
 
 # fire attack to a player itself, with only the fire attack card
@@ -551,7 +554,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'not own this card',
           }, result)
 
 assert_eq(ret_code.OK, gc.player_act({
@@ -641,5 +644,5 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'forbid target no card',
           }, result)

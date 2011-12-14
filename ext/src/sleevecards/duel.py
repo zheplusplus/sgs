@@ -13,15 +13,13 @@ def duel(game_control, args):
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: play_slash(game_control, user, target, a)
-    def play_filter(cards_ids):
+    def check_slash(cards_ids):
         cards = game_control.cards_by_ids(cards_ids)
         if len(cards) == 0:
-            return True
-        return len(cards) == 1 and cards[0].name == 'slash'
-    game_control.push_frame(
-            frames.PlayCards(game_control, target,
-                             play_filter,
-                             on_result))
+            return
+        checking.only_one_card_named_as(cards, 'slash')
+    game_control.push_frame(frames.PlayCards(game_control, target, check_slash,
+                                             on_result))
     return { 'code': ret_code.OK }
 
 def play_slash(game_control, player, target, args):

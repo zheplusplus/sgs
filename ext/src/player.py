@@ -27,7 +27,8 @@ class Player:
 
     def discarding_cards_stage(self, game_control):
         def discard_filter(cards):
-            return len(cards) == 2
+            if len(cards) != 2:
+                raise ValueError('must discard 2 cards')
         game_control.push_frame(
                 frames.DiscardCards(game_control, self, discard_filter,
                                     self.cards_discarded))

@@ -38,7 +38,7 @@ class GameControl:
         except ValueError, e:
             return {
                        'code': ret_code.BAD_REQUEST,
-                       'reason': ret_code.BR_WRONG_ARG,
+                       'reason': ret_code.BR_WRONG_ARG % e.message,
                    }
 
     def push_frame(self, frame):
