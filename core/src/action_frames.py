@@ -69,7 +69,6 @@ class ShowCards(FrameBase):
 class DiscardCards(FrameBase):
     def __init__(self, game_control, player, cards_filter, on_result):
         FrameBase.__init__(self, game_control, on_result)
-        self.game_control = game_control
         self.player = player
         self.cards_filter = cards_filter
 
@@ -90,7 +89,6 @@ class PlayCards(FrameBase):
     def __init__(self, game_control, player, cards_filter, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.player = player
-        self.game_control = game_control
         self.cards_filter = cards_filter
 
     def allowed_players(self):
@@ -107,3 +105,21 @@ class PlayCards(FrameBase):
             if len(cards) > 0:
                 self.game_control.play_cards(self.player, cards)
             return self.done(args)
+
+class AcceptMessage(FrameBase):
+    def __init__(self, game_control, players, msg_key, allowed_msgs, on_result):
+        FrameBase.__init__(self, game_control, on_result)
+        self.players = players
+        self.message_key = msg_key
+        self.allowed_messages = allowed_msgs
+
+    def allowed_players(self):
+        return self.players
+
+    def react(self, args):
+        if not args[self.message_key] in self.allowed_messages:
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': ret_code.BR_WRONG_ARG,
+                   }
+        return self.done(args)

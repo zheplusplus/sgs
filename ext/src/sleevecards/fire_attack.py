@@ -31,6 +31,6 @@ def discard_same_suit(game_control, player, target, args):
 def done(game_control, target, args):
     cards_ids = args['discard']
     if len(cards_ids) > 0:
-        game_control.discard_cards(game_control.player_by_token(args['token']),
-                                   cards_ids)
+        game_control.discard_cards_by_ids(
+                        game_control.player_by_token(args['token']), cards_ids)
         game_control.damage(target, 1, 'fire')

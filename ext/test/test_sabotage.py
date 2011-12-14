@@ -30,84 +30,194 @@ gc.start()
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
-def check_random_sabotage_card(c, with_id):
-    if c['rank'] == 5:
-        assert_eq('slash', c['name'])
-        assert_eq(card.SPADE, c['suit'])
-    if c['rank'] == 6:
-        assert_eq('dodge', c['name'])
-        assert_eq(card.HEART, c['suit'])
-    if c['rank'] == 7:
-        assert_eq('slash', c['name'])
-        assert_eq(card.CLUB, c['suit'])
-    if c['rank'] == 8:
-        assert_eq('dodge', c['name'])
-        assert_eq(card.DIAMOND, c['suit'])
-    if with_id:
-        assert_eq(c['id'], c['rank'] - 1)
-    else:
-        assert not 'id' in c
-sabotage_rank_accumulate = 0
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'sabotage',
+                           'targets': [players[1].player_id],
+                           'cards': [0],
+                       })
+assert_eq(ret_code.OK, result['code'])
+p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('sabotage', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('sabotage', event['use'][0]['name'])
+    assert_eq(1, event['use'][0]['rank'])
+    assert_eq(card.SPADE, event['use'][0]['suit'])
+    assert_eq(0, event['use'][0]['id'])
+p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(1, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p1_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('sabotage', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('sabotage', event['use'][0]['name'])
+    assert_eq(1, event['use'][0]['rank'])
+    assert_eq(card.SPADE, event['use'][0]['suit'])
+last_event_id += 1
 
-for i in range(0, 3):
-    result = gc.player_act({
-                               'token': players[0].token,
-                               'action': 'sabotage',
-                               'targets': [players[1].player_id],
-                               'cards': [i],
-                           })
-    assert_eq(ret_code.OK, result['code'])
-    p0_events = gc.get_events(players[0].token, last_event_id)
-    assert_eq(1, len(p0_events))
-    if True: # just indent for a nice appearance
-        event = p0_events[0]
-        assert_eq(players[0].player_id, event['user'])
-        assert_eq(1, len(event['targets']))
-        assert_eq(players[1].player_id, event['targets'][0])
-        assert_eq('sabotage', event['action'])
-        assert_eq(1, len(event['use']))
-        assert_eq('sabotage', event['use'][0]['name'])
-        assert_eq(i + 1, event['use'][0]['rank'])
-        assert_eq(card.SPADE, event['use'][0]['suit'])
-        assert_eq(i, event['use'][0]['id'])
-    p1_events = gc.get_events(players[1].token, last_event_id)
-    assert_eq(1, len(p1_events))
-    if True: # just indent for a nice appearance
-        event = p1_events[0]
-        assert_eq(players[0].player_id, event['user'])
-        assert_eq(1, len(event['targets']))
-        assert_eq(players[1].player_id, event['targets'][0])
-        assert_eq('sabotage', event['action'])
-        assert_eq(1, len(event['use']))
-        assert_eq('sabotage', event['use'][0]['name'])
-        assert_eq(i + 1, event['use'][0]['rank'])
-        assert_eq(card.SPADE, event['use'][0]['suit'])
-    last_event_id += 1
+result = gc.player_act({
+                           'token': players[0].token,
+                           'sabotage': 'cards',
+                       })
+assert_eq(ret_code.OK, result['code'])
+p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(players[1].player_id, event['player'])
+    assert_eq(1, len(event['discard']))
+    assert_eq('cards', event['discard'][0]['region'])
+    assert_eq(5, event['discard'][0]['rank'])
+    assert_eq('slash', event['discard'][0]['name'])
+    assert_eq(card.SPADE, event['discard'][0]['suit'])
 
-    result = gc.player_act({
-                               'token': players[0].token,
-                               'sabotage': 'cards',
-                           })
-    assert_eq(ret_code.OK, result['code'])
-    p0_events = gc.get_events(players[0].token, last_event_id)
-    assert_eq(1, len(p0_events))
-    if True: # just indent for a nice appearance
-        event = p0_events[0]
-        assert_eq(players[1].player_id, event['player'])
-        assert_eq('cards', event['type'])
-        assert_eq(1, len(event['cards']))
-        check_random_sabotage_card(event['cards'][0], False)
-    sabotage_rank_accumulate += event['cards'][0]['rank']
+p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(1, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p1_events[0]
+    assert_eq(players[1].player_id, event['player'])
+    assert_eq(1, len(event['discard']))
+    assert_eq('cards', event['discard'][0]['region'])
+    assert_eq(5, event['discard'][0]['rank'])
+    assert_eq(4, event['discard'][0]['id'])
+    assert_eq('slash', event['discard'][0]['name'])
+    assert_eq(card.SPADE, event['discard'][0]['suit'])
+last_event_id += 1
 
-    p1_events = gc.get_events(players[1].token, last_event_id)
-    assert_eq(1, len(p1_events))
-    if True: # just indent for a nice appearance
-        event = p0_events[0]
-        assert_eq(players[1].player_id, event['player'])
-        assert_eq('cards', event['type'])
-        assert_eq(1, len(event['cards']))
-        check_random_sabotage_card(event['cards'][0], True)
-    last_event_id += 1
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'sabotage',
+                           'targets': [players[1].player_id],
+                           'cards': [1],
+                       })
+assert_eq(ret_code.OK, result['code'])
+p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('sabotage', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('sabotage', event['use'][0]['name'])
+    assert_eq(2, event['use'][0]['rank'])
+    assert_eq(card.SPADE, event['use'][0]['suit'])
+    assert_eq(1, event['use'][0]['id'])
+p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(1, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p1_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('sabotage', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('sabotage', event['use'][0]['name'])
+    assert_eq(2, event['use'][0]['rank'])
+    assert_eq(card.SPADE, event['use'][0]['suit'])
+last_event_id += 1
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'sabotage': 'cards',
+                       })
+assert_eq(ret_code.OK, result['code'])
+p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(players[1].player_id, event['player'])
+    assert_eq(1, len(event['discard']))
+    assert_eq('cards', event['discard'][0]['region'])
+    assert_eq(6, event['discard'][0]['rank'])
+    assert_eq('dodge', event['discard'][0]['name'])
+    assert_eq(card.HEART, event['discard'][0]['suit'])
+
+p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(1, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p1_events[0]
+    assert_eq(players[1].player_id, event['player'])
+    assert_eq(1, len(event['discard']))
+    assert_eq('cards', event['discard'][0]['region'])
+    assert_eq(6, event['discard'][0]['rank'])
+    assert_eq(5, event['discard'][0]['id'])
+    assert_eq('dodge', event['discard'][0]['name'])
+    assert_eq(card.HEART, event['discard'][0]['suit'])
+last_event_id += 1
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'sabotage',
+                           'targets': [players[1].player_id],
+                           'cards': [2],
+                       })
+assert_eq(ret_code.OK, result['code'])
+p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('sabotage', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('sabotage', event['use'][0]['name'])
+    assert_eq(3, event['use'][0]['rank'])
+    assert_eq(card.SPADE, event['use'][0]['suit'])
+    assert_eq(2, event['use'][0]['id'])
+p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(1, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p1_events[0]
+    assert_eq(players[0].player_id, event['user'])
+    assert_eq(1, len(event['targets']))
+    assert_eq(players[1].player_id, event['targets'][0])
+    assert_eq('sabotage', event['action'])
+    assert_eq(1, len(event['use']))
+    assert_eq('sabotage', event['use'][0]['name'])
+    assert_eq(3, event['use'][0]['rank'])
+    assert_eq(card.SPADE, event['use'][0]['suit'])
+last_event_id += 1
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'sabotage': 'cards',
+                       })
+assert_eq(ret_code.OK, result['code'])
+p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(players[1].player_id, event['player'])
+    assert_eq(1, len(event['discard']))
+    assert_eq('cards', event['discard'][0]['region'])
+    assert_eq(7, event['discard'][0]['rank'])
+    assert_eq('slash', event['discard'][0]['name'])
+    assert_eq(card.CLUB, event['discard'][0]['suit'])
+
+p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(1, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p1_events[0]
+    assert_eq(players[1].player_id, event['player'])
+    assert_eq(1, len(event['discard']))
+    assert_eq('cards', event['discard'][0]['region'])
+    assert_eq(7, event['discard'][0]['rank'])
+    assert_eq(6, event['discard'][0]['id'])
+    assert_eq('slash', event['discard'][0]['name'])
+    assert_eq(card.CLUB, event['discard'][0]['suit'])
+last_event_id += 1
 
 result = gc.player_act({
                            'token': players[0].token,
@@ -274,19 +384,21 @@ if True: # just indent for a nice appearance
 if True: # just indent for a nice appearance
     event = p0_events[1]
     assert_eq(players[1].player_id, event['player'])
-    assert_eq('cards', event['type'])
-    assert_eq(1, len(event['cards']))
-    check_random_sabotage_card(event['cards'][0], False)
+    assert_eq(1, len(event['discard']))
+    assert_eq('cards', event['discard'][0]['region'])
+    assert_eq(8, event['discard'][0]['rank'])
+    assert_eq('dodge', event['discard'][0]['name'])
+    assert_eq(card.DIAMOND, event['discard'][0]['suit'])
 if True: # just indent for a nice appearance
     event = p1_events[1]
     assert_eq(players[1].player_id, event['player'])
-    assert_eq('cards', event['type'])
-    assert_eq(1, len(event['cards']))
-    check_random_sabotage_card(event['cards'][0], True)
+    assert_eq(1, len(event['discard']))
+    assert_eq('cards', event['discard'][0]['region'])
+    assert_eq(8, event['discard'][0]['rank'])
+    assert_eq(7, event['discard'][0]['id'])
+    assert_eq('dodge', event['discard'][0]['name'])
+    assert_eq(card.DIAMOND, event['discard'][0]['suit'])
 last_event_id += 2
-
-sabotage_rank_accumulate += p0_events[1]['cards'][0]['rank']
-assert_eq(5 + 6 + 7 + 8, sabotage_rank_accumulate)
 
 result = gc.player_act({
                            'token': players[0].token,

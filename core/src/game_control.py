@@ -51,8 +51,10 @@ class GameControl:
         self.events.add(
                 event.DealCards(player, self.card_pool.deal(player, cnt)))
 
-    def discard_cards(self, player, cards_ids):
-        cards = self.card_pool.cards_by_ids(cards_ids)
+    def discard_cards_by_ids(self, player, cards_ids):
+        self.discard_cards(player, self.card_pool.cards_by_ids(cards_ids))
+
+    def discard_cards(self, player, cards):
         self.events.add(event.DiscardCards(player, cards))
         self.card_pool.discard(cards)
 
@@ -87,3 +89,6 @@ class GameControl:
 
     def get_all_players(self):
         return self.players_control.players
+
+    def random_pick_cards(self, player, count):
+        return self.card_pool.random_pick_cards(player, count)

@@ -15,9 +15,13 @@ class Card:
         self.suit = suit
         self.owner_or_nil = None
         self.status = NORMAL
+        self.region = 'cardpool'
 
     def set_owner(self, owner):
         self.owner_or_nil = owner
+
+    def set_region(self, region):
+        self.region = region
 
     def using(self):
         self.status = IN_USE

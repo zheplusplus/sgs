@@ -34,6 +34,7 @@ class CardPool:
         result = self.cards[:cnt]
         self.cards = self.cards[cnt:]
         [c.set_owner(player) for c in result]
+        [c.set_region('cards') for c in result]
         self.player_id_to_owning_cards[player.player_id].extend(result)
         return result
 
@@ -42,6 +43,7 @@ class CardPool:
         [self.player_id_to_owning_cards[c.owner_or_nil.player_id].remove(c)
                 for c in cards]
         [c.set_owner(None) for c in cards]
+        [c.set_region('cardpool') for c in cards]
         [c.restore() for c in cards]
 
     def cards_by_ids(self, cards_ids):
@@ -51,6 +53,10 @@ class CardPool:
         self.check_player_recorded(player)
         return len(filter(lambda c: c.available(),
                           self.player_id_to_owning_cards[player.player_id])) > 0
+
+    def random_pick_cards(self, player, count):
+        self.check_player_recorded(player)
+        return self.player_id_to_owning_cards[player.player_id][0: count]
 
     def check_player_recorded(self, player):
         if not player.player_id in self.player_id_to_owning_cards:

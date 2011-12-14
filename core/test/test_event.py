@@ -44,7 +44,9 @@ assert_eq({
               'get': 3,
           }, evt.serialize(player1.token))
 
+[c.set_region('cards') for c in cards]
 evt = event.DiscardCards(player0, cards)
+[c.set_region('cardpool') for c in cards]
 assert_eq({
               'type': 'DiscardCards',
               'player': player0.player_id,
@@ -54,18 +56,21 @@ assert_eq({
                                  'name': 'slash',
                                  'rank': 1,
                                  'suit': 1,
+                                 'region': 'cards',
                              },
                              {
                                  'id': 1,
                                  'name': 'dodge',
                                  'rank': 2,
                                  'suit': 2,
+                                 'region': 'cards',
                              },
                              {
                                  'id': 2,
                                  'name': 'slash',
                                  'rank': 3,
                                  'suit': 1,
+                                 'region': 'cards',
                              },
                          ],
           }, evt.as_log())
@@ -78,16 +83,19 @@ assert_eq({
                                  'name': 'slash',
                                  'rank': 1,
                                  'suit': 1,
+                                 'region': 'cards',
                              },
                              {
                                  'name': 'dodge',
                                  'rank': 2,
                                  'suit': 2,
+                                 'region': 'cards',
                              },
                              {
                                  'name': 'slash',
                                  'rank': 3,
                                  'suit': 1,
+                                 'region': 'cards',
                              },
                          ],
           }, evt.serialize(player1.token))
