@@ -33,6 +33,20 @@ gc.start()
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
+# cards:
+# name        | rank (id = rank - 1) | suit
+
+# slash       | 1                    | SPADE
+# fire attack | 2                    | HEART <- use this
+# dodge       | 3                    | DIAMOND
+# fire attack | 4                    | HEART
+# slash       | 9                    | SPADE
+# slash       | 10                   | SPADE
+
+# slash       | 5                    | CLUB
+# fire attack | 6                    | HEART
+# dodge       | 7                    | DIAMOND
+# dodge       | 8                    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'action': 'fire attack',
@@ -67,6 +81,19 @@ if True: # just indent for a nice appearance
     assert_eq(card.HEART, event['use'][0]['suit'])
 last_event_id += 1
 
+# cards:
+# name        | rank | suit
+
+# slash       | 1    | SPADE
+# dodge       | 3    | DIAMOND
+# fire attack | 4    | HEART
+# slash       | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND <- show this
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[1].token,
         'show': [6],
@@ -85,6 +112,19 @@ p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(p0_events, p1_events)
 last_event_id += 1
 
+# cards:
+# name        | rank | suit
+
+# slash       | 1    | SPADE
+# dodge       | 3    | DIAMOND <- discard this
+# fire attack | 4    | HEART
+# slash       | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND <- show this
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'discard': [2],
@@ -117,6 +157,18 @@ if True: # just indent for a nice appearance
 assert_eq(p0_events[1], p1_events[1])
 last_event_id += 2
 
+# cards:
+# name        | rank | suit
+
+# slash       | 1    | SPADE
+# fire attack | 4    | HEART
+# slash       | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'action': 'fire attack',
@@ -197,6 +249,18 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'wrong targets count',
           }, result)
 
+# cards:
+# name        | rank | suit
+
+# slash       | 1    | SPADE
+# fire attack | 4    | HEART <- use this
+# slash       | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'action': 'fire attack',
@@ -205,6 +269,17 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 
+# cards:
+# name        | rank | suit
+
+# slash       | 1    | SPADE
+# slash       | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'show': [3],
@@ -238,6 +313,17 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'need exactly one card',
           }, result)
 
+# cards:
+# name        | rank | suit
+
+# slash       | 1    | SPADE
+# slash       | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND <- show this
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[1].token,
         'show': [6],
@@ -251,15 +337,6 @@ result = gc.player_act({
 assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': ret_code.BR_PLAYER_FORBID,
-          }, result)
-result = gc.player_act({
-        'token': players[0].token,
-        'discard': [1],
-    })
-assert_eq({
-              'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG %
-                                        'need exactly one card of same suit',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -280,7 +357,7 @@ assert_eq({
           }, result)
 result = gc.player_act({
         'token': players[0].token,
-        'discard': [0, 2],
+        'discard': [0, 8],
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -342,6 +419,17 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 
+# cards:
+# name        | rank | suit
+
+# slash       | 1    | SPADE
+# slash       | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'discard': [],
@@ -366,6 +454,17 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'not own this card',
           }, result)
 
+# cards:
+# name        | rank | suit
+
+# slash       | 1    | SPADE <- discard this
+# slash       | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'discard': [0, 8],
@@ -443,6 +542,20 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 1    | DIAMOND <- use this
+# fire attack | 2    | DIAMOND <- use this
+# fire attack | 3    | HEART <- use this
+# fire attack | 4    | HEART <- use this
+# slash       | 9    | SPADE
+# slash       | 10   | CLUB
+
+# slash       | 5    | CLUB <- show this
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 for i in range(0, 4):
     assert_eq(ret_code.OK, gc.player_act({
                                              'token': players[0].token,
@@ -458,10 +571,21 @@ for i in range(0, 4):
                                              'token': players[0].token,
                                              'discard': [],
                                          })['code'])
+
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
                                          'action': 'give up',
                                      })['code'])
+# cards:
+# name        | rank | suit
+
+# slash       | 9    | SPADE <- discard this
+# slash       | 10   | CLUB <- discard this
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
                                          'discard': [8, 9],
@@ -497,6 +621,20 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 1    | DIAMOND <- use this
+# fire attack | 2    | DIAMOND
+# fire attack | 3    | HEART
+# fire attack | 4    | HEART
+# fire attack | 9    | HEART
+# fire attack | 10   | HEART
+
+# slash       | 5    | CLUB <- show this
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
                                          'action': 'fire attack',
@@ -514,6 +652,19 @@ assert_eq(ret_code.OK, gc.player_act({
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until fire attack to 1
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 2    | DIAMOND <- use this
+# fire attack | 3    | HEART
+# fire attack | 4    | HEART
+# fire attack | 9    | HEART
+# fire attack | 10   | HEART
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
                                          'action': 'fire attack',
@@ -548,6 +699,18 @@ if True: # just indent for a nice appearance
     assert_eq(card.DIAMOND, event['use'][0]['suit'])
 last_event_id += 1
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 3    | HEART
+# fire attack | 4    | HEART
+# fire attack | 9    | HEART
+# fire attack | 10   | HEART
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
                            'show': [1],
@@ -557,6 +720,18 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'not own this card',
           }, result)
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 3    | HEART <- show this
+# fire attack | 4    | HEART
+# fire attack | 9    | HEART
+# fire attack | 10   | HEART
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
                                          'show': [2],
@@ -575,6 +750,18 @@ p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(p0_events, p1_events)
 last_event_id += 1
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 3    | HEART
+# fire attack | 4    | HEART <- discard this
+# fire attack | 9    | HEART
+# fire attack | 10   | HEART
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
                                          'discard': [3],
@@ -607,6 +794,17 @@ if True: # just indent for a nice appearance
 assert_eq(p0_events[1], p1_events[1])
 last_event_id += 1
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 3    | HEART <- show this
+# fire attack | 9    | HEART <- use this
+# fire attack | 10   | HEART
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
                                          'action': 'fire attack',
@@ -621,6 +819,16 @@ assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
                                          'discard': [],
                                      })['code'])
+# cards:
+# name        | rank | suit
+
+# fire attack | 3    | HEART <- show this
+# fire attack | 10   | HEART <- use this
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
                                          'action': 'fire attack',
@@ -636,6 +844,15 @@ assert_eq(ret_code.OK, gc.player_act({
                                          'discard': [],
                                      })['code'])
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 3    | HEART <- use this, no cards after use it
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# dodge       | 8    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'fire attack',

@@ -105,8 +105,5 @@ class AcceptMessage(FrameBase):
 
     def react(self, args):
         if not args[self.message_key] in self.allowed_messages:
-            return {
-                       'code': ret_code.BAD_REQUEST,
-                       'reason': ret_code.BR_WRONG_ARG,
-                   }
+            raise ValueError('bad message')
         return self.done(args)

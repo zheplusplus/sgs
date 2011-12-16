@@ -30,6 +30,20 @@ gc.start()
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
+# cards:
+# name     | rank (id = rank - 1) | suit
+
+# sabotage | 1                    | SPADE   <- use this to duel
+# sabotage | 2                    | SPADE
+# sabotage | 3                    | SPADE
+# sabotage | 4                    | SPADE
+# sabotage | 9                    | HEART
+# sabotage | 10                   | CLUB
+
+# slash    | 5                    | SPADE   <- discard this
+# dodge    | 6                    | HEART
+# slash    | 7                    | CLUB
+# dodge    | 8                    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'sabotage',
@@ -93,6 +107,18 @@ if True: # just indent for a nice appearance
     assert_eq(card.SPADE, event['discard'][0]['suit'])
 last_event_id += 1
 
+# cards:
+# name     | rank | suit
+
+# sabotage | 2    | SPADE   <- use this
+# sabotage | 3    | SPADE
+# sabotage | 4    | SPADE
+# sabotage | 9    | HEART
+# sabotage | 10   | CLUB
+
+# dodge    | 6    | HEART   <- discard this
+# slash    | 7    | CLUB
+# dodge    | 8    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'sabotage',
@@ -156,6 +182,16 @@ if True: # just indent for a nice appearance
     assert_eq(card.HEART, event['discard'][0]['suit'])
 last_event_id += 1
 
+# cards:
+# name     | rank | suit
+
+# sabotage | 3    | SPADE   <- use this
+# sabotage | 4    | SPADE
+# sabotage | 9    | HEART
+# sabotage | 10   | CLUB
+
+# slash    | 7    | CLUB    <- discard this
+# dodge    | 8    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'sabotage',
@@ -219,6 +255,14 @@ if True: # just indent for a nice appearance
     assert_eq(card.CLUB, event['discard'][0]['suit'])
 last_event_id += 1
 
+# cards:
+# name     | rank | suit
+
+# sabotage | 4    | SPADE
+# sabotage | 9    | HEART
+# sabotage | 10   | CLUB
+
+# dodge    | 8    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'sabotage',
@@ -276,7 +320,8 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'sabotage',
-                           'targets': [],
+                           'targets': [players[0].player_id,
+                                       players[1].player_id],
                            'cards': [3],
                        })
 assert_eq({
@@ -306,6 +351,14 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
 
+# cards:
+# name     | rank | suit
+
+# sabotage | 4    | SPADE   <- use this
+# sabotage | 9    | HEART
+# sabotage | 10   | CLUB
+
+# dodge    | 8    | DIAMOND <- discard this
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'sabotage',
@@ -328,16 +381,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, result)
-
-result = gc.player_act({
-                           'token': players[0].token,
-                           'sabotage': 'undef',
-                       })
-assert_eq({
-              'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG,
+              'reason': ret_code.BR_WRONG_ARG % 'bad message',
           }, result)
 
 result = gc.player_act({
@@ -400,6 +444,11 @@ if True: # just indent for a nice appearance
     assert_eq(card.DIAMOND, event['discard'][0]['suit'])
 last_event_id += 2
 
+# cards:
+# name     | rank | suit
+
+# sabotage | 9    | HEART
+# sabotage | 10   | CLUB
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'sabotage',

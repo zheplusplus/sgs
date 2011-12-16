@@ -30,6 +30,20 @@ gc.start()
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
+# cards:
+# name        | rank (id = rank - 1) | suit
+
+# duel        | 1                    | SPADE   <- use this to duel
+# fire attack | 2                    | HEART
+# slash       | 3                    | DIAMOND
+# duel        | 4                    | SPADE
+# duel        | 9                    | SPADE
+# slash       | 10                   | SPADE
+
+# slash       | 5                    | CLUB
+# fire attack | 6                    | HEART
+# dodge       | 7                    | DIAMOND
+# slash       | 8                    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'action': 'duel',
@@ -64,6 +78,19 @@ if True: # just indent for a nice appearance
     assert_eq(card.SPADE, event['use'][0]['suit'])
 last_event_id += 1
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 2    | HEART
+# slash       | 3    | DIAMOND
+# duel        | 4    | SPADE
+# duel        | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
+# slash       | 8    | DIAMOND <- play this
 result = gc.player_act({
         'token': players[1].token,
         'play': [7],
@@ -90,6 +117,18 @@ if True: # just indent for a nice appearance
     assert_eq(7, event['play'][0]['id'])
 last_event_id += 1
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 2    | HEART
+# slash       | 3    | DIAMOND <- play this
+# duel        | 4    | SPADE
+# duel        | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'play': [2],
@@ -132,6 +171,17 @@ p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(p0_events, p1_events)
 last_event_id += 1
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 2    | HEART
+# duel        | 4    | SPADE
+# duel        | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'action': 'duel',
@@ -147,11 +197,11 @@ result = gc.player_act({
         'token': players[0].token,
         'action': 'duel',
         'targets': [players[1].player_id],
-        'cards': [2],
+        'cards': [9],
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG % 'not own this card',
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
 
 result = gc.player_act({
@@ -187,6 +237,17 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'wrong targets count',
           }, result)
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 2    | HEART
+# duel        | 4    | SPADE <- use this
+# duel        | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'action': 'duel',
@@ -230,6 +291,16 @@ assert_eq({
               'reason': ret_code.BR_PLAYER_FORBID,
           }, result)
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 2    | HEART
+# duel        | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[1].token,
         'play': [9],
@@ -273,6 +344,16 @@ assert_eq({
               'reason': ret_code.BR_MISSING_ARG % 'play',
           }, result)
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 2    | HEART
+# duel        | 9    | SPADE
+# slash       | 10   | SPADE
+
+# slash       | 5    | CLUB <- play this
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[1].token,
         'play': [4],
@@ -315,6 +396,15 @@ p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(p0_events, p1_events)
 last_event_id += 1
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 2    | HEART
+# duel        | 9    | SPADE
+# slash       | 10   | SPADE
+
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'action': 'duel',
@@ -346,6 +436,15 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'forbid target self',
           }, result)
 
+# cards:
+# name        | rank | suit
+
+# fire attack | 2    | HEART
+# duel        | 9    | SPADE <- use this
+# slash       | 10   | SPADE
+
+# fire attack | 6    | HEART
+# dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'action': 'duel',
