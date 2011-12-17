@@ -40,6 +40,7 @@ def fake_action(gc, a):
 
 use_cards_frm = frames.UseCards(make_gc(), player, { 'test': fake_action },
                                 on_result_f)
+assert_eq([player], use_cards_frm.allowed_players())
 response = use_cards_frm.react({
                                    'token': 10,
                                    'action': 'test',
@@ -52,33 +53,14 @@ assert_eq({
               'cards': [0],
           }, result)
 result = None
-response = use_cards_frm.react({
-                                   'action': 'test',
-                                   'cards': [0],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_MISSING_ARG % "'token'",
-          }, response)
-assert_eq(None, result)
-response = use_cards_frm.react({
-                                   'token': 10,
-                                   'cards': [0],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_MISSING_ARG % "'action'",
-          }, response)
-assert_eq(None, result)
-response = use_cards_frm.react({
-                                   'token': 0,
-                                   'action': 'test',
-                                   'cards': [0],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_PLAYER_FORBID,
-          }, response)
+try:
+    response = use_cards_frm.react({
+                                       'token': 10,
+                                       'cards': [0],
+                                   })
+    assert False
+except KeyError, e:
+    assert_eq('action', e.message)
 assert_eq(None, result)
 response = use_cards_frm.react({
                                    'token': 10,
@@ -90,19 +72,23 @@ assert_eq({
               'reason': ret_code.BR_INCORRECT_INTERFACE,
           }, response)
 assert_eq(None, result)
-response = use_cards_frm.react({
-                                   'token': 10,
-                                   'action': 'test',
-                                   'cards': [1],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+try:
+    response = use_cards_frm.react({
+                                       'token': 10,
+                                       'action': 'test',
+                                       'cards': [1],
+                                   })
+    assert False
+except ValueError:
+    pass
 assert_eq(None, result)
 
-show_card_frm = frames.ShowCards(make_gc(), player, lambda c: len(c) == 1,
+def show_card_check(cards):
+    if len(cards) != 1:
+        raise ValueError('need one card only')
+show_card_frm = frames.ShowCards(make_gc(), player, show_card_check,
                                  on_result_f)
+assert_eq([player], show_card_frm.allowed_players())
 response = show_card_frm.react({
                                    'token': 10,
                                    'show': [0],
@@ -113,51 +99,49 @@ assert_eq({
               'show': [0],
           }, result)
 result = None
-response = show_card_frm.react({ 'token': 10 })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_MISSING_ARG % "'show'",
-          }, response)
-assert_eq(None, result)
-response = show_card_frm.react({
-                                   'token': 0,
-                                   'show': [0],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_PLAYER_FORBID,
-          }, response)
-assert_eq(None, result)
-response = show_card_frm.react({
-                                   'token': 10,
-                                   'show': [0, 2],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
-assert_eq(None, result)
-response = show_card_frm.react({
-                                   'token': 10,
-                                   'show': [],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
-assert_eq(None, result)
-response = show_card_frm.react({
-                                   'token': 10,
-                                   'show': [1],
-                               })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+try:
+    response = show_card_frm.react({ 'token': 10 })
+    assert False
+except KeyError, e:
+    assert_eq('show', e.message)
 assert_eq(None, result)
 
-discard_card_frm = frames.DiscardCards(make_gc(), player, lambda c: len(c) < 2,
+try:
+    response = show_card_frm.react({
+                                       'token': 10,
+                                       'show': [0, 2],
+                                   })
+    assert False
+except ValueError, e:
+    assert_eq('need one card only', e.message)
+assert_eq(None, result)
+
+try:
+    response = show_card_frm.react({
+                                       'token': 10,
+                                       'show': [],
+                                   })
+    assert False
+except ValueError, e:
+    assert_eq('need one card only', e.message)
+assert_eq(None, result)
+
+try:
+    response = show_card_frm.react({
+                                       'token': 10,
+                                       'show': [1],
+                                   })
+    assert False
+except ValueError:
+    pass
+assert_eq(None, result)
+
+def discard_card_check(cards):
+    if 1 < len(cards):
+        raise ValueError('number of cards more than 1')
+discard_card_frm = frames.DiscardCards(make_gc(), player, discard_card_check,
                                        on_result_f)
+assert_eq([player], discard_card_frm.allowed_players())
 response = discard_card_frm.react({
                                       'token': 10,
                                       'discard': [0],
@@ -178,36 +162,29 @@ assert_eq({
               'discard': [],
           }, result)
 result = None
-response = discard_card_frm.react({ 'token': 10 })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_MISSING_ARG % "'discard'",
-          }, response)
+try:
+    response = discard_card_frm.react({ 'token': 10 })
+    assert False
+except KeyError, e:
+    assert_eq('discard', e.message)
 assert_eq(None, result)
-response = discard_card_frm.react({
-                                      'token': 0,
-                                      'discard': [0],
-                                  })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_PLAYER_FORBID,
-          }, response)
+
+try:
+    response = discard_card_frm.react({
+                                          'token': 10,
+                                          'discard': [0, 2],
+                                      })
+    assert False
+except ValueError, e:
+    assert_eq('number of cards more than 1', e.message)
 assert_eq(None, result)
-response = discard_card_frm.react({
-                                      'token': 10,
-                                      'discard': [0, 2],
-                                  })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
-assert_eq(None, result)
-response = discard_card_frm.react({
-                                      'token': 10,
-                                      'discard': [1],
-                                  })
-assert_eq({
-              'code': 400,
-              'reason': ret_code.BR_WRONG_ARG,
-          }, response)
+
+try:
+    response = discard_card_frm.react({
+                                          'token': 10,
+                                          'discard': [1],
+                                      })
+    assert False
+except ValueError:
+    pass
 assert_eq(None, result)
