@@ -12,31 +12,23 @@ def duel(game_control, args):
     checking.only_one_card_named_as(cards, 'duel')
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
-    on_result = lambda gc, a: play_slash(game_control, user, target, a)
+    game_control.push_frame(play_slash_frame(game_control, target, user))
+    return { 'code': ret_code.OK }
+
+def play_slash_frame(game_control, player, next_player):
     def check_slash(cards_ids):
         cards = game_control.cards_by_ids(cards_ids)
         if len(cards) == 0:
             return
         checking.only_one_card_named_as(cards, 'slash')
-    game_control.push_frame(frames.PlayCards(game_control, target, check_slash,
-                                             on_result))
-    return { 'code': ret_code.OK }
+    on_result = lambda gc, a: play_slash(gc, player, next_player, a)
+    return frames.PlayCards(game_control, player, check_slash, on_result)
 
 def play_slash(game_control, player, target, args):
-    cards_ids = args['play']
-    if len(cards_ids) > 1:
-        raise ValueError('wrong card')
-    def play_filter(cards_ids):
-        cards = game_control.cards_by_ids(cards_ids)
-        if len(cards) == 0:
-            return True
-        return len(cards) == 1 and cards[0].name == 'slash'
-    if len(cards_ids) == 0:
-        done(game_control, target, args)
+    if len(args['play']) == 0:
+        done(game_control, player, args)
     else:
-        game_control.push_frame(
-              frames.PlayCards(game_control, player, play_filter,
-                               lambda gc, a: play_slash(gc, target, player, a)))
+        game_control.push_frame(play_slash_frame(game_control, target, player))
 
 def done(game_control, target, args):
     game_control.damage(target, 1, 'normal')

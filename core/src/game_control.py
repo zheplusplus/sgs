@@ -87,8 +87,5 @@ class GameControl:
     def player_has_cards(self, player):
         return self.card_pool.player_has_cards(player)
 
-    def get_all_players(self):
-        return self.players_control.players
-
     def random_pick_cards(self, player, count):
         return self.card_pool.random_pick_cards(player, count)

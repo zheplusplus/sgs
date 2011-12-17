@@ -41,6 +41,7 @@ class UseCards(FrameBase):
         cards = self.game_control.cards_by_ids(args['cards'])
         check_owner(self.player, cards)
         check_available(cards)
+
         import card
         with card.InUseStatusRestore(cards):
             return self.interface_map[args['action']](self.game_control, args)
@@ -89,6 +90,7 @@ class PlayCards(FrameBase):
         cards = args['play']
         self.cards_check(cards)
         check_owner(self.player, self.game_control.cards_by_ids(cards))
+
         if len(cards) > 0:
             self.game_control.play_cards(self.player, cards)
         return self.done(args)
