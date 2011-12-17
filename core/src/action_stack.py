@@ -10,3 +10,6 @@ class ActionStack:
 
     def pop(self):
         self.frames.pop()
+
+    def allowed_players(self):
+        return self.frames[-1].allowed_players()

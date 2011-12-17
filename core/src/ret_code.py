@@ -11,4 +11,4 @@ BAD_REQUEST = 400
 BR_MISSING_ARG = 'missing argument: %s'
 BR_PLAYER_FORBID = 'player forbidden'
 BR_INCORRECT_INTERFACE = 'incorrect interface'
-BR_WRONG_ARG = 'wrong argument'
+BR_WRONG_ARG = 'wrong argument: %s'
