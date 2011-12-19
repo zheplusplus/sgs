@@ -381,7 +381,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG % 'bad message',
+              'reason': ret_code.BR_WRONG_ARG % 'no such equipment',
           }, result)
 
 result = gc.player_act({
@@ -455,6 +455,196 @@ result = gc.player_act({
                            'targets': [players[1].player_id],
                            'cards': [8],
                        })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG % 'forbid target no card',
+          }, result)
+
+# sabotage weapon
+pc = PlayersControl()
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+            test_data.CardInfo('duel', 1, card.SPADE),
+            test_data.CardInfo('zhangba serpent spear', 2, card.SPADE),
+            test_data.CardInfo('slash', 3, card.DIAMOND),
+            test_data.CardInfo('dodge', 4, card.DIAMOND),
+
+            test_data.CardInfo('slash', 5, card.CLUB),
+            test_data.CardInfo('sabotage', 6, card.HEART),
+            test_data.CardInfo('sabotage', 7, card.DIAMOND),
+            test_data.CardInfo('slash', 8, card.DIAMOND),
+
+            test_data.CardInfo('duel', 9, card.SPADE),
+            test_data.CardInfo('zhangba serpent spear', 10, card.HEART),
+
+            test_data.CardInfo('duel', 11, card.DIAMOND),
+            test_data.CardInfo('duel', 12, card.HEART),
+     ])), pc, ActionStack())
+players = [Player(91, 0), Player(1729, 1)]
+map(lambda p: pc.add_player(p), players)
+gc.start()
+
+result = gc.player_act({
+                          'token': players[0].token,
+                          'action': 'equip',
+                          'cards': [1],
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                          'token': players[0].token,
+                          'action': 'give up',
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+# cards:
+# name                  | rank (id = rank - 1) | suit
+
+# duel                  | 1                    | SPADE   <- discard this
+# zhangba serpent spear | 2                    | SPADE   -- equipped
+# slash                 | 3                    | DIAMOND
+# dodge                 | 4                    | DIAMOND
+# duel                  | 9                    | SPADE   <- discard this
+# zhangba serpent spear | 10                   | HEART
+
+# slash                 | 5                    | CLUB
+# sabotage              | 6                    | HEART
+# sabotage              | 7                    | DIAMOND
+# slash                 | 8                    | DIAMOND
+result = gc.player_act({
+                          'token': players[0].token,
+                          'discard': [0, 8],
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+# cards:
+# name                  | rank (id = rank - 1) | suit
+
+# zhangba serpent spear | 2                    | SPADE   -- equipped
+# slash                 | 3                    | DIAMOND
+# dodge                 | 4                    | DIAMOND
+# zhangba serpent spear | 10                   | HEART
+
+# slash                 | 5                    | CLUB
+# sabotage              | 6                    | HEART
+# sabotage              | 7                    | DIAMOND
+# slash                 | 8                    | DIAMOND
+# duel                  | 11                   | DIAMOND <- draw this and use it
+# duel                  | 12                   | HEART   <- draw this
+result = gc.player_act({
+                          'token': players[1].token,
+                          'action': 'duel',
+                          'targets': [players[0].player_id],
+                          'cards': [10],
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+# cards:
+# name                  | rank (id = rank - 1) | suit
+
+# zhangba serpent spear | 2                    | SPADE   -- equipped
+# slash                 | 3                    | DIAMOND
+# dodge                 | 4                    | DIAMOND <- play this
+# zhangba serpent spear | 10                   | HEART   <-  and this
+
+# slash                 | 5                    | CLUB
+# sabotage              | 6                    | HEART
+# sabotage              | 7                    | DIAMOND
+# slash                 | 8                    | DIAMOND
+# duel                  | 12                   | HEART
+result = gc.player_act({
+                          'token': players[0].token,
+                          'method': 'zhangba serpent spear',
+                          'play': [3, 9],
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                          'token': players[1].token,
+                          'method': 'slash',
+                          'play': [4],
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                          'token': players[0].token,
+                          'method': 'slash',
+                          'play': [2],
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                          'token': players[1].token,
+                          'method': 'give up',
+                          'play': [],
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+# cards:
+# name                  | rank (id = rank - 1) | suit
+
+# zhangba serpent spear | 2                    | SPADE   -- equipped
+
+# sabotage              | 6                    | HEART   <- use this
+# sabotage              | 7                    | DIAMOND
+# slash                 | 8                    | DIAMOND
+# duel                  | 12                   | HEART
+result = gc.player_act({
+                          'token': players[1].token,
+                          'action': 'sabotage',
+                          'targets': [players[0].player_id],
+                          'cards': [5],
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                          'token': players[1].token,
+                          'sabotage': 'cards',
+                      })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG % 'bad region',
+          }, result)
+
+last_event_id = len(gc.get_events(players[0].token, 0)) # about to sabotage
+result = gc.player_act({
+                          'token': players[1].token,
+                          'sabotage': 'weapon',
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+p0_events = gc.get_events(players[0].token, last_event_id)
+assert_eq(1, len(p0_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(players[0].player_id, event['player'])
+    assert_eq(1, len(event['discard']))
+    assert_eq('weapon', event['discard'][0]['region'])
+    assert_eq('zhangba serpent spear', event['discard'][0]['name'])
+    assert_eq(2, event['discard'][0]['rank'])
+    assert_eq(card.SPADE, event['discard'][0]['suit'])
+    assert_eq(1, event['discard'][0]['id'])
+p1_events = gc.get_events(players[1].token, last_event_id)
+assert_eq(1, len(p1_events))
+if True: # just indent for a nice appearance
+    event = p0_events[0]
+    assert_eq(1, len(event['discard']))
+    assert_eq('weapon', event['discard'][0]['region'])
+    assert_eq(2, event['discard'][0]['rank'])
+    assert_eq(card.SPADE, event['discard'][0]['suit'])
+    assert_eq(1, event['discard'][0]['id'])
+
+# cards:
+# name                  | rank (id = rank - 1) | suit
+
+# sabotage              | 7                    | DIAMOND <- use this
+# slash                 | 8                    | DIAMOND
+# duel                  | 12                   | HEART
+result = gc.player_act({
+                          'token': players[1].token,
+                          'action': 'sabotage',
+                          'targets': [players[0].player_id],
+                          'cards': [6],
+                      })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': ret_code.BR_WRONG_ARG % 'forbid target no card',

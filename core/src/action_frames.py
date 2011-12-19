@@ -15,11 +15,6 @@ def check_owner(owner, cards):
         if owner != c.owner_or_nil:
             raise ValueError('not own this card')
 
-def check_available(cards):
-    for c in cards:
-        if not c.available():
-            raise ValueError('card not available')
-
 class UseCards(FrameBase):
     def __init__(self, game_control, player, interface_map, on_result):
         FrameBase.__init__(self, game_control, on_result)
@@ -40,7 +35,6 @@ class UseCards(FrameBase):
             args['cards'] = []
         cards = self.game_control.cards_by_ids(args['cards'])
         check_owner(self.player, cards)
-        check_available(cards)
 
         import card
         with card.InUseStatusRestore(cards):
@@ -57,8 +51,8 @@ class ShowCards(FrameBase):
 
     def react(self, args):
         cards = args['show']
-        self.cards_check(cards)
         check_owner(self.player, self.game_control.cards_by_ids(cards))
+        self.cards_check(cards)
         self.game_control.show_cards(self.player, cards)
         return self.done(args)
 
@@ -73,39 +67,39 @@ class DiscardCards(FrameBase):
 
     def react(self, args):
         cards = args['discard']
-        self.cards_check(cards)
         check_owner(self.player, self.game_control.cards_by_ids(cards))
+        self.cards_check(cards)
         return self.done(args)
 
 class PlayCards(FrameBase):
-    def __init__(self, game_control, player, cards_check, on_result):
+    def __init__(self, game_control, player, methods, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.player = player
-        self.cards_check = cards_check
+        self.methods = methods
 
     def allowed_players(self):
         return [self.player]
 
     def react(self, args):
-        cards = args['play']
-        self.cards_check(cards)
-        check_owner(self.player, self.game_control.cards_by_ids(cards))
-
+        cards = self.game_control.cards_by_ids(args['play'])
+        check_owner(self.player, cards)
+        method = args['method']
+        if not method in self.methods:
+            raise ValueError('no such method')
+        self.methods[method](cards)
         if len(cards) > 0:
             self.game_control.play_cards(self.player, cards)
         return self.done(args)
 
 class AcceptMessage(FrameBase):
-    def __init__(self, game_control, players, msg_key, allowed_msgs, on_result):
+    def __init__(self, game_control, players, on_message, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.players = players
-        self.message_key = msg_key
-        self.allowed_messages = allowed_msgs
+        self.on_message = on_message
 
     def allowed_players(self):
         return self.players
 
     def react(self, args):
-        if not args[self.message_key] in self.allowed_messages:
-            raise ValueError('bad message')
+        self.on_message(args)
         return self.done(args)

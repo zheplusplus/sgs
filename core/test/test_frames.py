@@ -188,3 +188,18 @@ try:
 except ValueError:
     pass
 assert_eq(None, result)
+
+def on_message(args):
+    if 'bing' in args:
+        raise ValueError('bang')
+acc_msg_frm = frames.AcceptMessage(make_gc(), [player], on_message, on_result_f)
+response = acc_msg_frm.react({ 'bang': 'bing' })
+assert_eq({ 'bang': 'bing' }, result)
+assert_eq(ret_code.OK, response['code'])
+result = None
+try:
+    response = acc_msg_frm.react({ 'bing': 'bang' })
+    assert False
+except ValueError:
+    pass
+assert_eq(None, result)

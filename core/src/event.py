@@ -171,3 +171,25 @@ class Damage(Event):
             'damage': self.damage,
             'category': self.category,
         }
+
+class Equip(Event):
+    def __init__(self, player, card, region):
+        self.player = player
+        self.card = card
+        self.region = region
+
+    def _serialize(self, player_token):
+        if player_token == self.player.token:
+            return self.as_log()
+        return {
+            'player': self.player.player_id,
+            'equip': cards_to_msg([self.card])[0],
+            'region': self.region,
+        }
+
+    def _as_log(self):
+        return {
+            'player': self.player.player_id,
+            'equip': cards_to_msg_include_id([self.card])[0],
+            'region': self.region,
+        }

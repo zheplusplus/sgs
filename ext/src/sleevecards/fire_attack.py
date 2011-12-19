@@ -9,13 +9,15 @@ def fire_attack(game_control, args):
     checking.only_one_target(targets_ids)
     checking.only_one_card_named_as(cards, 'fire attack')
     target = game_control.player_by_id(targets_ids[0])
-    checking.forbid_target_no_card(target, game_control)
+    checking.forbid_target_no_card_in_hand(target, game_control)
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: discard_same_suit(gc, user, target, a)
-    def show_check(cards):
-        if len(cards) != 1:
+    def show_check(cards_ids):
+        if len(cards_ids) != 1:
             raise ValueError('need exactly one card')
+        if game_control.cards_by_ids(cards_ids)[0].region != 'cards':
+            raise ValueError('bad region')
     game_control.push_frame(frames.ShowCards(game_control, target, show_check,
                                              on_result))
     return { 'code': ret_code.OK }

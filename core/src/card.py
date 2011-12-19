@@ -3,6 +3,8 @@ SPADE = 1
 HEART = 2
 CLUB = 3
 DIAMOND = 4
+BLACK = 1
+RED = 2
 
 NORMAL = 0
 IN_USE = 1
@@ -22,6 +24,9 @@ class Card:
 
     def set_region(self, region):
         self.region = region
+
+    def color(self):
+        return BLACK if self.suit == SPADE or self.suit == CLUB else RED
 
     def using(self):
         self.status = IN_USE

@@ -16,16 +16,11 @@ def duel(game_control, args):
     return { 'code': ret_code.OK }
 
 def play_slash_frame(game_control, player, next_player):
-    def check_slash(cards_ids):
-        cards = game_control.cards_by_ids(cards_ids)
-        if len(cards) == 0:
-            return
-        checking.only_one_card_named_as(cards, 'slash')
     on_result = lambda gc, a: play_slash(gc, player, next_player, a)
-    return frames.PlayCards(game_control, player, check_slash, on_result)
+    return player.response_frame('slash', game_control, on_result)
 
 def play_slash(game_control, player, target, args):
-    if len(args['play']) == 0:
+    if args['method'] == 'give up':
         done(game_control, player, args)
     else:
         game_control.push_frame(play_slash_frame(game_control, target, player))

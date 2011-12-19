@@ -235,3 +235,28 @@ assert_eq({
           }, evt.as_log())
 assert_eq(evt.as_log(), evt.serialize(player0.token))
 assert_eq(evt.as_log(), evt.serialize(player1.token))
+
+equipment_card = card.Card(0, 'zhangba serpent spear', 12, card.SPADE)
+evt = event.Equip(player0, equipment_card, 'weapon')
+assert_eq({
+              'player': player0.player_id,
+              'region': 'weapon',
+              'type': 'Equip',
+              'equip': {
+                           'id': 0,
+                           'name': 'zhangba serpent spear',
+                           'rank': 12,
+                           'suit': 1,
+                       }
+          }, evt.as_log())
+assert_eq(evt.as_log(), evt.serialize(player0.token))
+assert_eq({
+              'player': player0.player_id,
+              'region': 'weapon',
+              'type': 'Equip',
+              'equip': {
+                           'name': 'zhangba serpent spear',
+                           'rank': 12,
+                           'suit': 1,
+                       }
+          }, evt.serialize(player1.token))

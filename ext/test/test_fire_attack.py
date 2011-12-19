@@ -863,3 +863,11 @@ assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': ret_code.BR_WRONG_ARG % 'forbid target no card',
           }, result)
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'fire attack',
+                           'targets': [players[1].player_id],
+                           'cards': [2],
+                       })
+assert_eq(ret_code.OK, result['code'])

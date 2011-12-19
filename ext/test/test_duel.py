@@ -93,6 +93,7 @@ last_event_id += 1
 # slash       | 8    | DIAMOND <- play this
 result = gc.player_act({
         'token': players[1].token,
+        'method': 'slash',
         'play': [7],
     })
 assert_eq(ret_code.OK, result['code'])
@@ -131,6 +132,7 @@ last_event_id += 1
 # dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
+        'method': 'slash',
         'play': [2],
     })
 assert_eq(ret_code.OK, result['code'])
@@ -157,6 +159,7 @@ last_event_id += 1
 
 result = gc.player_act({
         'token': players[1].token,
+        'method': 'give up',
         'play': [],
     })
 assert_eq(ret_code.OK, result['code'])
@@ -321,6 +324,17 @@ assert_eq({
 
 result = gc.player_act({
         'token': players[1].token,
+        'method': 'slash',
+        'play': [],
+    })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
+          }, result)
+
+result = gc.player_act({
+        'token': players[1].token,
+        'method': 'slash',
         'play': [4, 5],
     })
 assert_eq({
@@ -329,6 +343,7 @@ assert_eq({
           }, result)
 
 result = gc.player_act({
+        'method': 'slash',
         'play': [4],
     })
 assert_eq({
@@ -338,6 +353,7 @@ assert_eq({
 
 result = gc.player_act({
         'token': players[1].token,
+        'method': 'slash',
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -356,6 +372,7 @@ assert_eq({
 # dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[1].token,
+        'method': 'slash',
         'play': [4],
     })
 assert_eq(ret_code.OK, result['code'])
@@ -382,6 +399,7 @@ last_event_id += 1
 
 result = gc.player_act({
         'token': players[0].token,
+        'method': 'give up',
         'play': [],
     })
 assert_eq(ret_code.OK, result['code'])
@@ -481,6 +499,7 @@ last_event_id += 1
 
 result = gc.player_act({
         'token': players[1].token,
+        'method': 'give up',
         'play': [],
     })
 assert_eq(ret_code.OK, result['code'])
