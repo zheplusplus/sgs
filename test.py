@@ -7,4 +7,6 @@ import ext.test.test_dragon_heart_martial_saint_slash_response
 import ext.test.test_zhangba_serpent_spear
 import ext.test.test_sabotage
 import ext.test.test_fire_attack_to_player_with_equipment_only
+import ext.test.test_distance_horses
+import ext.test.test_steal
 print 'Test finished.'

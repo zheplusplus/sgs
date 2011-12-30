@@ -21,7 +21,7 @@ class GameControl:
     def get_events(self, token, prev_event_id):
         return self.events.serialize(token, prev_event_id)
 
-    def add_event(self, event):
+    def _add_event(self, event):
         self.events.add(event)
 
     def player_act(self, args):
@@ -51,31 +51,49 @@ class GameControl:
         self.action_stack.pop()
 
     def deal_cards(self, player, cnt):
-        self.add_event(
+        self._add_event(
                 event.DealCards(player, self.card_pool.deal(player, cnt)))
 
     def discard_cards_by_ids(self, player, cards_ids):
         self.discard_cards(player, self.card_pool.cards_by_ids(cards_ids))
 
     def discard_cards(self, player, cards):
-        self.add_event(event.DiscardCards(player, cards))
+        self._add_event(event.DiscardCards(player, cards))
+        self.recycle_cards(cards)
+
+    def recycle_cards(self, cards):
         self.card_pool.discard(cards)
 
     def use_cards_for_players(self, user, targets_ids, action, cards):
-        self.add_event(event.UseCardsForPlayers(user, targets_ids, action,
-                                                cards))
+        self._add_event(event.UseCardsForPlayers(user, targets_ids, action,
+                                                 cards))
         self.card_pool.discard(cards)
 
     def show_cards(self, player, cards_ids):
-        self.add_event(
+        self._add_event(
                 event.ShowCards(player, self.card_pool.cards_by_ids(cards_ids)))
 
     def play_cards(self, player, cards):
-        self.add_event(event.PlayCards(player, cards))
+        self._add_event(event.PlayCards(player, cards))
         self.card_pool.discard(cards)
 
+    def equip(self, player, card, region):
+        self._add_event(event.Equip(player, card, region))
+
+    def unequip(self, player, card, region):
+        self._add_event(event.Unequip(player, card, region))
+        return card
+
+    def private_cards_transfer(self, source, target, cards):
+        self._add_event(event.PrivateCardsTransfer(source, target, cards))
+        self.card_pool.cards_transfer(target, cards)
+
+    def public_cards_transfer(self, source, target, cards):
+        self._add_event(event.PublicCardsTransfer(source, target, cards))
+        self.card_pool.cards_transfer(target, cards)
+
     def damage(self, victim, damage, category):
-        self.add_event(event.Damage(victim, damage, category))
+        self._add_event(event.Damage(victim, damage, category))
 
     def cards_by_ids(self, cards_ids):
         return self.card_pool.cards_by_ids(cards_ids)
@@ -85,6 +103,9 @@ class GameControl:
 
     def player_by_token(self, player_token):
         return self.players_control.get_by_token(player_token)
+
+    def distance_between(self, source, target):
+        return self.players_control.distance_between(source, target)
 
     def player_has_cards(self, player):
         return self.card_pool.player_has_cards(player)

@@ -40,30 +40,35 @@ class CardPool:
 
     def discard(self, cards):
         self.discarded.extend(cards)
-        [self.player_id_to_owning_cards[c.owner_or_nil.player_id].remove(c)
-                for c in cards]
-        [c.set_owner(None) for c in cards]
-        [c.set_region('cardpool') for c in cards]
-        [c.restore() for c in cards]
+        for c in cards:
+            self.player_id_to_owning_cards[c.owner_or_nil.player_id].remove(c)
+            c.set_region('cardpool')
+            c.set_owner(None)
+            c.restore()
 
     def cards_by_ids(self, cards_ids):
         return map(lambda card_id: self.id_to_card[card_id], cards_ids)
 
     def player_has_cards(self, player):
-        self.check_player_recorded(player)
         return len(filter(lambda c: c.available(),
                           self.player_id_to_owning_cards[player.player_id])) > 0
 
     def player_has_cards_at(self, player, region):
-        self.check_player_recorded(player)
         return len(filter(lambda c: c.available() and c.region == region,
                           self.player_id_to_owning_cards[player.player_id])) > 0
 
     def random_pick_cards(self, player, count):
-        self.check_player_recorded(player)
         cards = filter(lambda c: c.region == 'cards',
                        self.player_id_to_owning_cards[player.player_id])
         return cards[0: count]
+
+    def cards_transfer(self, target, cards):
+        for c in cards:
+            self.player_id_to_owning_cards[c.owner_or_nil.player_id].remove(c)
+            c.set_region('cards')
+            c.set_owner(target)
+            c.restore()
+        self.player_id_to_owning_cards[target.player_id].extend(cards)
 
     def check_player_recorded(self, player):
         if not player.player_id in self.player_id_to_owning_cards:

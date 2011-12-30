@@ -24,7 +24,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('sabotage', 9, card.HEART),
             test_data.CardInfo('sabotage', 10, card.CLUB),
      ])), pc, ActionStack())
-players = [Player(91, 0), Player(1729, 1)]
+players = [Player(91), Player(1729)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -479,7 +479,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('duel', 11, card.DIAMOND),
             test_data.CardInfo('duel', 12, card.HEART),
      ])), pc, ActionStack())
-players = [Player(91, 0), Player(1729, 1)]
+players = [Player(91), Player(1729)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -617,21 +617,12 @@ assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['player'])
-    assert_eq(1, len(event['discard']))
-    assert_eq('weapon', event['discard'][0]['region'])
-    assert_eq('zhangba serpent spear', event['discard'][0]['name'])
-    assert_eq(2, event['discard'][0]['rank'])
-    assert_eq(card.SPADE, event['discard'][0]['suit'])
-    assert_eq(1, event['discard'][0]['id'])
+    assert_eq('weapon', event['region'])
+    assert_eq('zhangba serpent spear', event['unequip']['name'])
+    assert_eq(2, event['unequip']['rank'])
+    assert_eq(card.SPADE, event['unequip']['suit'])
 p1_events = gc.get_events(players[1].token, last_event_id)
-assert_eq(1, len(p1_events))
-if True: # just indent for a nice appearance
-    event = p0_events[0]
-    assert_eq(1, len(event['discard']))
-    assert_eq('weapon', event['discard'][0]['region'])
-    assert_eq(2, event['discard'][0]['rank'])
-    assert_eq(card.SPADE, event['discard'][0]['suit'])
-    assert_eq(1, event['discard'][0]['id'])
+assert_eq(p0_events, p1_events)
 
 # cards:
 # name                  | rank (id = rank - 1) | suit

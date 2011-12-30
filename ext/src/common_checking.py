@@ -25,4 +25,8 @@ def only_one_card_of_color(cards, expected_color):
 def cards_region(cards, expected_region):
     for c in cards:
         if c.region != expected_region:
-            raise ValueError('card in bad region')
+            raise ValueError('wrong region')
+
+def within_range(game_control, source, target, action):
+    if source.ranges[action] < game_control.distance_between(source, target):
+        raise ValueError('out of range')

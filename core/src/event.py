@@ -47,6 +47,13 @@ def cards_to_msg(cards):
 def cards_to_msg_include_id(cards):
     return make_cards_msg(cards, card_to_msg_include_id)
 
+def add_region_formatter(formatter):
+    def f(card):
+        msg = formatter(card)
+        msg['region'] = card.region
+        return msg
+    return f
+
 class DealCards(Event):
     def __init__(self, player, cards):
         self.player = player
@@ -66,19 +73,19 @@ class DealCards(Event):
             'get': cards_to_msg_include_id(self.cards),
         }
 
-class DiscardCards(Event):
-    class CardInfo:
-        def __init__(self, card_id, name, rank, suit, region):
-            self.card_id = card_id
-            self.name = name
-            self.rank = rank
-            self.suit = suit
-            self.region = region
+class CardStub:
+    def __init__(self, card_id, name, rank, suit, region):
+        self.card_id = card_id
+        self.name = name
+        self.rank = rank
+        self.suit = suit
+        self.region = region
 
+class DiscardCards(Event):
     def __init__(self, player, cards):
         self.player = player
-        self.cards = [DiscardCards.CardInfo(c.card_id, c.name, c.rank, c.suit,
-                                            c.region) for c in cards]
+        self.cards = [CardStub(c.card_id, c.name, c.rank, c.suit, c.region)
+                                for c in cards]
 
     def _serialize(self, player_token):
         if player_token == self.player.token:
@@ -86,7 +93,7 @@ class DiscardCards(Event):
         return {
             'player': self.player.player_id,
             'discard': make_cards_msg(self.cards,
-                                      self._add_region_formatter(card_to_msg)),
+                                      add_region_formatter(card_to_msg)),
         }
 
     def _as_log(self):
@@ -94,15 +101,51 @@ class DiscardCards(Event):
             'player': self.player.player_id,
             'discard': make_cards_msg(
                             self.cards,
-                            self._add_region_formatter(card_to_msg_include_id)),
+                            add_region_formatter(card_to_msg_include_id)),
         }
 
-    def _add_region_formatter(self, formatter):
-        def f(card):
-            msg = formatter(card)
-            msg['region'] = card.region
-            return msg
-        return f
+class CardsTransferBase(Event):
+    def _as_log(self):
+        return {
+            'source': self.source.player_id,
+            'target': self.target.player_id,
+            'cards': make_cards_msg(
+                                self.cards,
+                                add_region_formatter(card_to_msg_include_id)),
+        }
+
+class PrivateCardsTransfer(CardsTransferBase):
+    def __init__(self, source, target, cards):
+        self.source = source
+        self.target = target
+        self.cards = [CardStub(c.card_id, c.name, c.rank, c.suit, c.region)
+                                for c in cards]
+
+    def _serialize(self, player_token):
+        if player_token in (self.source.token, self.target.token):
+            return self.as_log()
+        return {
+            'source': self.source.player_id,
+            'target': self.target.player_id,
+            'cards': len(self.cards),
+        }
+
+class PublicCardsTransfer(CardsTransferBase):
+    def __init__(self, source, target, cards):
+        self.source = source
+        self.target = target
+        self.cards = [CardStub(c.card_id, c.name, c.rank, c.suit, c.region)
+                                for c in cards]
+
+    def _serialize(self, player_token):
+        if player_token in (self.source.token, self.target.token):
+            return self.as_log()
+        return {
+            'source': self.source.player_id,
+            'target': self.target.player_id,
+            'cards': make_cards_msg(self.cards,
+                                    add_region_formatter(card_to_msg)),
+        }
 
 class UseCardsForPlayers(Event):
     def __init__(self, user, targets_ids, action, cards):
@@ -191,5 +234,25 @@ class Equip(Event):
         return {
             'player': self.player.player_id,
             'equip': cards_to_msg_include_id([self.card])[0],
+            'region': self.region,
+        }
+
+class Unequip(Event):
+    def __init__(self, player, card, region):
+        self.player = player
+        self.card = card
+        self.region = region
+
+    def _serialize(self, player_token):
+        return {
+            'player': self.player.player_id,
+            'unequip': cards_to_msg([self.card])[0],
+            'region': self.region,
+        }
+
+    def _as_log(self):
+        return {
+            'player': self.player.player_id,
+            'unequip': cards_to_msg_include_id([self.card])[0],
             'region': self.region,
         }

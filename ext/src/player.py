@@ -8,11 +8,15 @@ STARTDEAL = 4
 ROUNDDEAL = 2
 
 class Player:
-    def __init__(self, token, pid):
+    def __init__(self, token):
         self.token = token
-        self.player_id = pid
         self.responses = { 'slash': response.ToCertainCard('slash') }
         self.equipment = dict()
+        self.cw_positive_dist_mod = 0
+        self.ccw_positive_dist_mod = 0
+        self.cw_passive_dist_mod = 0
+        self.ccw_passive_dist_mod = 0
+        self.ranges = { 'steal': 1 }
 
     def start(self, game_control):
         self.get_cards(game_control, STARTDEAL)
@@ -49,14 +53,20 @@ class Player:
     def response_frame(self, action, game_control, on_result):
         return self.responses[action].response(game_control, self, on_result)
 
-    def equip(self, game_control, region, card, on_remove):
+    def equip(self, game_control, card, region, on_remove):
         if region in self.equipment:
-            self.equipment[region]()
+            game_control.recycle_cards([self.unequip(game_control, region)])
         card.set_region(region)
-        self.equipment[region] = on_remove
-        game_control.add_event(event.Equip(self, card, region))
+        def rm_func():
+            on_remove(game_control, self, card)
+            return card
+        self.equipment[region] = rm_func
+        game_control.equip(self, card, region)
 
-    def remove_equip(self, region):
+    def unequip_check(self, game_control, region):
         if not region in self.equipment:
             raise ValueError('no such equipment')
-        self.equipment[region]()
+        return self.unequip(game_control, region)
+
+    def unequip(self, game_control, region):
+        return game_control.unequip(self, self.equipment[region](), region)

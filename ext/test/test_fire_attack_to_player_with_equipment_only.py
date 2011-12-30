@@ -27,7 +27,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('fire attack', 11, card.HEART),
             test_data.CardInfo('sabotage', 12, card.DIAMOND),
      ])), pc, ActionStack())
-players = [Player(91, 0), Player(1729, 1)]
+players = [Player(91), Player(1729)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
