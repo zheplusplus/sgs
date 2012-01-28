@@ -534,3 +534,105 @@ assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': ret_code.BR_WRONG_ARG % 'wrong region',
           }, result)
+
+# with horsemanship and prodigy
+
+import ext.src.skills.horsemanship as horsemanship
+import ext.src.skills.prodigy as prodigy
+
+players = [Player(0), Player(1), Player(2), Player(3), Player(4), Player(5)]
+horsemanship.add_to(players[0])
+prodigy.add_to(players[1])
+
+pc = PlayersControl()
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+            test_data.CardInfo('-chitu', 5, card.HEART),
+            test_data.CardInfo('steal', 1, card.SPADE),
+            test_data.CardInfo('slash', 1, card.CLUB),
+            test_data.CardInfo('slash', 1, card.CLUB),
+
+            test_data.CardInfo('steal', 7, card.CLUB),
+            test_data.CardInfo('slash', 1, card.CLUB),
+            test_data.CardInfo('slash', 1, card.CLUB),
+            test_data.CardInfo('slash', 1, card.CLUB),
+
+            test_data.CardInfo('slash', 2, card.CLUB),
+            test_data.CardInfo('slash', 2, card.CLUB),
+            test_data.CardInfo('slash', 2, card.CLUB),
+            test_data.CardInfo('slash', 2, card.CLUB),
+
+            test_data.CardInfo('slash', 3, card.CLUB), # <- player 0 steal this
+            test_data.CardInfo('slash', 3, card.CLUB),
+            test_data.CardInfo('slash', 3, card.CLUB),
+            test_data.CardInfo('slash', 3, card.CLUB),
+
+            test_data.CardInfo('slash', 4, card.CLUB),
+            test_data.CardInfo('slash', 4, card.CLUB),
+            test_data.CardInfo('slash', 4, card.CLUB),
+            test_data.CardInfo('slash', 4, card.CLUB),
+
+            test_data.CardInfo('slash', 5, card.CLUB),
+            test_data.CardInfo('slash', 5, card.CLUB),
+            test_data.CardInfo('slash', 5, card.CLUB),
+            test_data.CardInfo('slash', 5, card.CLUB),
+
+            test_data.CardInfo('slash', 1, card.CLUB),
+            test_data.CardInfo('slash', 1, card.CLUB),
+
+            test_data.CardInfo('slash', 1, card.CLUB),
+            test_data.CardInfo('slash', 1, card.CLUB),
+     ])), pc, ActionStack())
+map(lambda p: pc.add_player(p), players)
+gc.start()
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'steal',
+                           'targets': [players[3].player_id],
+                           'cards': [1],
+                       })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG % 'out of range',
+          }, result)
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'equip',
+                           'cards': [0],
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'steal',
+                           'targets': [players[3].player_id],
+                           'cards': [1],
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'steal': 'cards',
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'give up',
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'discard': [2, 12],
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[1].token,
+                           'action': 'steal',
+                           'targets': [players[4].player_id],
+                           'cards': [4],
+                       })
+assert_eq(ret_code.OK, result['code'])
