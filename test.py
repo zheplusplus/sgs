@@ -9,4 +9,8 @@ import ext.test.test_sabotage
 import ext.test.test_fire_attack_to_player_with_equipment_only
 import ext.test.test_distance_horses
 import ext.test.test_steal
+import ext.test.test_rattan_armor
+import ext.test.test_merciless
+import ext.test.test_heavenly_scent
+import ext.test.test_fury_pith
 print 'Test finished.'

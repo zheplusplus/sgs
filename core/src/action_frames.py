@@ -66,9 +66,11 @@ class DiscardCards(FrameBase):
         return [self.player]
 
     def react(self, args):
-        cards = args['discard']
-        check_owner(self.player, self.game_control.cards_by_ids(cards))
-        self.cards_check(cards)
+        cards_ids = args['discard']
+        check_owner(self.player, self.game_control.cards_by_ids(cards_ids))
+        self.cards_check(cards_ids)
+        if len(cards_ids) > 0:
+            self.game_control.discard_cards_by_ids(self.player, cards_ids)
         return self.done(args)
 
 class PlayCards(FrameBase):

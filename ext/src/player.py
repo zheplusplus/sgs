@@ -17,6 +17,19 @@ class Player:
         self.cw_passive_dist_mod = 0
         self.ccw_passive_dist_mod = 0
         self.ranges = { 'steal': 1 }
+        self.actions_before_damaging = Player._damage_actions_dict()
+        self.actions_before_damaged = Player._damage_actions_dict()
+        self.actions_after_damaging = Player._damage_actions_dict()
+        self.actions_after_damaged = Player._damage_actions_dict()
+
+    @staticmethod
+    def _damage_actions_dict():
+        inaction = lambda d, gc: None
+        return {
+                   'status': [],
+                   'character': { 'trigger': inaction, 'ability': inaction },
+                   'equipment': { 'trigger': inaction, 'ability': inaction },
+               }
 
     def start(self, game_control):
         self.get_cards(game_control, STARTDEAL)
@@ -44,7 +57,6 @@ class Player:
                                     self.cards_discarded))
 
     def cards_discarded(self, game_control, args):
-        game_control.discard_cards_by_ids(self, args['discard'])
         game_control.next_round()
 
     def get_cards(self, game_control, cnt):
@@ -70,3 +82,39 @@ class Player:
 
     def unequip(self, game_control, region):
         return game_control.unequip(self, self.equipment[region](), region)
+
+    def before_damaging_actions(self):
+        return (self.actions_before_damaging['status'] +
+                [
+                    self.actions_before_damaging['character']['trigger'],
+                    self.actions_before_damaging['character']['ability'],
+                    self.actions_before_damaging['equipment']['trigger'],
+                    self.actions_before_damaging['equipment']['ability'],
+                ])
+
+    def after_damaging_actions(self):
+        return (self.actions_after_damaging['status'] +
+                [
+                    self.actions_after_damaging['character']['trigger'],
+                    self.actions_after_damaging['character']['ability'],
+                    self.actions_after_damaging['equipment']['trigger'],
+                    self.actions_after_damaging['equipment']['ability'],
+                ])
+
+    def before_damaged_actions(self):
+        return (self.actions_before_damaged['status'] +
+                [
+                    self.actions_before_damaged['character']['trigger'],
+                    self.actions_before_damaged['character']['ability'],
+                    self.actions_before_damaged['equipment']['trigger'],
+                    self.actions_before_damaged['equipment']['ability'],
+                ])
+
+    def after_damaged_actions(self):
+        return (self.actions_after_damaged['status'] +
+                [
+                    self.actions_after_damaged['character']['trigger'],
+                    self.actions_after_damaged['character']['ability'],
+                    self.actions_after_damaged['equipment']['trigger'],
+                    self.actions_after_damaged['equipment']['ability'],
+                ])

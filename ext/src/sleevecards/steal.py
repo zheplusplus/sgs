@@ -14,7 +14,7 @@ def steal(game_control, args):
     checking.within_range(game_control, user, target, 'steal')
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
-    on_result = lambda gc, a: done(gc, target, a)
+    on_result = lambda gc, a: None
     game_control.push_frame(
       frames.AcceptMessage(game_control, [user],
                            lambda a: on_message(game_control, user, target, a),
@@ -31,6 +31,3 @@ def on_message(game_control, user, target, args):
     else:
         game_control.public_cards_transfer(
                     target, user, [target.unequip_check(game_control, region)])
-
-def done(game_control, target, args):
-    pass

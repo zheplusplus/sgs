@@ -236,6 +236,24 @@ assert_eq({
 assert_eq(evt.as_log(), evt.serialize(player0.token))
 assert_eq(evt.as_log(), evt.serialize(player1.token))
 
+evt = event.VigorLost(player0, 1)
+assert_eq({
+              'type': 'VigorLost',
+              'player': player0.player_id,
+              'point': 1,
+          }, evt.as_log())
+assert_eq(evt.as_log(), evt.serialize(player0.token))
+assert_eq(evt.as_log(), evt.serialize(player1.token))
+
+evt = event.VigorRegain(player0, 1)
+assert_eq({
+              'type': 'VigorRegain',
+              'player': player0.player_id,
+              'point': 1,
+          }, evt.as_log())
+assert_eq(evt.as_log(), evt.serialize(player0.token))
+assert_eq(evt.as_log(), evt.serialize(player1.token))
+
 equipment_card = card.Card(0, 'zhangba serpent spear', 12, card.SPADE)
 evt = event.Equip(player0, equipment_card, 'weapon')
 assert_eq({

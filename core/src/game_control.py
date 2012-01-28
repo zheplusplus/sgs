@@ -95,6 +95,12 @@ class GameControl:
     def damage(self, victim, damage, category):
         self._add_event(event.Damage(victim, damage, category))
 
+    def vigor_lost(self, player, point):
+        self._add_event(event.VigorLost(player, point))
+
+    def vigor_regain(self, player, point):
+        self._add_event(event.VigorRegain(player, point))
+
     def cards_by_ids(self, cards_ids):
         return self.card_pool.cards_by_ids(cards_ids)
 

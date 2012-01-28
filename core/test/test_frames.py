@@ -23,6 +23,8 @@ def make_gc():
     class FakeCardPool:
         def cards_by_ids(self, ids):
             return map(lambda i: cards[i], ids)
+        def discard(self, cards):
+            pass
     class FakeActionStack:
         def pop(self):
             pass

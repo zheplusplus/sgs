@@ -12,11 +12,8 @@ class Response:
         return frames.PlayCards(game_control, player, self.methods, on_result)
 
     def allow_give_up(self, methods):
-        methods['give up'] = self._give_up
+        methods['give up'] = lambda c: None
         return methods
-
-    def _give_up(self, cards):
-        pass
 
 class ToCertainCard(Response):
     def __init__(self, card_name):

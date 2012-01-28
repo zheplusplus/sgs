@@ -215,6 +215,28 @@ class Damage(Event):
             'category': self.category,
         }
 
+class VigorLost(Event):
+    def __init__(self, player, point):
+        self.player = player
+        self.point = point
+
+    def _as_log(self):
+        return {
+            'player': self.player.player_id,
+            'point': self.point,
+        }
+
+class VigorRegain(Event):
+    def __init__(self, player, point):
+        self.player = player
+        self.point = point
+
+    def _as_log(self):
+        return {
+            'player': self.player.player_id,
+            'point': self.point,
+        }
+
 class Equip(Event):
     def __init__(self, player, card, region):
         self.player = player

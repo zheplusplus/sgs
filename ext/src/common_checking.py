@@ -22,6 +22,10 @@ def only_one_card_of_color(cards, expected_color):
     if len(cards) != 1 or expected_color != cards[0].color():
         raise ValueError('wrong cards')
 
+def only_one_card_of_suit(cards, expected_suit):
+    if len(cards) != 1 or expected_suit != cards[0].suit:
+        raise ValueError('wrong cards')
+
 def cards_region(cards, expected_region):
     for c in cards:
         if c.region != expected_region:

@@ -1,5 +1,6 @@
 import core.src.action_frames as frames
 import core.src.ret_code as ret_code
+import core.src.damage as damage
 import ext.src.common_checking as checking
 
 def duel(game_control, args):
@@ -12,18 +13,23 @@ def duel(game_control, args):
     checking.only_one_card_named_as(cards, 'duel')
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
-    game_control.push_frame(play_slash_frame(game_control, target, user))
+    game_control.push_frame(play_slash_frame(game_control, target, user, cards))
     return { 'code': ret_code.OK }
 
-def play_slash_frame(game_control, player, next_player):
-    on_result = lambda gc, a: play_slash(gc, player, next_player, a)
+def play_slash_frame(game_control, player, next_player, duel_cards):
+    on_result = lambda gc, a: play_slash(gc, a, player, next_player, duel_cards)
     return player.response_frame('slash', game_control, on_result)
 
-def play_slash(game_control, player, target, args):
+def play_slash(game_control, args, player, target, duel_cards):
     if args['method'] == 'give up':
-        done(game_control, player, args)
+        done(game_control, target, player, duel_cards)
     else:
-        game_control.push_frame(play_slash_frame(game_control, target, player))
+        game_control.push_frame(play_slash_frame(game_control, target, player,
+                                duel_cards))
 
-def done(game_control, target, args):
-    game_control.damage(target, 1, 'normal')
+def done(game_control, source, target, duel_cards):
+    damage.Damage(source, target, 'duel', duel_cards, 'normal', 1,
+                  source.before_damaging_actions() +
+                  target.before_damaged_actions(),
+                  source.after_damaging_actions() +
+                  target.after_damaged_actions()).operate(game_control)

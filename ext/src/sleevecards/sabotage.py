@@ -13,7 +13,7 @@ def sabotage(game_control, args):
     checking.forbid_target_no_card(target, game_control)
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
-    on_result = lambda gc, a: done(gc, target, a)
+    on_result = lambda gc, a: None
     game_control.push_frame(
             frames.AcceptMessage(game_control, [user],
                                  lambda a: on_message(game_control, target, a),
@@ -29,6 +29,3 @@ def on_message(game_control, target, args):
         game_control.discard_cards(target, cards)
     else:
         game_control.recycle_cards([target.unequip_check(game_control, region)])
-
-def done(game_control, target, args):
-    pass

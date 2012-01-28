@@ -535,6 +535,95 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'wrong region',
           }, result)
 
+# steal player without cards in hand
+
+players = [Player(91), Player(1729)]
+pc = PlayersControl()
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+            test_data.CardInfo('-chitu', 5, card.HEART),
+            test_data.CardInfo('steal', 1, card.CLUB),
+            test_data.CardInfo('steal', 1, card.CLUB),
+            test_data.CardInfo('steal', 1, card.CLUB),
+
+            test_data.CardInfo('steal', 2, card.CLUB),
+            test_data.CardInfo('slash', 2, card.CLUB),
+            test_data.CardInfo('slash', 2, card.CLUB),
+            test_data.CardInfo('slash', 2, card.CLUB),
+
+            test_data.CardInfo('slash', 1, card.CLUB),
+            test_data.CardInfo('slash', 1, card.CLUB),
+
+            test_data.CardInfo('slash', 2, card.CLUB),
+            test_data.CardInfo('slash', 2, card.CLUB),
+     ])), pc, ActionStack())
+map(lambda p: pc.add_player(p), players)
+gc.start()
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'equip',
+                           'cards': [0],
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'give up',
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'discard': [8, 9],
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[1].token,
+                           'action': 'steal',
+                           'targets': [players[0].player_id],
+                           'cards': [4],
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[1].token,
+                           'steal': 'cards',
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+for i in (1, 2):
+    result = gc.player_act({
+                               'token': players[1].token,
+                               'action': 'steal',
+                               'targets': [players[0].player_id],
+                               'cards': [i],
+                           })
+    assert_eq(ret_code.OK, result['code'])
+
+    result = gc.player_act({
+                               'token': players[1].token,
+                               'steal': 'cards',
+                           })
+    assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[1].token,
+                           'action': 'steal',
+                           'targets': [players[0].player_id],
+                           'cards': [3],
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[1].token,
+                           'steal': 'cards',
+                       })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG % 'bad region',
+          }, result)
+
 # with horsemanship and prodigy
 
 import ext.src.skills.horsemanship as horsemanship

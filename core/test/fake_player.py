@@ -32,7 +32,6 @@ class Player:
                                     self.cards_discarded))
 
     def cards_discarded(self, game_control, args):
-        game_control.discard_cards_by_ids(self, args['discard'])
         game_control.next_round()
 
     def get_cards(self, game_control, cnt):

@@ -21,3 +21,5 @@ import zhangba_serpent_spear as serpent_spear
 serpent_spear.imported(equipment_dict)
 import horses
 horses.imported(equipment_dict)
+import rattan_armor
+rattan_armor.imported(equipment_dict)
