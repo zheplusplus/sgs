@@ -27,7 +27,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('dodge', 11, card.HEART),
             test_data.CardInfo('dodge', 12, card.DIAMOND),
      ])), pc, ActionStack())
-players = [Player(91), Player(1729)]
+players = [Player(91, 4), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -419,106 +419,14 @@ result = gc.player_act({
     })
 assert_eq(ret_code.OK, result['code'])
 
-# cards:
-# name        | rank | suit
-
-# slash       | 1    | SPADE
-# slash       | 9    | SPADE
-# slash       | 10   | SPADE
-
-# slash       | 5    | CLUB
-# fire attack | 6    | HEART
-# dodge       | 7    | DIAMOND
-# dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
         'discard': [],
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG % 'must discard 2 cards',
+              'reason': ret_code.BR_PLAYER_FORBID,
           }, result)
-result = gc.player_act({
-        'token': players[0].token,
-    })
-assert_eq({
-              'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % 'discard',
-          }, result)
-result = gc.player_act({
-        'token': players[0].token,
-        'discard': [0, 1],
-    })
-assert_eq({
-              'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG % 'not own this card',
-          }, result)
-
-# cards:
-# name        | rank | suit
-
-# slash       | 1    | SPADE <- discard this
-# slash       | 9    | SPADE
-# slash       | 10   | SPADE
-
-# slash       | 5    | CLUB
-# fire attack | 6    | HEART
-# dodge       | 7    | DIAMOND
-# dodge       | 8    | DIAMOND
-result = gc.player_act({
-        'token': players[0].token,
-        'discard': [0, 8],
-    })
-assert_eq(ret_code.OK, result['code'])
-
-p0_events = gc.get_events(players[0].token, last_event_id)
-assert_eq(2, len(p0_events))
-if True: # just indent for a nice appearance
-    event = p0_events[0]
-    assert_eq(players[0].player_id, event['player'])
-    assert_eq(2, len(event['discard']))
-    if True: # just indent for a nice appearance, check cards
-        cards = event['discard']
-        assert_eq('slash', cards[0]['name'])
-        assert_eq(1, cards[0]['rank'])
-        assert_eq(card.SPADE, cards[0]['suit'])
-        assert_eq(0, cards[0]['id'])
-        assert_eq('slash', cards[1]['name'])
-        assert_eq(9, cards[1]['rank'])
-        assert_eq(card.SPADE, cards[1]['suit'])
-        assert_eq(8, cards[1]['id'])
-    event = p0_events[1]
-    assert_eq(players[1].player_id, event['player'])
-    assert_eq(2, event['get'])
-p1_events = gc.get_events(players[1].token, last_event_id)
-assert_eq(2, len(p1_events))
-if True: # just indent for a nice appearance
-    event = p0_events[0]
-    assert_eq(players[0].player_id, event['player'])
-    assert_eq(2, len(event['discard']))
-    if True: # just indent for a nice appearance, check cards
-        cards = event['discard']
-        assert_eq('slash', cards[0]['name'])
-        assert_eq(1, cards[0]['rank'])
-        assert_eq(card.SPADE, cards[0]['suit'])
-        assert_eq('slash', cards[1]['name'])
-        assert_eq(9, cards[1]['rank'])
-        assert_eq(card.SPADE, cards[1]['suit'])
-    event = p0_events[1]
-    assert_eq(players[1].player_id, event['player'])
-    assert_eq(2, event['get'])
-event = p1_events[1]
-assert_eq(players[1].player_id, event['player'])
-if True: # just indent for a nice appearance, check cards
-    cards = event['get']
-    assert_eq('dodge', cards[0]['name'])
-    assert_eq(11, cards[0]['rank'])
-    assert_eq(card.HEART, cards[0]['suit'])
-    assert_eq(10, cards[0]['id'])
-    assert_eq('dodge', cards[1]['name'])
-    assert_eq(12, cards[1]['rank'])
-    assert_eq(card.DIAMOND, cards[1]['suit'])
-    assert_eq(11, cards[1]['id'])
 
 # fire attack to a player without cards
 pc = PlayersControl()
@@ -536,8 +444,8 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('slash', 9, card.SPADE),
             test_data.CardInfo('slash', 10, card.CLUB),
 
-            test_data.CardInfo('slash', 11, card.CLUB),
-            test_data.CardInfo('slash', 12, card.CLUB),
+            test_data.CardInfo('steal', 11, card.CLUB),
+            test_data.CardInfo('steal', 12, card.CLUB),
      ])), pc, ActionStack())
 map(lambda p: pc.add_player(p), players)
 gc.start()
@@ -579,17 +487,42 @@ assert_eq(ret_code.OK, gc.player_act({
 # cards:
 # name        | rank | suit
 
-# slash       | 9    | SPADE <- discard this
-# slash       | 10   | CLUB <- discard this
+# slash       | 9    | SPADE
+# slash       | 10   | CLUB
 
 # slash       | 5    | CLUB
 # fire attack | 6    | HEART
 # dodge       | 7    | DIAMOND
 # dodge       | 8    | DIAMOND
-assert_eq(ret_code.OK, gc.player_act({
-                                         'token': players[0].token,
-                                         'discard': [8, 9],
-                                     })['code'])
+# steal       | 11   | CLUB
+# steal       | 12   | CLUB
+result = gc.player_act({
+                           'token': players[1].token,
+                           'action': 'steal',
+                           'targets': [players[0].player_id],
+                           'cards': [10],
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[1].token,
+                           'steal': 'cards',
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[1].token,
+                           'action': 'steal',
+                           'targets': [players[0].player_id],
+                           'cards': [11],
+                       })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                           'token': players[1].token,
+                           'steal': 'cards',
+                       })
+assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,

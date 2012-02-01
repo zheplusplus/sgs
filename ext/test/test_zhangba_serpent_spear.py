@@ -24,7 +24,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('duel', 9, card.SPADE),
             test_data.CardInfo('zhangba serpent spear', 10, card.HEART),
      ])), pc, ActionStack())
-players = [Player(91), Player(1729)]
+players = [Player(91, 4), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -332,7 +332,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('duel', 11, card.DIAMOND),
             test_data.CardInfo('duel', 12, card.HEART),
      ])), pc, ActionStack())
-players = [Player(91), Player(1729)]
+players = [Player(91, 4), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -365,7 +365,7 @@ assert_eq({
 # zhangba serpent spear | 2                    | SPADE   -- equipped
 # slash                 | 3                    | DIAMOND
 # dodge                 | 4                    | DIAMOND
-# duel                  | 9                    | SPADE   <- discard this
+# duel                  | 9                    | SPADE
 # zhangba serpent spear | 10                   | HEART
 
 # slash                 | 5                    | CLUB
@@ -374,7 +374,7 @@ assert_eq({
 # slash                 | 8                    | DIAMOND
 result = gc.player_act({
                           'token': players[0].token,
-                          'discard': [0, 8],
+                          'discard': [0],
                       })
 assert_eq(ret_code.OK, result['code'])
 
@@ -384,6 +384,7 @@ assert_eq(ret_code.OK, result['code'])
 # zhangba serpent spear | 2                    | SPADE   -- equipped
 # slash                 | 3                    | DIAMOND
 # dodge                 | 4                    | DIAMOND
+# duel                  | 9                    | SPADE
 # zhangba serpent spear | 10                   | HEART
 
 # slash                 | 5                    | CLUB

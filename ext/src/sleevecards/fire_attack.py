@@ -1,6 +1,6 @@
 import core.src.ret_code as ret_code
 import core.src.action_frames as frames
-import core.src.damage as damage
+import ext.src.damage as damage
 import ext.src.common_checking as checking
 
 def fire_attack(game_control, args):
@@ -40,7 +40,4 @@ def done(game_control, args, source, target, fire_attack_cards):
     cards_ids = args['discard']
     if len(cards_ids) > 0:
         damage.Damage(source, target, 'fire attack', fire_attack_cards, 'fire',
-                      1, source.before_damaging_actions() +
-                         target.before_damaged_actions(),
-                      source.after_damaging_actions() +
-                      target.after_damaged_actions()).operate(game_control)
+                      1).operate(game_control)

@@ -1,40 +1,66 @@
-class PlayersControl:
-    def __init__(self):
-        self.players = []
-        self.current_pid = 0
-        self.token_index = dict()
-        self.id_index = dict()
+from core.src.players_control import PlayersControl as CorePlayersControl
+from core.src.action_frames import FrameBase
 
-    def add_player(self, player):
-        player.player_id = len(self.players)
-        self.players.append(player)
-        self.token_index[player.token] = player
-        self.id_index[player.player_id] = player
+class _RescueFrame(FrameBase):
+    def __init__(self, game_control, who, players, after_rescuing):
+        FrameBase.__init__(self, game_control, lambda gc, r: after_rescuing())
+        self.who = who
+        self.players = players
+        self.player_index = 0
+
+    def allowed_players(self):
+        return [self._current()]
+
+    def _next(self):
+        self.player_index += 1
+        if self.player_index == len(self.players):
+            self.game_control.kill(self.who)
+            self.done(None)
+
+    def _current(self):
+        return self.players[self.player_index]
+
+    def _push_player_frame(self):
+        self.game_control.push_frame(self._current().response_frame(
+                                  'peach', self.game_control, self._on_result))
+
+    def _check_rescued(self):
+        if 0 < self.who.vigor:
+            self.done(None)
+        else:
+            self._push_player_frame()
+
+    def _on_result(self, game_control, args):
+        if args['method'] != 'give up':
+            game_control.vigor_regain(self.who, 1)
+            self._check_rescued()
+        else:
+            self._next()
+
+    def react(self, args):
+        self._push_player_frame()
+        return self.game_control.player_act(args)
+
+class PlayersControl(CorePlayersControl):
+    def __init__(self):
+        CorePlayersControl.__init__(self)
 
     def next_player(self):
         self.current_pid = (self.current_pid + 1) % len(self.players)
+        if None == self.current_player():
+            self.next_player()
 
-    def current_player(self):
-        return self.players[self.current_pid]
+    def players_from_current(self):
+        current = self.current_player()
+        if None == current:
+            return self.succeeding_players()
+        return [current] + self.succeeding_players()
 
-    def get_by_id(self, i):
-        return self.id_index[i]
+    def succeeding_players(self):
+        return filter(lambda p: p.alive, self.players[self.current_pid + 1:] +
+                                         self.players[:self.current_pid])
 
-    def get_by_token(self, t):
-        return self.token_index[t]
-
-    def distance_between(self, source, target):
-        return min(self._cw_basic_distance(source, target) -
-                     source.cw_positive_dist_mod +
-                     target.cw_passive_dist_mod,
-                   self._ccw_basic_distance(source, target) -
-                     source.ccw_positive_dist_mod +
-                     target.ccw_passive_dist_mod)
-
-    def _cw_basic_distance(self, source, target):
-        return ((source.player_id - target.player_id + len(self.players)) %
-                                                        len(self.players))
-
-    def _ccw_basic_distance(self, source, target):
-        return ((target.player_id - source.player_id + len(self.players)) %
-                                                        len(self.players))
+    def try_rescuing(self, game_control, player, after_brink_of_death):
+        game_control.push_frame(_RescueFrame(game_control, player,
+                                             self.players_from_current(),
+                                             after_brink_of_death))

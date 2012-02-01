@@ -32,7 +32,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('slash', 8, card.SPADE),
             test_data.CardInfo('slash', 9, card.HEART),
      ])), pc, ActionStack())
-players = [Player(19), Player(91), Player(1729)]
+players = [Player(19, 4), Player(91, 4), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -227,8 +227,8 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 # -dawan                | 13   | 1  | SPADE   <- equipped
 # +jueying              | 5    | 2  | SPADE   <- equipped
 # slash                 | 1    | 3  | CLUB
-# +zhuahuangfeidian     | 5    | 12 | HEART   <- discard
-# zhangba serpent spear | 7    | 13 | HEART   <- discard
+# +zhuahuangfeidian     | 5    | 12 | HEART
+# zhangba serpent spear | 7    | 13 | HEART
 
 # -zixing               | 13   | 4  | DIAMOND
 # +dilu                 | 5    | 5  | CLUB
@@ -242,11 +242,6 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 result = gc.player_act({
                           'token': players[0].token,
                           'action': 'give up',
-                      })
-assert_eq(ret_code.OK, result['code'])
-result = gc.player_act({
-                          'token': players[0].token,
-                          'discard': [12, 13],
                       })
 assert_eq(ret_code.OK, result['code'])
 

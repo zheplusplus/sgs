@@ -9,8 +9,10 @@ cards = [
             card.Card(1, 'dodge', 2, card.HEART),
             card.Card(2, 'slash', 3, card.SPADE),
         ]
-player0 = fake_player.Player(91, 29)
-player1 = fake_player.Player(112, 1954)
+player0 = fake_player.Player(91)
+player0.player_id = 0
+player1 = fake_player.Player(112)
+player1.player_id = 1
 
 evt = event.DealCards(player0, cards)
 assert_eq({
@@ -303,7 +305,8 @@ assert_eq({
           }, evt.serialize(player0.token))
 assert_eq(evt.serialize(player1.token), evt.serialize(player0.token))
 
-player2 = fake_player.Player(1123, 5813)
+player2 = fake_player.Player(1123)
+player2.player_id = 2
 evt = event.PrivateCardsTransfer(player0, player1, cards)
 assert_eq({
               'type': 'PrivateCardsTransfer',
@@ -398,3 +401,12 @@ assert_eq({
                            },
                        ],
           }, evt.serialize(player2.token))
+
+evt = event.PlayerKilled(player0)
+assert_eq({
+              'type': 'PlayerKilled',
+              'player': player0.player_id,
+          }, evt.as_log())
+assert_eq(evt.as_log(), evt.serialize(player0.token))
+assert_eq(evt.as_log(), evt.serialize(player1.token))
+assert_eq(evt.as_log(), evt.serialize(player2.token))

@@ -1,22 +1,22 @@
+from core.src.player import Player as CorePlayer
 import core.src.action_frames as frames
 
 STARTDEAL = 4
 ROUNDDEAL = 2
 
-class Player:
-    def __init__(self, token, pid):
-        self.token = token
-        self.player_id = pid
+class Player(CorePlayer):
+    def __init__(self, token):
+        CorePlayer.__init__(self, token, 1, dict())
 
     def start(self, game_control):
-        self.get_cards(game_control, STARTDEAL)
+        self.draw_cards(game_control, STARTDEAL)
 
     def round(self, game_control):
-        self.getting_cards_stage(game_control)
+        self.drawing_cards_stage(game_control)
         self.using_cards_stage(game_control)
 
-    def getting_cards_stage(self, game_control):
-        self.get_cards(game_control, ROUNDDEAL)
+    def drawing_cards_stage(self, game_control):
+        self.draw_cards(game_control, ROUNDDEAL)
 
     def using_cards_stage(self, game_control):
         game_control.push_frame(
@@ -33,6 +33,3 @@ class Player:
 
     def cards_discarded(self, game_control, args):
         game_control.next_round()
-
-    def get_cards(self, game_control, cnt):
-        game_control.deal_cards(self, cnt)

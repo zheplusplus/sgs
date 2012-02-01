@@ -24,7 +24,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('sabotage', 9, card.HEART),
             test_data.CardInfo('sabotage', 10, card.CLUB),
      ])), pc, ActionStack())
-players = [Player(91), Player(1729)]
+players = [Player(91, 4), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -477,9 +477,9 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('zhangba serpent spear', 10, card.HEART),
 
             test_data.CardInfo('duel', 11, card.DIAMOND),
-            test_data.CardInfo('duel', 12, card.HEART),
+            test_data.CardInfo('sabotage', 12, card.HEART),
      ])), pc, ActionStack())
-players = [Player(91), Player(1729)]
+players = [Player(91, 4), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -503,7 +503,7 @@ assert_eq(ret_code.OK, result['code'])
 # zhangba serpent spear | 2                    | SPADE   -- equipped
 # slash                 | 3                    | DIAMOND
 # dodge                 | 4                    | DIAMOND
-# duel                  | 9                    | SPADE   <- discard this
+# duel                  | 9                    | SPADE
 # zhangba serpent spear | 10                   | HEART
 
 # slash                 | 5                    | CLUB
@@ -512,7 +512,7 @@ assert_eq(ret_code.OK, result['code'])
 # slash                 | 8                    | DIAMOND
 result = gc.player_act({
                           'token': players[0].token,
-                          'discard': [0, 8],
+                          'discard': [0],
                       })
 assert_eq(ret_code.OK, result['code'])
 
@@ -522,6 +522,7 @@ assert_eq(ret_code.OK, result['code'])
 # zhangba serpent spear | 2                    | SPADE   -- equipped
 # slash                 | 3                    | DIAMOND
 # dodge                 | 4                    | DIAMOND
+# duel                  | 9                    | SPADE
 # zhangba serpent spear | 10                   | HEART
 
 # slash                 | 5                    | CLUB
@@ -529,7 +530,7 @@ assert_eq(ret_code.OK, result['code'])
 # sabotage              | 7                    | DIAMOND
 # slash                 | 8                    | DIAMOND
 # duel                  | 11                   | DIAMOND <- draw this and use it
-# duel                  | 12                   | HEART   <- draw this
+# sabotage              | 12                   | HEART   <- draw this
 result = gc.player_act({
                           'token': players[1].token,
                           'action': 'duel',
@@ -544,13 +545,14 @@ assert_eq(ret_code.OK, result['code'])
 # zhangba serpent spear | 2                    | SPADE   -- equipped
 # slash                 | 3                    | DIAMOND
 # dodge                 | 4                    | DIAMOND <- play this
+# duel                  | 9                    | SPADE
 # zhangba serpent spear | 10                   | HEART   <-  and this
 
 # slash                 | 5                    | CLUB
 # sabotage              | 6                    | HEART
 # sabotage              | 7                    | DIAMOND
 # slash                 | 8                    | DIAMOND
-# duel                  | 12                   | HEART
+# sabotage              | 12                   | HEART
 result = gc.player_act({
                           'token': players[0].token,
                           'method': 'zhangba serpent spear',
@@ -583,16 +585,31 @@ assert_eq(ret_code.OK, result['code'])
 # name                  | rank (id = rank - 1) | suit
 
 # zhangba serpent spear | 2                    | SPADE   -- equipped
+# duel                  | 9                    | SPADE   <- sabotage this
 
 # sabotage              | 6                    | HEART   <- use this
 # sabotage              | 7                    | DIAMOND
 # slash                 | 8                    | DIAMOND
-# duel                  | 12                   | HEART
+# sabotage              | 12                   | HEART
 result = gc.player_act({
                           'token': players[1].token,
                           'action': 'sabotage',
                           'targets': [players[0].player_id],
                           'cards': [5],
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                          'token': players[1].token,
+                          'sabotage': 'cards',
+                      })
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+                          'token': players[1].token,
+                          'action': 'sabotage',
+                          'targets': [players[0].player_id],
+                          'cards': [6],
                       })
 assert_eq(ret_code.OK, result['code'])
 
@@ -629,12 +646,12 @@ assert_eq(p0_events, p1_events)
 
 # sabotage              | 7                    | DIAMOND <- use this
 # slash                 | 8                    | DIAMOND
-# duel                  | 12                   | HEART
+# sabotage              | 12                   | HEART
 result = gc.player_act({
                           'token': players[1].token,
                           'action': 'sabotage',
                           'targets': [players[0].player_id],
-                          'cards': [6],
+                          'cards': [11],
                       })
 assert_eq({
               'code': ret_code.BAD_REQUEST,

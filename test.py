@@ -1,6 +1,8 @@
 import core.test.test_game_control
 import core.test.test_event
 import core.test.test_frames
+import core.test.test_players_control
+import ext.test.test_players_control
 import ext.test.test_fire_attack
 import ext.test.test_duel
 import ext.test.test_dragon_heart_martial_saint_slash_response
@@ -13,4 +15,6 @@ import ext.test.test_rattan_armor
 import ext.test.test_merciless
 import ext.test.test_heavenly_scent
 import ext.test.test_fury_pith
+import ext.test.test_brink_of_death_and_rescue
+import ext.test.test_suicide
 print 'Test finished.'

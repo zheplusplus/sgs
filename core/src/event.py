@@ -278,3 +278,12 @@ class Unequip(Event):
             'unequip': cards_to_msg_include_id([self.card])[0],
             'region': self.region,
         }
+
+class PlayerKilled(Event):
+    def __init__(self, player):
+        self.player = player
+
+    def _as_log(self):
+        return {
+            'player': self.player.player_id,
+        }

@@ -7,7 +7,7 @@ import core.src.card as card
 import core.src.ret_code as ret_code
 import core.src.action_frames as frames
 
-player = fake_player.Player(10, 0)
+player = fake_player.Player(10)
 cards = [
             card.Card(0, 'slash', 1, card.SPADE),
             card.Card(1, 'slash', 2, card.SPADE),

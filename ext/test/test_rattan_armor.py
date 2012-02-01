@@ -27,7 +27,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('fire attack', 11, card.CLUB),
             test_data.CardInfo('dodge', 12, card.HEART),
      ])), pc, ActionStack())
-players = [Player(91), Player(1729)]
+players = [Player(91, 8), Player(1729, 8)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -77,27 +77,8 @@ result = gc.player_act({
                        })
 assert_eq(ret_code.OK, result['code'])
 
-# cards:
-# name         | rank | id | suit
-
-# rattan armor | 2    | 1  | SPADE <- equipped
-# slash        | 3    | 2  | HEART
-# slash        | 4    | 3  | HEART
-# slash        | 9    | 8  | SPADE <- discard
-# slash        | 10   | 9  | CLUB  <- discard
-
-# steal        | 5    | 4  | CLUB
-# fire attack  | 6    | 5  | HEART
-# dodge        | 7    | 6  | HEART
-# duel         | 8    | 7  | HEART
-result = gc.player_act({
-                           'token': players[0].token,
-                           'discard': [8, 9],
-                       })
-assert_eq(ret_code.OK, result['code'])
-
 p0_events = gc.get_events(players[0].token, last_event_id)
-assert_eq(5, len(p0_events))
+assert_eq(4, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['player'])
@@ -118,17 +99,6 @@ if True: # just indent for a nice appearance
     assert_eq(card.SPADE, event['equip']['suit'])
     assert_eq(1, event['equip']['id'])
     event = p0_events[3]
-    assert_eq(players[0].player_id, event['player'])
-    assert_eq(2, len(event['discard']))
-    assert_eq('slash', event['discard'][0]['name'])
-    assert_eq(9, event['discard'][0]['rank'])
-    assert_eq(card.SPADE, event['discard'][0]['suit'])
-    assert_eq(8, event['discard'][0]['id'])
-    assert_eq('slash', event['discard'][1]['name'])
-    assert_eq(10, event['discard'][1]['rank'])
-    assert_eq(card.CLUB, event['discard'][1]['suit'])
-    assert_eq(9, event['discard'][1]['id'])
-    event = p0_events[4]
     assert_eq(players[1].player_id, event['player'])
     assert_eq(2, event['get'])
 
@@ -138,6 +108,8 @@ if True: # just indent for a nice appearance
 # rattan armor | 2    | 1  | SPADE <- equipped
 # slash        | 3    | 2  | HEART <- show this
 # slash        | 4    | 3  | HEART
+# slash        | 9    | 8  | SPADE
+# slash        | 10   | 9  | CLUB
 
 # steal        | 5    | 4  | CLUB
 # fire attack  | 6    | 5  | HEART <- use this
@@ -197,6 +169,8 @@ if True: # just indent for a nice appearance
 # rattan armor | 2    | 1  | SPADE <- equipped
 # slash        | 3    | 2  | HEART
 # slash        | 4    | 3  | HEART
+# slash        | 9    | 8  | SPADE
+# slash        | 10   | 9  | CLUB
 
 # steal        | 5    | 4  | CLUB
 # duel         | 8    | 7  | HEART <- use this
@@ -235,6 +209,8 @@ assert_eq(p0_events, p1_events)
 # rattan armor | 2    | 1  | SPADE <- equipped
 # slash        | 3    | 2  | HEART
 # slash        | 4    | 3  | HEART
+# slash        | 9    | 8  | SPADE
+# slash        | 10   | 9  | CLUB
 
 # steal        | 5    | 4  | CLUB <- steal rattan armor
 # fire attack  | 11   | 10 | CLUB
@@ -259,6 +235,8 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until steal
 
 # slash        | 3    | 2  | HEART
 # slash        | 4    | 3  | HEART
+# slash        | 9    | 8  | SPADE
+# slash        | 10   | 9  | CLUB
 
 # rattan armor | 2    | 1  | SPADE <- equipped
 # fire attack  | 11   | 10 | CLUB
@@ -294,6 +272,8 @@ if True: # just indent for a nice appearance
 
 # slash        | 3    | 2  | HEART <- show this
 # slash        | 4    | 3  | HEART
+# slash        | 9    | 8  | SPADE
+# slash        | 10   | 9  | CLUB
 
 # rattan armor | 2    | 1  | SPADE <- equipped
 # fire attack  | 11   | 10 | CLUB <- use this

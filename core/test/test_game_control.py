@@ -29,8 +29,8 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('dodge', 4, card.HEART),
             test_data.CardInfo('dodge', 5, card.HEART),
      ])), pc, ActionStack())
-players = [fake_player.Player(6, 0), fake_player.Player(24, 1),
-           fake_player.Player(1729, 2)]
+players = [fake_player.Player(6), fake_player.Player(24),
+           fake_player.Player(1729)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 assert_eq(200, gc.player_act({

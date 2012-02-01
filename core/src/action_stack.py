@@ -1,6 +1,9 @@
 class ActionStack:
     def __init__(self):
-        self.frames = []
+        class DummyFrame:
+            def resume(self):
+                pass
+        self.frames = [DummyFrame()]
 
     def push(self, frame):
         self.frames.append(frame)
@@ -10,6 +13,7 @@ class ActionStack:
 
     def pop(self):
         self.frames.pop()
+        self.frames[-1].resume()
 
     def allowed_players(self):
         return self.frames[-1].allowed_players()

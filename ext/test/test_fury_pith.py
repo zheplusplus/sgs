@@ -25,7 +25,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('duel', 9, card.HEART),
             test_data.CardInfo('duel', 10, card.HEART),
      ])), pc, ActionStack())
-players = [Player(91), Player(1729)]
+players = [Player(91, 4), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 fury_pith.add_to(players[1])
 gc.start()

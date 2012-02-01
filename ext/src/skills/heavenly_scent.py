@@ -27,12 +27,17 @@ def _check_one_heart_card(game_control, cards_ids):
 def _damage_transfer(game_control, args, damage):
     if len(args['discard']) > 0:
         target = game_control.player_by_id(args['targets'][0])
+        def draw_cards(d, game_control):
+            game_control.deal_cards(target, target.max_vigor - target.vigor)
         Damage(damage.source, target, damage.action, damage.cards,
                damage.category, damage.point,
                [target.actions_before_damaged['equipment']['trigger'],
-                target.actions_before_damaged['equipment']['ability']],
+                target.actions_before_damaged['equipment']['ability']] +
+                damage.source.computing_before_damaging +
+                target.computing_before_damaged,
                damage.source.after_damaging_actions() +
-               target.after_damaged_actions()).operate(game_control)
+               target.after_damaged_actions()
+               ).add_affix(draw_cards).operate(game_control)
     else:
         damage.resume()
 

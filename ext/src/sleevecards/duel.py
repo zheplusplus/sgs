@@ -1,6 +1,6 @@
 import core.src.action_frames as frames
 import core.src.ret_code as ret_code
-import core.src.damage as damage
+import ext.src.damage as damage
 import ext.src.common_checking as checking
 
 def duel(game_control, args):
@@ -28,8 +28,5 @@ def play_slash(game_control, args, player, target, duel_cards):
                                 duel_cards))
 
 def done(game_control, source, target, duel_cards):
-    damage.Damage(source, target, 'duel', duel_cards, 'normal', 1,
-                  source.before_damaging_actions() +
-                  target.before_damaged_actions(),
-                  source.after_damaging_actions() +
-                  target.after_damaged_actions()).operate(game_control)
+    damage.Damage(source, target, 'duel', duel_cards, 'normal', 1
+                  ).operate(game_control)

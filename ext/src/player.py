@@ -1,24 +1,24 @@
+from core.src.player import Player as CorePlayer
 import core.src.action_frames as frames
 from player_using_cards import get_using_cards_interface_map
 import common_checking as checking
 import player_response as response
-import core.src.event as event
 
 STARTDEAL = 4
 ROUNDDEAL = 2
 
-class Player:
-    def __init__(self, token):
-        self.token = token
-        self.responses = { 'slash': response.ToCertainCard('slash') }
-        self.equipment = dict()
-        self.cw_positive_dist_mod = 0
-        self.ccw_positive_dist_mod = 0
-        self.cw_passive_dist_mod = 0
-        self.ccw_passive_dist_mod = 0
+class Player(CorePlayer):
+    def __init__(self, token, max_vigor):
+        CorePlayer.__init__(self, token, max_vigor,
+                            {
+                                'slash': response.ToCertainCard('slash'),
+                                'peach': response.ToCertainCard('peach'),
+                            })
         self.ranges = { 'steal': 1 }
         self.actions_before_damaging = Player._damage_actions_dict()
         self.actions_before_damaged = Player._damage_actions_dict()
+        self.computing_before_damaging = []
+        self.computing_before_damaged = []
         self.actions_after_damaging = Player._damage_actions_dict()
         self.actions_after_damaged = Player._damage_actions_dict()
 
@@ -32,14 +32,14 @@ class Player:
                }
 
     def start(self, game_control):
-        self.get_cards(game_control, STARTDEAL)
+        self.draw_cards(game_control, STARTDEAL)
 
     def round(self, game_control):
-        self.getting_cards_stage(game_control)
+        self.drawing_cards_stage(game_control)
         self.using_cards_stage(game_control)
 
-    def getting_cards_stage(self, game_control):
-        self.get_cards(game_control, ROUNDDEAL)
+    def drawing_cards_stage(self, game_control):
+        self.draw_cards(game_control, ROUNDDEAL)
 
     def using_cards_stage(self, game_control):
         game_control.push_frame(
@@ -48,40 +48,21 @@ class Player:
                                 lambda gc, _: self.discarding_cards_stage(gc)))
 
     def discarding_cards_stage(self, game_control):
+        need_discard = game_control.player_cards_count_at(
+                                             self, 'cards') - self.vigor
         def discard_check(cards_ids):
             checking.cards_region(game_control.cards_by_ids(cards_ids), 'cards')
-            if len(cards_ids) != 2:
-                raise ValueError('must discard 2 cards')
-        game_control.push_frame(
-                frames.DiscardCards(game_control, self, discard_check,
-                                    self.cards_discarded))
+            if len(cards_ids) != need_discard:
+                raise ValueError('must discard ' + str(need_discard) + ' cards')
+        if self.alive and 0 < need_discard:
+            game_control.push_frame(
+                    frames.DiscardCards(game_control, self, discard_check,
+                                        self.cards_discarded))
+        else:
+            game_control.next_round()
 
     def cards_discarded(self, game_control, args):
         game_control.next_round()
-
-    def get_cards(self, game_control, cnt):
-        game_control.deal_cards(self, cnt)
-
-    def response_frame(self, action, game_control, on_result):
-        return self.responses[action].response(game_control, self, on_result)
-
-    def equip(self, game_control, card, region, on_remove):
-        if region in self.equipment:
-            game_control.recycle_cards([self.unequip(game_control, region)])
-        card.set_region(region)
-        def rm_func():
-            on_remove(game_control, self, card)
-            return card
-        self.equipment[region] = rm_func
-        game_control.equip(self, card, region)
-
-    def unequip_check(self, game_control, region):
-        if not region in self.equipment:
-            raise ValueError('no such equipment')
-        return self.unequip(game_control, region)
-
-    def unequip(self, game_control, region):
-        return game_control.unequip(self, self.equipment[region](), region)
 
     def before_damaging_actions(self):
         return (self.actions_before_damaging['status'] +

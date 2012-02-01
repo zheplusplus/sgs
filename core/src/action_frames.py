@@ -10,6 +10,9 @@ class FrameBase:
         self.on_result(self.game_control, result)
         return { 'code': ret_code.OK }
 
+    def resume(self):
+        pass
+
 def check_owner(owner, cards):
     for c in cards:
         if owner != c.owner_or_nil:
@@ -20,7 +23,7 @@ class UseCards(FrameBase):
         FrameBase.__init__(self, game_control, on_result)
         self.player = player
         self.interface_map = interface_map
-        self.interface_map['give up'] = lambda gc, a: self.done({})
+        self.interface_map['give up'] = lambda gc, a: self.done(None)
 
     def allowed_players(self):
         return [self.player]
@@ -39,6 +42,10 @@ class UseCards(FrameBase):
         import card
         with card.InUseStatusRestore(cards):
             return self.interface_map[args['action']](self.game_control, args)
+
+    def resume(self):
+        if not self.player.alive:
+            self.done(None)
 
 class ShowCards(FrameBase):
     def __init__(self, game_control, player, cards_check, on_result):

@@ -92,14 +92,35 @@ class GameControl:
         self._add_event(event.PublicCardsTransfer(source, target, cards))
         self.card_pool.cards_transfer(target, cards)
 
-    def damage(self, victim, damage, category):
-        self._add_event(event.Damage(victim, damage, category))
+    def _decrease_player_vigor(self, player, point, on_brink_of_death,
+                               after_brink_of_death):
+        player.vigor -= point
+        if player.vigor <= 0:
+            on_brink_of_death(lambda: self.players_control.try_rescuing(
+                                            self, player, after_brink_of_death))
+
+    def damage(self, damage):
+        self._add_event(event.Damage(damage.victim, damage.point,
+                                     damage.category))
+        self._decrease_player_vigor(damage.victim, damage.point,
+                                    lambda f: damage.interrupt(f),
+                                    damage.resume)
 
     def vigor_lost(self, player, point):
         self._add_event(event.VigorLost(player, point))
+        self._decrease_player_vigor(player, point, lambda f: f(), lambda: None)
 
     def vigor_regain(self, player, point):
-        self._add_event(event.VigorRegain(player, point))
+        if player.max_vigor < player.vigor + point:
+            point = player.max_vigor - player.vigor
+        if 0 < point:
+            self._add_event(event.VigorRegain(player, point))
+            player.vigor += point
+
+    def kill(self, player):
+        self._add_event(event.PlayerKilled(player))
+        self.players_control.kill(player)
+        self.card_pool.recycle_cards_of_player(player)
 
     def cards_by_ids(self, cards_ids):
         return self.card_pool.cards_by_ids(cards_ids)
@@ -118,6 +139,9 @@ class GameControl:
 
     def player_has_cards_at(self, player, region):
         return self.card_pool.player_has_cards_at(player, region)
+
+    def player_cards_count_at(self, player, region):
+        return self.card_pool.player_cards_count_at(player, region)
 
     def random_pick_cards(self, player, count):
         return self.card_pool.random_pick_cards(player, count)

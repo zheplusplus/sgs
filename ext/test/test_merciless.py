@@ -28,7 +28,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('dodge', 11, card.CLUB),
             test_data.CardInfo('dodge', 12, card.HEART),
      ])), pc, ActionStack())
-players = [Player(91), Player(1729)]
+players = [Player(91, 3), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 merciless.add_to(players[1])
 gc.start()

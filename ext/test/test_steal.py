@@ -32,7 +32,7 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('steal', 9, card.HEART),
             test_data.CardInfo('steal', 10, card.CLUB),
      ])), pc, ActionStack())
-players = [Player(19), Player(91), Player(1729)]
+players = [Player(19, 3), Player(91, 4), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
@@ -331,6 +331,7 @@ result = gc.player_act({
                            'token': players[0].token,
                            'discard': [13, 5],
                        })
+assert_eq(ret_code.OK, result['code'])
 
 # cards:
 # name     | rank | id | suit
@@ -537,7 +538,7 @@ assert_eq({
 
 # steal player without cards in hand
 
-players = [Player(91), Player(1729)]
+players = [Player(91, 3), Player(1729, 4)]
 pc = PlayersControl()
 gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('-chitu', 5, card.HEART),
@@ -629,7 +630,7 @@ assert_eq({
 import ext.src.skills.horsemanship as horsemanship
 import ext.src.skills.prodigy as prodigy
 
-players = [Player(0), Player(1), Player(2), Player(3), Player(4), Player(5)]
+players = [Player(i, 3) for i in range(0, 6)]
 horsemanship.add_to(players[0])
 prodigy.add_to(players[1])
 
