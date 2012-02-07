@@ -53,7 +53,7 @@ result = gc.player_act({
                           'token': players[0].token,
                           'action': 'duel',
                           'targets': [players[1].player_id],
-                          'cards': [0],
+                          'use': [0],
                       })
 assert_eq(ret_code.OK, result['code'])
 last_event_id = len(gc.get_events(players[0].token, 0)) # until duel

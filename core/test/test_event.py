@@ -14,36 +14,36 @@ player0.player_id = 0
 player1 = fake_player.Player(112)
 player1.player_id = 1
 
-evt = event.DealCards(player0, cards)
+evt = event.DrawCards(player0, cards)
 assert_eq({
-              'type': 'DealCards',
+              'type': 'DrawCards',
               'player': player0.player_id,
-              'get': [
-                         {
-                             'id': 0,
-                             'name': 'slash',
-                             'rank': 1,
-                             'suit': 1,
-                         },
-                         {
-                             'id': 1,
-                             'name': 'dodge',
-                             'rank': 2,
-                             'suit': 2,
-                         },
-                         {
-                             'id': 2,
-                             'name': 'slash',
-                             'rank': 3,
-                             'suit': 1,
-                         },
-                     ],
+              'draw': [
+                          {
+                              'id': 0,
+                              'name': 'slash',
+                              'rank': 1,
+                              'suit': 1,
+                          },
+                          {
+                              'id': 1,
+                              'name': 'dodge',
+                              'rank': 2,
+                              'suit': 2,
+                          },
+                          {
+                              'id': 2,
+                              'name': 'slash',
+                              'rank': 3,
+                              'suit': 1,
+                          },
+                      ],
           }, evt.as_log())
 assert_eq(evt.as_log(), evt.serialize(player0.token))
 assert_eq({
-              'type': 'DealCards',
+              'type': 'DrawCards',
               'player': player0.player_id,
-              'get': 3,
+              'draw': 3,
           }, evt.serialize(player1.token))
 
 [c.set_region('cards') for c in cards]
@@ -312,29 +312,29 @@ assert_eq({
               'type': 'PrivateCardsTransfer',
               'source': player0.player_id,
               'target': player1.player_id,
-              'cards': [
-                           {
-                               'id': 0,
-                               'name': 'slash',
-                               'rank': 1,
-                               'suit': 1,
-                               'region': 'cardpool',
-                           },
-                           {
-                               'id': 1,
-                               'name': 'dodge',
-                               'rank': 2,
-                               'suit': 2,
-                               'region': 'cardpool',
-                           },
-                           {
-                               'id': 2,
-                               'name': 'slash',
-                               'rank': 3,
-                               'suit': 1,
-                               'region': 'cardpool',
-                           },
-                       ],
+              'transfer': [
+                              {
+                                  'id': 0,
+                                  'name': 'slash',
+                                  'rank': 1,
+                                  'suit': 1,
+                                  'region': 'cardpool',
+                              },
+                              {
+                                  'id': 1,
+                                  'name': 'dodge',
+                                  'rank': 2,
+                                  'suit': 2,
+                                  'region': 'cardpool',
+                              },
+                              {
+                                  'id': 2,
+                                  'name': 'slash',
+                                  'rank': 3,
+                                  'suit': 1,
+                                  'region': 'cardpool',
+                              },
+                          ],
           }, evt.as_log())
 assert_eq(evt.as_log(), evt.serialize(player0.token))
 assert_eq(evt.serialize(player0.token), evt.serialize(player1.token))
@@ -342,7 +342,7 @@ assert_eq({
               'type': 'PrivateCardsTransfer',
               'source': player0.player_id,
               'target': player1.player_id,
-              'cards': 3,
+              'transfer': 3,
           }, evt.serialize(player2.token))
 
 evt = event.PublicCardsTransfer(player0, player1, cards)
@@ -350,29 +350,29 @@ assert_eq({
               'type': 'PublicCardsTransfer',
               'source': player0.player_id,
               'target': player1.player_id,
-              'cards': [
-                           {
-                               'id': 0,
-                               'name': 'slash',
-                               'rank': 1,
-                               'suit': 1,
-                               'region': 'cardpool',
-                           },
-                           {
-                               'id': 1,
-                               'name': 'dodge',
-                               'rank': 2,
-                               'suit': 2,
-                               'region': 'cardpool',
-                           },
-                           {
-                               'id': 2,
-                               'name': 'slash',
-                               'rank': 3,
-                               'suit': 1,
-                               'region': 'cardpool',
-                           },
-                       ],
+              'transfer': [
+                              {
+                                  'id': 0,
+                                  'name': 'slash',
+                                  'rank': 1,
+                                  'suit': 1,
+                                  'region': 'cardpool',
+                              },
+                              {
+                                  'id': 1,
+                                  'name': 'dodge',
+                                  'rank': 2,
+                                  'suit': 2,
+                                  'region': 'cardpool',
+                              },
+                              {
+                                  'id': 2,
+                                  'name': 'slash',
+                                  'rank': 3,
+                                  'suit': 1,
+                                  'region': 'cardpool',
+                              },
+                          ],
           }, evt.as_log())
 assert_eq(evt.as_log(), evt.serialize(player0.token))
 assert_eq(evt.serialize(player0.token), evt.serialize(player1.token))
@@ -380,26 +380,26 @@ assert_eq({
               'type': 'PublicCardsTransfer',
               'source': player0.player_id,
               'target': player1.player_id,
-              'cards': [
-                           {
-                               'name': 'slash',
-                               'rank': 1,
-                               'suit': 1,
-                               'region': 'cardpool',
-                           },
-                           {
-                               'name': 'dodge',
-                               'rank': 2,
-                               'suit': 2,
-                               'region': 'cardpool',
-                           },
-                           {
-                               'name': 'slash',
-                               'rank': 3,
-                               'suit': 1,
-                               'region': 'cardpool',
-                           },
-                       ],
+              'transfer': [
+                              {
+                                  'name': 'slash',
+                                  'rank': 1,
+                                  'suit': 1,
+                                  'region': 'cardpool',
+                              },
+                              {
+                                  'name': 'dodge',
+                                  'rank': 2,
+                                  'suit': 2,
+                                  'region': 'cardpool',
+                              },
+                              {
+                                  'name': 'slash',
+                                  'rank': 3,
+                                  'suit': 1,
+                                  'region': 'cardpool',
+                              },
+                          ],
           }, evt.serialize(player2.token))
 
 evt = event.PlayerKilled(player0)

@@ -55,7 +55,7 @@ result = gc.player_act({
                            'token': players[0].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [0],
+                           'use': [0],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -102,22 +102,22 @@ if True: # just indent for a nice appearance
     assert_eq('PlayerKilled', event['type'])
     event = p0_events[1]
     assert_eq(players[1].player_id, event['player'])
-    assert_eq(2, event['get'])
+    assert_eq(2, event['draw'])
 p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(2, len(p1_events))
 if True: # just indent for a nice appearance
     assert_eq(p0_events[0], p1_events[0])
     event = p1_events[1]
     assert_eq(players[1].player_id, event['player'])
-    assert_eq(2, len(event['get']))
-    assert_eq(2, event['get'][0]['rank'])
-    assert_eq(card.SPADE, event['get'][0]['suit'])
-    assert_eq('slash', event['get'][0]['name'])
-    assert_eq(14, event['get'][0]['id'])
-    assert_eq(3, event['get'][1]['rank'])
-    assert_eq(card.SPADE, event['get'][1]['suit'])
-    assert_eq('slash', event['get'][1]['name'])
-    assert_eq(15, event['get'][1]['id'])
+    assert_eq(2, len(event['draw']))
+    assert_eq(2, event['draw'][0]['rank'])
+    assert_eq(card.SPADE, event['draw'][0]['suit'])
+    assert_eq('slash', event['draw'][0]['name'])
+    assert_eq(14, event['draw'][0]['id'])
+    assert_eq(3, event['draw'][1]['rank'])
+    assert_eq(card.SPADE, event['draw'][1]['suit'])
+    assert_eq('slash', event['draw'][1]['name'])
+    assert_eq(15, event['draw'][1]['id'])
 p2_events = gc.get_events(players[2].token, last_event_id)
 assert_eq(p0_events, p2_events)
 

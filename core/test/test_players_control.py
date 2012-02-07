@@ -31,3 +31,9 @@ assert_eq(2, pc.distance_between(players[7], players[3]))
 assert_eq(1, pc.distance_between(players[7], players[1]))
 assert_eq(2, pc.distance_between(players[3], players[7]))
 assert_eq(1, pc.distance_between(players[1], players[7]))
+
+try:
+    pc.get_by_id(0)
+    assert False
+except ValueError, e:
+    assert_eq('player dead', e.message)

@@ -54,7 +54,7 @@ def add_region_formatter(formatter):
         return msg
     return f
 
-class DealCards(Event):
+class DrawCards(Event):
     def __init__(self, player, cards):
         self.player = player
         self.cards = cards
@@ -64,13 +64,13 @@ class DealCards(Event):
             return self.as_log()
         return {
             'player': self.player.player_id,
-            'get': len(self.cards),
+            'draw': len(self.cards),
         }
 
     def _as_log(self):
         return {
             'player': self.player.player_id,
-            'get': cards_to_msg_include_id(self.cards),
+            'draw': cards_to_msg_include_id(self.cards),
         }
 
 class CardStub:
@@ -109,7 +109,7 @@ class CardsTransferBase(Event):
         return {
             'source': self.source.player_id,
             'target': self.target.player_id,
-            'cards': make_cards_msg(
+            'transfer': make_cards_msg(
                                 self.cards,
                                 add_region_formatter(card_to_msg_include_id)),
         }
@@ -127,7 +127,7 @@ class PrivateCardsTransfer(CardsTransferBase):
         return {
             'source': self.source.player_id,
             'target': self.target.player_id,
-            'cards': len(self.cards),
+            'transfer': len(self.cards),
         }
 
 class PublicCardsTransfer(CardsTransferBase):
@@ -143,8 +143,8 @@ class PublicCardsTransfer(CardsTransferBase):
         return {
             'source': self.source.player_id,
             'target': self.target.player_id,
-            'cards': make_cards_msg(self.cards,
-                                    add_region_formatter(card_to_msg)),
+            'transfer': make_cards_msg(self.cards,
+                                       add_region_formatter(card_to_msg)),
         }
 
 class UseCardsForPlayers(Event):

@@ -68,7 +68,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 result = gc.player_act({
                           'token': players[0].token,
                           'action': 'equip',
-                          'cards': [0],
+                          'use': [0],
                       })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
@@ -124,7 +124,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 result = gc.player_act({
                           'token': players[0].token,
                           'action': 'equip',
-                          'cards': [2],
+                          'use': [2],
                       })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
@@ -180,7 +180,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 result = gc.player_act({
                           'token': players[0].token,
                           'action': 'equip',
-                          'cards': [1],
+                          'use': [1],
                       })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
@@ -276,7 +276,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 result = gc.player_act({
                           'token': players[1].token,
                           'action': 'equip',
-                          'cards': [4],
+                          'use': [4],
                       })
 assert_eq(ret_code.OK, result['code'])
 
@@ -311,7 +311,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 result = gc.player_act({
                           'token': players[1].token,
                           'action': 'equip',
-                          'cards': [5],
+                          'use': [5],
                       })
 assert_eq(ret_code.OK, result['code'])
 
@@ -346,7 +346,7 @@ assert_eq(2, gc.distance_between(players[2], players[1]))
 result = gc.player_act({
                           'token': players[1].token,
                           'action': 'equip',
-                          'cards': [6],
+                          'use': [6],
                       })
 assert_eq(ret_code.OK, result['code'])
 

@@ -13,11 +13,17 @@ class PlayersControl:
         p = self.players[self.current_pid]
         return p if p.alive else None
 
+    @staticmethod
+    def _check_not_dead(player):
+        if not player.alive:
+            raise ValueError('player dead')
+        return player
+
     def get_by_id(self, i):
-        return self.players[i]
+        return PlayersControl._check_not_dead(self.players[i])
 
     def get_by_token(self, t):
-        return self.token_index[t]
+        return PlayersControl._check_not_dead(self.token_index[t])
 
     def distance_between(self, source, target):
         return min(self._cw_basic_distance(source, target) -
@@ -27,21 +33,21 @@ class PlayersControl:
                      source.ccw_positive_dist_mod +
                      target.ccw_passive_dist_mod)
 
-    def _compute_basic_distance(self, source_id, target_id, id_incr):
+    def _compute_basic_distance(self, source, target, id_incr):
         distance = 0
+        source_id = source.player_id
+        target_id = target.player_id
         while source_id != target_id:
             source_id = id_incr(source_id) % len(self.players)
-            if self.get_by_id(source_id).alive:
+            if self.players[source_id].alive:
                 distance += 1
         return distance
 
     def _cw_basic_distance(self, source, target):
-        return self._compute_basic_distance(source.player_id, target.player_id,
-                                            lambda i: i - 1)
+        return self._compute_basic_distance(source, target, lambda i: i - 1)
 
     def _ccw_basic_distance(self, source, target):
-        return self._compute_basic_distance(source.player_id, target.player_id,
-                                            lambda i: i + 1)
+        return self._compute_basic_distance(source, target, lambda i: i + 1)
 
     def kill(self, player):
         player.alive = False

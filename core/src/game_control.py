@@ -51,8 +51,9 @@ class GameControl:
         self.action_stack.pop()
 
     def deal_cards(self, player, cnt):
-        self._add_event(
-                event.DealCards(player, self.card_pool.deal(player, cnt)))
+        cards = self.card_pool.deal(player, cnt)
+        self._add_event(event.DrawCards(player, cards))
+        return cards
 
     def discard_cards_by_ids(self, player, cards_ids):
         self.discard_cards(player, self.card_pool.cards_by_ids(cards_ids))

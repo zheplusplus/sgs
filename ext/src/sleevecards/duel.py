@@ -6,7 +6,7 @@ import ext.src.common_checking as checking
 def duel(game_control, args):
     targets_ids = args['targets']
     user = game_control.player_by_token(args['token'])
-    cards = game_control.cards_by_ids(args['cards'])
+    cards = game_control.cards_by_ids(args['use'])
     checking.only_one_target(targets_ids)
     target = game_control.player_by_id(targets_ids[0])
     checking.forbid_target_self(user, target)

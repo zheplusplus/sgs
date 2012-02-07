@@ -29,3 +29,8 @@ pc.next_player()
 assert_eq(players[4], pc.current_player())
 assert_eq([players[i] for i in range(5, 8)] + [players[i] for i in range(0, 3)],
           pc.succeeding_players())
+
+players[4].alive = False
+assert_eq([players[i] for i in range(5, 8)] + [players[i] for i in range(0, 3)],
+          pc.succeeding_players())
+assert_eq(pc.succeeding_players(), pc.players_from_current())

@@ -5,7 +5,7 @@ import ext.src.common_checking as checking
 
 def fire_attack(game_control, args):
     targets_ids = args['targets']
-    cards = game_control.cards_by_ids(args['cards'])
+    cards = game_control.cards_by_ids(args['use'])
     user = game_control.player_by_token(args['token'])
     checking.only_one_target(targets_ids)
     checking.only_one_card_named_as(cards, 'fire attack')

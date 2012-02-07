@@ -53,7 +53,7 @@ gc.start()
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'equip',
-                           'cards': [0],
+                           'use': [0],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -87,7 +87,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [5],
+                           'use': [5],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -119,7 +119,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [6],
+                           'use': [6],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -299,7 +299,7 @@ gc.start()
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'equip',
-                           'cards': [0],
+                           'use': [0],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -319,7 +319,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [5],
+                           'use': [5],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -339,7 +339,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [6],
+                           'use': [6],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -433,7 +433,7 @@ gc.start()
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'equip',
-                           'cards': [0],
+                           'use': [0],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -453,7 +453,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [5],
+                           'use': [5],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -473,7 +473,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [6],
+                           'use': [6],
                        })
 assert_eq(ret_code.OK, result['code'])
 

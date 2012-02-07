@@ -34,7 +34,7 @@ gc.start()
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'equip',
-                           'cards': [0],
+                           'use': [0],
                        })
 assert_eq(ret_code.OK, result['code'])
 result = gc.player_act({
@@ -53,7 +53,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [10],
+                           'use': [10],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -84,7 +84,7 @@ for i in range(0, 3):
                                'token': players[1].token,
                                'action': 'sabotage',
                                'targets': [players[0].player_id],
-                               'cards': [5 + i],
+                               'use': [5 + i],
                            })
     assert_eq(ret_code.OK, result['code'])
     result = gc.player_act({
@@ -97,7 +97,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [4],
+                           'use': [4],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,

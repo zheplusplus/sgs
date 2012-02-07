@@ -48,7 +48,7 @@ result = gc.player_act({
                            'token': players[0].token,
                            'action': 'duel',
                            'targets': [players[1].player_id],
-                           'cards': [1],
+                           'use': [1],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -88,7 +88,7 @@ result = gc.player_act({
                            'token': players[0].token,
                            'action': 'duel',
                            'targets': [players[1].player_id],
-                           'cards': [2],
+                           'use': [2],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -137,7 +137,7 @@ result = gc.player_act({
                            'token': players[0].token,
                            'action': 'duel',
                            'targets': [players[1].player_id],
-                           'cards': [3],
+                           'use': [3],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -163,7 +163,7 @@ assert_eq(p0_events, p1_events)
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'equip',
-                           'cards': [0],
+                           'use': [0],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -181,7 +181,7 @@ result = gc.player_act({
                            'token': players[0].token,
                            'action': 'duel',
                            'targets': [players[1].player_id],
-                           'cards': [8],
+                           'use': [8],
                        })
 assert_eq(ret_code.OK, result['code'])
 

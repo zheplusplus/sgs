@@ -46,19 +46,19 @@ assert_eq([player], use_cards_frm.allowed_players())
 response = use_cards_frm.react({
                                    'token': 10,
                                    'action': 'test',
-                                   'cards': [0],
+                                   'use': [0],
                                })
 assert_eq(ret_code.OK, response['code'])
 assert_eq({
               'token': 10,
               'action': 'test',
-              'cards': [0],
+              'use': [0],
           }, result)
 result = None
 try:
     response = use_cards_frm.react({
                                        'token': 10,
-                                       'cards': [0],
+                                       'use': [0],
                                    })
     assert False
 except KeyError, e:
@@ -78,7 +78,7 @@ try:
     response = use_cards_frm.react({
                                        'token': 10,
                                        'action': 'test',
-                                       'cards': [1],
+                                       'use': [1],
                                    })
     assert False
 except ValueError:

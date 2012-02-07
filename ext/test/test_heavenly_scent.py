@@ -55,7 +55,7 @@ gc.start()
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'equip',
-                           'cards': [1],
+                           'use': [1],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -89,7 +89,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [5],
+                           'use': [5],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -109,7 +109,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [5],
+                           'use': [5],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -190,7 +190,7 @@ if True: # just indent for a nice appearance
     assert_eq(1, event['damage'])
     assert_eq('fire', event['category'])
     event = p0_events[2]
-    assert_eq(1, event['get'])
+    assert_eq(1, event['draw'])
 p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(3, len(p1_events))
 if True: # just indent for a nice appearance
@@ -201,11 +201,11 @@ if True: # just indent for a nice appearance
     assert_eq(card.HEART, event['discard'][0]['suit'])
     assert_eq(p0_events[1], p1_events[1])
     event = p1_events[2]
-    assert_eq(1, len(event['get']))
-    assert_eq(13, event['get'][0]['rank'])
-    assert_eq(card.DIAMOND, event['get'][0]['suit'])
-    assert_eq('dodge', event['get'][0]['name'])
-    assert_eq(12, event['get'][0]['id'])
+    assert_eq(1, len(event['draw']))
+    assert_eq(13, event['draw'][0]['rank'])
+    assert_eq(card.DIAMOND, event['draw'][0]['suit'])
+    assert_eq('dodge', event['draw'][0]['name'])
+    assert_eq(12, event['draw'][0]['id'])
 
 # cards:
 # name         | rank | id | suit
@@ -222,7 +222,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'duel',
                            'targets': [players[0].player_id],
-                           'cards': [7],
+                           'use': [7],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -263,7 +263,7 @@ assert_eq(p0_events, p1_events)
 result = gc.player_act({
                            'token': players[1].token,
                            'action': 'equip',
-                           'cards': [4],
+                           'use': [4],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -271,7 +271,7 @@ result = gc.player_act({
                            'token': players[1].token,
                            'action': 'fire attack',
                            'targets': [players[0].player_id],
-                           'cards': [6],
+                           'use': [6],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -317,7 +317,7 @@ if True: # just indent for a nice appearance
     assert_eq(2, event['damage'])
     assert_eq('fire', event['category'])
     event = p0_events[2]
-    assert_eq(3, event['get'])
+    assert_eq(3, event['draw'])
 p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(3, len(p1_events))
 if True: # just indent for a nice appearance
@@ -328,16 +328,16 @@ if True: # just indent for a nice appearance
     assert_eq(card.HEART, event['discard'][0]['suit'])
     assert_eq(p0_events[1], p1_events[1])
     event = p1_events[2]
-    assert_eq(3, len(event['get']))
-    assert_eq(1, event['get'][0]['rank'])
-    assert_eq(card.DIAMOND, event['get'][0]['suit'])
-    assert_eq('dodge', event['get'][0]['name'])
-    assert_eq(13, event['get'][0]['id'])
-    assert_eq(2, event['get'][1]['rank'])
-    assert_eq(card.DIAMOND, event['get'][1]['suit'])
-    assert_eq('dodge', event['get'][1]['name'])
-    assert_eq(14, event['get'][1]['id'])
-    assert_eq(3, event['get'][2]['rank'])
-    assert_eq(card.DIAMOND, event['get'][2]['suit'])
-    assert_eq('dodge', event['get'][2]['name'])
-    assert_eq(15, event['get'][2]['id'])
+    assert_eq(3, len(event['draw']))
+    assert_eq(1, event['draw'][0]['rank'])
+    assert_eq(card.DIAMOND, event['draw'][0]['suit'])
+    assert_eq('dodge', event['draw'][0]['name'])
+    assert_eq(13, event['draw'][0]['id'])
+    assert_eq(2, event['draw'][1]['rank'])
+    assert_eq(card.DIAMOND, event['draw'][1]['suit'])
+    assert_eq('dodge', event['draw'][1]['name'])
+    assert_eq(14, event['draw'][1]['id'])
+    assert_eq(3, event['draw'][2]['rank'])
+    assert_eq(card.DIAMOND, event['draw'][2]['suit'])
+    assert_eq('dodge', event['draw'][2]['name'])
+    assert_eq(15, event['draw'][2]['id'])

@@ -34,10 +34,10 @@ class UseCards(FrameBase):
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_INCORRECT_INTERFACE,
                    }
-        if not 'cards' in args:
-            args['cards'] = []
-        cards = self.game_control.cards_by_ids(args['cards'])
-        check_owner(self.player, cards)
+        cards = []
+        if 'use' in args:
+            cards = self.game_control.cards_by_ids(args['use'])
+            check_owner(self.player, cards)
 
         import card
         with card.InUseStatusRestore(cards):
@@ -90,8 +90,10 @@ class PlayCards(FrameBase):
         return [self.player]
 
     def react(self, args):
-        cards = self.game_control.cards_by_ids(args['play'])
-        check_owner(self.player, cards)
+        cards = []
+        if 'play' in args:
+            cards = self.game_control.cards_by_ids(args['play'])
+            check_owner(self.player, cards)
         method = args['method']
         if not method in self.methods:
             raise ValueError('no such method')

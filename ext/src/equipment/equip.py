@@ -9,7 +9,7 @@ def equip(player, game_control, card):
     equipment_dict[card.name](player, game_control, card)
 
 def interface(game_control, args):
-    cards = game_control.cards_by_ids(args['cards'])
+    cards = game_control.cards_by_ids(args['use'])
     checking.cards_region(cards, 'cards')
     if len(cards) != 1:
         raise ValueError('wrong cards')
