@@ -1,0 +1,32 @@
+<html>
+<head><title>SGS</title></head>
+<script>
+function post_act(data, on_sent) {
+    var req = null;
+    try {
+        if (window.XMLHttpRequest) {
+            req = new XMLHttpRequest();
+        } else {
+            req = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+    } catch (e) {
+        alert('Browser not support AJAX!');
+        return;
+    }
+    req.open('POST', '/act', true);
+    req.onreadystatechange = function() {
+        if (req.readyState == 4) {
+            on_sent(req);
+        }
+    }
+    req.send(data);
+}
+
+function send() {
+    post_act('123', function(req) {
+        alert(req.responseText);
+    });
+}
+</script>
+<body>
+<button onclick='send()'>Send</button>
