@@ -1,19 +1,23 @@
+from action_frames import FrameBase
+
 class ActionStack:
     def __init__(self):
-        class DummyFrame:
-            def resume(self):
-                pass
-        self.frames = [DummyFrame()]
+        self.frames = [FrameBase(None)]
 
     def push(self, frame):
         self.frames.append(frame)
+        frame.activated()
 
     def call(self, args):
         return self.frames[-1].react(args)
 
-    def pop(self):
-        self.frames.pop()
-        self.frames[-1].resume()
+    def pop(self, result):
+        stack_top = self.frames.pop()
+        stack_top.destructed()
+        self.frames[-1].resume(result)
 
     def allowed_players(self):
         return self.frames[-1].allowed_players()
+
+    def hint(self, token):
+        return self.frames[-1].hint(token)

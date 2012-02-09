@@ -4,7 +4,7 @@ from core.src.action_stack import ActionStack
 import core.src.card as card
 import core.src.ret_code as ret_code
 from ext.src.players_control import PlayersControl
-from ext.src.player import Player
+from ext.test.fake_player import Player
 
 from test_common import *
 import test_data
@@ -67,7 +67,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 # slash                 | 6    | 11 | SPADE
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [0],
                       })
 assert_eq(ret_code.OK, result['code'])
@@ -123,7 +123,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 # slash                 | 6    | 11 | SPADE
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [2],
                       })
 assert_eq(ret_code.OK, result['code'])
@@ -179,7 +179,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 # slash                 | 6    | 11 | SPADE
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [1],
                       })
 assert_eq(ret_code.OK, result['code'])
@@ -241,7 +241,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 # slash                 | 6    | 11 | SPADE
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'give up',
+                          'action': 'abort',
                       })
 assert_eq(ret_code.OK, result['code'])
 
@@ -275,7 +275,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 # slash                 | 6    | 11 | SPADE
 result = gc.player_act({
                           'token': players[1].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [4],
                       })
 assert_eq(ret_code.OK, result['code'])
@@ -310,7 +310,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 # slash                 | 6    | 11 | SPADE
 result = gc.player_act({
                           'token': players[1].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [5],
                       })
 assert_eq(ret_code.OK, result['code'])
@@ -345,7 +345,7 @@ assert_eq(2, gc.distance_between(players[2], players[1]))
 # slash                 | 6    | 11 | SPADE
 result = gc.player_act({
                           'token': players[1].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [6],
                       })
 assert_eq(ret_code.OK, result['code'])

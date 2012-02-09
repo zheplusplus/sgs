@@ -4,7 +4,7 @@ from core.src.action_stack import ActionStack
 import core.src.card as card
 import core.src.ret_code as ret_code
 from ext.src.players_control import PlayersControl
-from ext.src.player import Player
+from ext.test.fake_player import Player
 
 from test_common import *
 import test_data
@@ -17,14 +17,14 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
             test_data.CardInfo('slash', 4, card.HEART),
 
             test_data.CardInfo('steal', 5, card.CLUB),
-            test_data.CardInfo('fire attack', 6, card.HEART),
+            test_data.CardInfo('arson attack', 6, card.HEART),
             test_data.CardInfo('dodge', 7, card.HEART),
             test_data.CardInfo('duel', 8, card.HEART),
 
             test_data.CardInfo('slash', 9, card.SPADE),
             test_data.CardInfo('slash', 10, card.CLUB),
 
-            test_data.CardInfo('fire attack', 11, card.CLUB),
+            test_data.CardInfo('arson attack', 11, card.CLUB),
             test_data.CardInfo('dodge', 12, card.HEART),
      ])), pc, ActionStack())
 players = [Player(91, 8), Player(1729, 8)]
@@ -44,7 +44,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 # slash        | 10   | 9  | CLUB
 
 # steal        | 5    | 4  | CLUB
-# fire attack  | 6    | 5  | HEART
+# arson attack | 6    | 5  | HEART
 # dodge        | 7    | 6  | HEART
 # duel         | 8    | 7  | HEART
 result = gc.player_act({
@@ -73,7 +73,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -112,14 +112,14 @@ if True: # just indent for a nice appearance
 # slash        | 10   | 9  | CLUB
 
 # steal        | 5    | 4  | CLUB
-# fire attack  | 6    | 5  | HEART <- use this
+# arson attack | 6    | 5  | HEART <- use this
 # dodge        | 7    | 6  | HEART <- discard this
 # duel         | 8    | 7  | HEART
-# fire attack  | 11   | 10 | CLUB
+# arson attack | 11   | 10 | CLUB
 # dodge        | 12   | 11 | HEART
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'fire attack',
+                           'action': 'arson attack',
                            'targets': [players[0].player_id],
                            'use': [5],
                        })
@@ -127,7 +127,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'show': [2],
+                           'discard': [2],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -135,6 +135,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until show a card
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [6],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -174,7 +175,7 @@ if True: # just indent for a nice appearance
 
 # steal        | 5    | 4  | CLUB
 # duel         | 8    | 7  | HEART <- use this
-# fire attack  | 11   | 10 | CLUB
+# arson attack | 11   | 10 | CLUB
 # dodge        | 12   | 11 | HEART
 result = gc.player_act({
                            'token': players[1].token,
@@ -187,7 +188,7 @@ assert_eq(ret_code.OK, result['code'])
 last_event_id = len(gc.get_events(players[0].token, 0)) # until duel
 result = gc.player_act({
                            'token': players[0].token,
-                           'method': 'give up',
+                           'method': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -212,11 +213,11 @@ assert_eq(p0_events, p1_events)
 # slash        | 10   | 9  | CLUB
 
 # steal        | 5    | 4  | CLUB <- steal rattan armor
-# fire attack  | 11   | 10 | CLUB
+# arson attack | 11   | 10 | CLUB
 # dodge        | 12   | 11 | HEART
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [4],
                        })
@@ -224,7 +225,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'steal': 'armor',
+                           'region': 'armor',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -238,7 +239,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until steal
 # slash        | 10   | 9  | CLUB
 
 # rattan armor | 2    | 1  | SPADE <- equipped
-# fire attack  | 11   | 10 | CLUB
+# arson attack | 11   | 10 | CLUB
 # dodge        | 12   | 11 | HEART
 result = gc.player_act({
                            'token': players[1].token,
@@ -275,11 +276,11 @@ if True: # just indent for a nice appearance
 # slash        | 10   | 9  | CLUB
 
 # rattan armor | 2    | 1  | SPADE <- equipped
-# fire attack  | 11   | 10 | CLUB <- use this
+# arson attack | 11   | 10 | CLUB <- use this
 # dodge        | 12   | 11 | HEART <- discard this
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'fire attack',
+                           'action': 'arson attack',
                            'targets': [players[0].player_id],
                            'use': [10],
                        })
@@ -287,7 +288,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'show': [2],
+                           'discard': [2],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -295,6 +296,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until show a card
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [11],
                        })
 assert_eq(ret_code.OK, result['code'])

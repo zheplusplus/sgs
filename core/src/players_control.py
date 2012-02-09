@@ -4,6 +4,9 @@ class PlayersControl:
         self.current_pid = 0
         self.token_index = dict()
 
+    def start(self, game_control):
+        for player in self.players: player.start(game_control)
+
     def add_player(self, player):
         player.player_id = len(self.players)
         self.players.append(player)

@@ -14,31 +14,51 @@ player0.player_id = 0
 player1 = fake_player.Player(112)
 player1.player_id = 1
 
+evt = event.GameInit([player1, player0])
+assert_eq({
+    91: 0,
+    112: 1,
+    'type': 'GameInit',
+}, evt.as_log())
+assert_eq({
+    'players': 2,
+    'position': 0,
+    'type': 'GameInit',
+}, evt.serialize(player0.token))
+assert_eq({
+    'players': 2,
+    'position': 1,
+    'type': 'GameInit',
+}, evt.serialize(player1.token))
+
 evt = event.DrawCards(player0, cards)
 assert_eq({
-              'type': 'DrawCards',
-              'player': player0.player_id,
-              'draw': [
-                          {
-                              'id': 0,
-                              'name': 'slash',
-                              'rank': 1,
-                              'suit': 1,
-                          },
-                          {
-                              'id': 1,
-                              'name': 'dodge',
-                              'rank': 2,
-                              'suit': 2,
-                          },
-                          {
-                              'id': 2,
-                              'name': 'slash',
-                              'rank': 3,
-                              'suit': 1,
-                          },
-                      ],
-          }, evt.as_log())
+    'type': 'DrawCards',
+    'player': player0.player_id,
+    'draw': [
+        {
+            'id': 0,
+            'name': 'slash',
+            'rank': 1,
+            'suit': 1,
+            'region': 'cardpool',
+        },
+        {
+            'id': 1,
+            'name': 'dodge',
+            'rank': 2,
+            'suit': 2,
+            'region': 'cardpool',
+        },
+        {
+            'id': 2,
+            'name': 'slash',
+            'rank': 3,
+            'suit': 1,
+            'region': 'cardpool',
+        },
+    ],
+}, evt.as_log())
 assert_eq(evt.as_log(), evt.serialize(player0.token))
 assert_eq({
               'type': 'DrawCards',
@@ -46,9 +66,9 @@ assert_eq({
               'draw': 3,
           }, evt.serialize(player1.token))
 
-[c.set_region('cards') for c in cards]
+for c in cards: c.set_region('onhand')
 evt = event.DiscardCards(player0, cards)
-[c.set_region('cardpool') for c in cards]
+for c in cards: c.set_region('cardpool')
 assert_eq({
               'type': 'DiscardCards',
               'player': player0.player_id,
@@ -58,21 +78,21 @@ assert_eq({
                                  'name': 'slash',
                                  'rank': 1,
                                  'suit': 1,
-                                 'region': 'cards',
+                                 'region': 'onhand',
                              },
                              {
                                  'id': 1,
                                  'name': 'dodge',
                                  'rank': 2,
                                  'suit': 2,
-                                 'region': 'cards',
+                                 'region': 'onhand',
                              },
                              {
                                  'id': 2,
                                  'name': 'slash',
                                  'rank': 3,
                                  'suit': 1,
-                                 'region': 'cards',
+                                 'region': 'onhand',
                              },
                          ],
           }, evt.as_log())
@@ -85,19 +105,19 @@ assert_eq({
                                  'name': 'slash',
                                  'rank': 1,
                                  'suit': 1,
-                                 'region': 'cards',
+                                 'region': 'onhand',
                              },
                              {
                                  'name': 'dodge',
                                  'rank': 2,
                                  'suit': 2,
-                                 'region': 'cards',
+                                 'region': 'onhand',
                              },
                              {
                                  'name': 'slash',
                                  'rank': 3,
                                  'suit': 1,
-                                 'region': 'cards',
+                                 'region': 'onhand',
                              },
                          ],
           }, evt.serialize(player1.token))
@@ -105,55 +125,61 @@ assert_eq({
 evt = event.UseCardsForPlayers(player0, [player0.player_id, player1.player_id],
                                'test', cards)
 assert_eq({
-              'type': 'UseCardsForPlayers',
-              'user': player0.player_id,
-              'targets': [player0.player_id, player1.player_id],
-              'action': 'test',
-              'use': [
-                         {
-                             'id': 0,
-                             'name': 'slash',
-                             'rank': 1,
-                             'suit': 1,
-                         },
-                         {
-                             'id': 1,
-                             'name': 'dodge',
-                             'rank': 2,
-                             'suit': 2,
-                         },
-                         {
-                             'id': 2,
-                             'name': 'slash',
-                             'rank': 3,
-                             'suit': 1,
-                         },
-                     ],
-          }, evt.as_log())
+    'type': 'UseCardsForPlayers',
+    'user': player0.player_id,
+    'targets': [player0.player_id, player1.player_id],
+    'action': 'test',
+    'use': [
+        {
+            'id': 0,
+            'name': 'slash',
+            'rank': 1,
+            'suit': 1,
+            'region': 'cardpool',
+        },
+        {
+            'id': 1,
+            'name': 'dodge',
+            'rank': 2,
+            'suit': 2,
+            'region': 'cardpool',
+        },
+        {
+            'id': 2,
+            'name': 'slash',
+            'rank': 3,
+            'suit': 1,
+            'region': 'cardpool',
+        },
+    ],
+}, evt.as_log())
 assert_eq(evt.as_log(), evt.serialize(player0.token))
 assert_eq({
-              'type': 'UseCardsForPlayers',
-              'user': player0.player_id,
-              'targets': [player0.player_id, player1.player_id],
-              'action': 'test',
-              'use': [
-                         {
-                             'name': 'slash',
-                             'rank': 1,
-                             'suit': 1,
-                         },
-                         {
-                             'name': 'dodge',
-                             'rank': 2,
-                             'suit': 2,
-                         },
-                         {
-                             'name': 'slash',
-                             'rank': 3,
-                             'suit': 1,
-                         },
-                     ],
-          }, evt.serialize(player1.token))
+    'type': 'UseCardsForPlayers',
+    'user': player0.player_id,
+    'targets': [player0.player_id, player1.player_id],
+    'action': 'test',
+    'use': [
+        {
+            'name': 'slash',
+            'rank': 1,
+            'suit': 1,
+            'region': 'cardpool',
+        },
+        {
+            'name': 'dodge',
+            'rank': 2,
+            'suit': 2,
+            'region': 'cardpool',
+        },
+        {
+            'name': 'slash',
+            'rank': 3,
+            'suit': 1,
+            'region': 'cardpool',
+        },
+    ],
+}, evt.serialize(player1.token))
 
 evt = event.PlayCards(player0, cards)
 assert_eq({
@@ -165,18 +191,21 @@ assert_eq({
                               'name': 'slash',
                               'rank': 1,
                               'suit': 1,
+                              'region': 'cardpool',
                           },
                           {
                               'id': 1,
                               'name': 'dodge',
                               'rank': 2,
                               'suit': 2,
+                              'region': 'cardpool',
                           },
                           {
                               'id': 2,
                               'name': 'slash',
                               'rank': 3,
                               'suit': 1,
+                              'region': 'cardpool',
                           },
                       ],
           }, evt.as_log())
@@ -189,16 +218,19 @@ assert_eq({
                               'name': 'slash',
                               'rank': 1,
                               'suit': 1,
+                              'region': 'cardpool',
                           },
                           {
                               'name': 'dodge',
                               'rank': 2,
                               'suit': 2,
+                              'region': 'cardpool',
                           },
                           {
                               'name': 'slash',
                               'rank': 3,
                               'suit': 1,
+                              'region': 'cardpool',
                           },
                       ],
           }, evt.serialize(player1.token))
@@ -212,16 +244,19 @@ assert_eq({
                               'name': 'slash',
                               'rank': 1,
                               'suit': 1,
+                              'region': 'cardpool',
                           },
                           {
                               'name': 'dodge',
                               'rank': 2,
                               'suit': 2,
+                              'region': 'cardpool',
                           },
                           {
                               'name': 'slash',
                               'rank': 3,
                               'suit': 1,
+                              'region': 'cardpool',
                           },
                       ],
           }, evt.as_log())
@@ -267,6 +302,7 @@ assert_eq({
                            'name': 'zhangba serpent spear',
                            'rank': 12,
                            'suit': 1,
+                           'region': 'cardpool',
                        }
           }, evt.as_log())
 assert_eq(evt.as_log(), evt.serialize(player0.token))
@@ -278,6 +314,7 @@ assert_eq({
                            'name': 'zhangba serpent spear',
                            'rank': 12,
                            'suit': 1,
+                           'region': 'cardpool',
                        }
           }, evt.serialize(player1.token))
 
@@ -291,6 +328,7 @@ assert_eq({
                              'name': 'zhangba serpent spear',
                              'rank': 12,
                              'suit': 1,
+                             'region': 'cardpool',
                          }
           }, evt.as_log())
 assert_eq({
@@ -301,6 +339,7 @@ assert_eq({
                              'name': 'zhangba serpent spear',
                              'rank': 12,
                              'suit': 1,
+                             'region': 'cardpool',
                          }
           }, evt.serialize(player0.token))
 assert_eq(evt.serialize(player1.token), evt.serialize(player0.token))

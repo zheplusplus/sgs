@@ -26,12 +26,38 @@ class EventList:
     def add(self, event):
         self.events.append(event)
 
+class GameInit(Event):
+    def __init__(self, players):
+        self.players_map = { p.token: p.player_id for p in players }
+
+    def _as_log(self):
+        return self.players_map.copy()
+
+    def _serialize(self, token):
+        s = { 'players': len(self.players_map) }
+        if token in self.players_map:
+            s['position'] = self.players_map[token]
+        return s
+
+class SelectCharacter(Event):
+    def __init__(self, player, character):
+        self.player = player
+        self.character = character
+
+    def _as_log(self):
+        return {
+            'player': self.player.player_id,
+            'character': self.character.name,
+            'max vigor': self.player.max_vigor,
+        }
+
 def card_to_msg(c):
     return {
-               'name': c.name,
-               'rank': c.rank,
-               'suit': c.suit,
-           }
+        'name': c.name,
+        'rank': c.rank,
+        'suit': c.suit,
+        'region': c.region,
+    }
 
 def card_to_msg_include_id(c):
     msg = card_to_msg(c)
@@ -54,10 +80,22 @@ def add_region_formatter(formatter):
         return msg
     return f
 
+class CardStub:
+    @staticmethod
+    def stub(cards):
+        return map(CardStub, cards)
+
+    def __init__(self, card):
+        self.card_id = card.card_id
+        self.name = card.base_name
+        self.rank = card.base_rank
+        self.suit = card.base_suit
+        self.region = card.region
+
 class DrawCards(Event):
     def __init__(self, player, cards):
         self.player = player
-        self.cards = cards
+        self.cards = CardStub.stub(cards)
 
     def _serialize(self, player_token):
         if player_token == self.player.token:
@@ -73,19 +111,10 @@ class DrawCards(Event):
             'draw': cards_to_msg_include_id(self.cards),
         }
 
-class CardStub:
-    def __init__(self, card_id, name, rank, suit, region):
-        self.card_id = card_id
-        self.name = name
-        self.rank = rank
-        self.suit = suit
-        self.region = region
-
 class DiscardCards(Event):
     def __init__(self, player, cards):
         self.player = player
-        self.cards = [CardStub(c.card_id, c.name, c.rank, c.suit, c.region)
-                                for c in cards]
+        self.cards = CardStub.stub(cards)
 
     def _serialize(self, player_token):
         if player_token == self.player.token:
@@ -118,8 +147,7 @@ class PrivateCardsTransfer(CardsTransferBase):
     def __init__(self, source, target, cards):
         self.source = source
         self.target = target
-        self.cards = [CardStub(c.card_id, c.name, c.rank, c.suit, c.region)
-                                for c in cards]
+        self.cards = CardStub.stub(cards)
 
     def _serialize(self, player_token):
         if player_token in (self.source.token, self.target.token):
@@ -134,8 +162,7 @@ class PublicCardsTransfer(CardsTransferBase):
     def __init__(self, source, target, cards):
         self.source = source
         self.target = target
-        self.cards = [CardStub(c.card_id, c.name, c.rank, c.suit, c.region)
-                                for c in cards]
+        self.cards = CardStub.stub(cards)
 
     def _serialize(self, player_token):
         if player_token in (self.source.token, self.target.token):
@@ -152,7 +179,7 @@ class UseCardsForPlayers(Event):
         self.user = user
         self.targets_ids = targets_ids
         self.action = action
-        self.cards = cards
+        self.cards = CardStub.stub(cards)
 
     def _serialize(self, player_token):
         if player_token == self.user.token:
@@ -175,7 +202,7 @@ class UseCardsForPlayers(Event):
 class PlayCards(Event):
     def __init__(self, player, cards):
         self.player = player
-        self.cards = cards
+        self.cards = CardStub.stub(cards)
 
     def _serialize(self, player_token):
         if player_token == self.player.token:
@@ -194,7 +221,7 @@ class PlayCards(Event):
 class ShowCards(Event):
     def __init__(self, player, cards):
         self.player = player
-        self.cards = cards
+        self.cards = CardStub.stub(cards)
 
     def _as_log(self):
         return {
@@ -240,7 +267,7 @@ class VigorRegain(Event):
 class Equip(Event):
     def __init__(self, player, card, region):
         self.player = player
-        self.card = card
+        self.card = CardStub(card)
         self.region = region
 
     def _serialize(self, player_token):
@@ -262,7 +289,7 @@ class Equip(Event):
 class Unequip(Event):
     def __init__(self, player, card, region):
         self.player = player
-        self.card = card
+        self.card = CardStub(card)
         self.region = region
 
     def _serialize(self, player_token):

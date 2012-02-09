@@ -1,14 +1,15 @@
 import core.src.ret_code as ret_code
-from core.src.action_frames import FrameBase
+from core.src.action_frames import FrameBase, CardsTargetFrame
 import ext.src.common_checking as checking
+import ext.src.wrappers as wrappers
 
 class _BequeathedStrategyAfterDamage(FrameBase):
     def __init__(self, game_control, damage):
-        FrameBase.__init__(self, game_control, lambda gc, a: damage.resume())
+        FrameBase.__init__(self, game_control)
         self.damage = damage
         self.times = damage.point
 
-    def resume(self):
+    def activated(self):
         if self.times == 0:
             return self.done(None)
         self.times -= 1
@@ -17,40 +18,66 @@ class _BequeathedStrategyAfterDamage(FrameBase):
                         self.game_control, self.damage.victim,
                         self.game_control.deal_cards(self.damage.victim, 2)))
 
-class _BequeathedStrategyTransferCards(FrameBase):
+    def resume(self, r):
+        self.activated()
+
+    def destructed(self):
+        self.damage.resume()
+
+class _BequeathedStrategyTransferCards(CardsTargetFrame):
     def __init__(self, game_control, source, cards):
-        FrameBase.__init__(self, game_control, self.finished)
-        self.source = source
+        CardsTargetFrame.__init__(self, game_control, source)
         self.cards = cards
         for c in self.cards: c.set_region('bequeathed strategy')
-        self.rest = len(cards)
-
-    def allowed_players(self):
-        return [self.source]
+        self._update_hint()
 
     def react(self, args):
-        cards = self.game_control.cards_by_ids(args['transfer'])
-        if len(cards) == 0:
+        if args['action'] == 'abort':
             return self.done(None)
-        target = self.game_control.player_by_id(args['target'])
-        checking.forbid_target_self(self.source, target)
+        cards = self.game_control.cards_by_ids(args['use'])
+        if len(cards) == 0:
+            raise ValueError('bad cards')
+        targets_ids = args['targets']
+        checking.only_one_target(targets_ids)
+        target = self.game_control.player_by_id(targets_ids[0])
+        checking.forbid_target_self(self.player, target)
         checking.cards_region(cards, 'bequeathed strategy')
-        self.game_control.private_cards_transfer(self.source, target, cards)
-        self.rest -= len(cards)
-        if self.rest == 0:
+
+        for c in cards: c.set_region('onhand')
+        self.game_control.private_cards_transfer(self.player, target, cards)
+        self.cards = [c for c in self.cards if c not in cards]
+        self._update_hint()
+        if len(self.cards) == 0:
             return self.done(None)
         return { 'code': ret_code.OK }
 
-    def finished(self, gc, a):
-        for c in self.cards: c.set_region('cards')
+    def destructed(self):
+        for c in self.cards: c.set_region('onhand')
+
+    def _update_hint(self):
+        self.clear_hint()
+        targets = self.game_control.players_from_current()
+        targets.remove(self.player)
+        hint = {
+            'bequeathed strategy': {
+                'require': ['fix target', 'min card count'],
+                'target count': 1,
+                'targets': map(lambda p: p.player_id, targets),
+                'cards': map(lambda c: c.card_id, self.cards),
+                'card count': 1,
+            }
+        }
+        self.set_hint_category('methods', hint)
+        self.add_abort()
+
+    def _hint_action(self, token):
+        return 'use'
 
 def add_to(player):
-    player.actions_after_damaged['character']['ability'] = bequeathed_strategy
+    player.after_damaged_char = bequeathed_strategy
 
-def bequeathed_strategy(damage, game_control):
-    damage.interrupt(lambda: _push_bequeathed_strategy(game_control, damage))
-
-def _push_bequeathed_strategy(game_control, damage):
-    frame = _BequeathedStrategyAfterDamage(game_control, damage)
-    game_control.push_frame(frame)
-    frame.resume()
+@wrappers.alive
+@wrappers.as_damage_victim
+def bequeathed_strategy(player, damage, game_control):
+    damage.interrupt(lambda: game_control.push_frame(
+                        _BequeathedStrategyAfterDamage(game_control, damage)))

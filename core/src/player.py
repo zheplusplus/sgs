@@ -1,9 +1,7 @@
 class Player:
-    def __init__(self, token, max_vigor, responses_dict):
+    def __init__(self, token, responses_dict):
         self.token = token
         self.alive = True
-        self.max_vigor = max_vigor
-        self.vigor = max_vigor
         self.responses = responses_dict
         self.equipment = dict()
         self.cw_positive_dist_mod = 0
@@ -14,12 +12,14 @@ class Player:
     def draw_cards(self, game_control, cnt):
         game_control.deal_cards(self, cnt)
 
-    def response_frame(self, action, game_control, on_result):
-        return self.responses[action].response(game_control, self, on_result)
+    def response_frame(self, action, game_control):
+        return self.responses[action].response(game_control, self)
 
     def equip(self, game_control, card, region, on_remove):
         if region in self.equipment:
-            game_control.recycle_cards([self.unequip(game_control, region)])
+            unequipped = self.unequip(game_control, region)
+            unequipped.set_region('unequipped')
+            game_control.recycle_cards([unequipped])
         card.set_region(region)
         def rm_func():
             on_remove(game_control, self, card)
@@ -33,4 +33,11 @@ class Player:
         return self.unequip(game_control, region)
 
     def unequip(self, game_control, region):
-        return game_control.unequip(self, self.equipment[region](), region)
+        card = game_control.unequip(self, self.equipment[region](), region)
+        del self.equipment[region]
+        return card
+
+    def all_regions(self):
+        regions = ['onhand']
+        regions.extend(list(self.equipment))
+        return regions

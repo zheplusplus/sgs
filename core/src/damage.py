@@ -15,6 +15,7 @@ class Damage:
         self.after_damage_actions = after_damage_actions
         self.affix = []
         self.act_index = 0
+        self.cleaners = []
 
     def add_affix(self, affix):
         self.affix.append(affix)
@@ -58,10 +59,16 @@ class Damage:
             i.after_interrupted()
 
     def start_affix(self, game_control):
-        try:
-            while 0 < len(self.affix):
-                act = self.affix[-1]
-                self.affix.pop()
-                act(self, game_control)
-        except _DamageInterrupted, i:
-            i.after_interrupted()
+        while 0 < len(self.affix):
+            act = self.affix[-1]
+            self.affix.pop()
+            act(self, game_control)
+        self.clean(game_control)
+
+    def add_cleaner(self, c):
+        self.cleaners.append(c)
+        return self
+
+    def clean(self, game_control):
+        for c in self.cleaners:
+            c(self, game_control)
