@@ -1,4 +1,4 @@
 import server
 
-if '__main__' == __name__:
+def main():
     server.start()

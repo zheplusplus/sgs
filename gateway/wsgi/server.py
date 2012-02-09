@@ -1,32 +1,33 @@
 import os
 from wsgiref.simple_server import make_server
 
+import game
+
 def start():
     make_server('', 8000, app).serve_forever()
 
-def response_ok(start_response):
-    start_response('200 OK', [('Content-type', 'text/plain')])
-
-def response_bad_request(start_response):
-    start_response('400 Bad Request', [('Content-type', 'text/plain')])
+def plain_headers():
+    return [('Content-type', 'text/plain')]
+RESPONSE_MAPPING = {
+                       200: lambda sr: sr('200 OK', plain_headers()),
+                       400: lambda sr: sr('400 Bad Request', plain_headers()),
+                       404: lambda sr: sr('404 Not Found', plain_headers()),
+                   }
 
 def app(env, start_response):
     path = env['PATH_INFO']
     if '/' == path:
-        response_ok(start_response)
+        start_response('200 OK', [('Content-type', 'text/html')])
         return read_index()
-    if '/act' == path:
-        response_body = ''
-        try:
-            request_body_size = int(env['CONTENT_LENGTH'])
-            request_body = env['wsgi.input'].read(request_body_size)
-            response_ok(start_response)
-        except Exception, e:
-            response_bad_request(start_response)
-            request_body = e.message
-        return [response_body]
-    start_response('404 Not Found', [('content-type', 'text/html')])
-    return []
+    try:
+        request_body_size = int(env['CONTENT_LENGTH'])
+        request_body = env['wsgi.input'].read(request_body_size)
+        response = game.game_room.response(path, request_body)
+        RESPONSE_MAPPING[response['code']](start_response)
+        return [str(response)]
+    except Exception, e:
+        RESPONSE_MAPPING[400](start_response)
+        return [e.message]
 
 def read_index():
     path = os.path.join(os.path.dirname(__file__), 'htmls/index.html')

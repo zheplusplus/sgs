@@ -13,7 +13,7 @@ function post_act(data, on_sent) {
         alert('Browser not support AJAX!');
         return;
     }
-    req.open('POST', '/act', true);
+    req.open('POST', document.getElementById('url').value, true);
     req.onreadystatechange = function() {
         if (req.readyState == 4) {
             on_sent(req);
@@ -23,10 +23,16 @@ function post_act(data, on_sent) {
 }
 
 function send() {
-    post_act('123', function(req) {
-        alert(req.responseText);
+    post_act(document.getElementById('request').value, function(req) {
+        document.getElementById('receive').innerHTML +=
+                                            (req.responseText + '<br>');
     });
 }
 </script>
 <body>
+<p>
+Request: <textarea id='request'></textarea><br>
+URL: <input id='url'/>
 <button onclick='send()'>Send</button>
+</p>
+<p id='receive'/>
