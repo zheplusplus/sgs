@@ -3,6 +3,7 @@ import core.src.action_frames as frames
 from player_using_cards import get_using_cards_interface_map
 import common_checking as checking
 import player_response as response
+import characters
 
 STARTDEAL = 4
 ROUNDDEAL = 2
@@ -21,6 +22,7 @@ class Player(CorePlayer):
         self.computing_before_damaged = []
         self.actions_after_damaging = Player._damage_actions_dict()
         self.actions_after_damaged = Player._damage_actions_dict()
+        self.character = characters.DEFAULT
 
     @staticmethod
     def _damage_actions_dict():

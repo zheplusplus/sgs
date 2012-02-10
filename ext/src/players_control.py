@@ -51,13 +51,10 @@ class PlayersControl(CorePlayersControl):
         return CorePlayersControl.add_player(self, player)
 
     def start(self, game_control):
-        from ext.src.characters import *
-        CHARACTERS = [GUO_JIA, ZHANG_CHUNHUA, ZHAO_YUN, GUAN_YU, HUANG_YUEYING,
-                      HUANG_YUEYING, MA_CHAO, WEI_YAN]
-        for i in range(0, len(self.players)):
-            CHARACTERS[i].select(self.players[i])
+        for p in self.players:
+            p.character.select(p)
         game_control.characters_selected(self.players)
-        for player in self.players: player.start(game_control)
+        CorePlayersControl.start(self, game_control)
 
     def next_player(self):
         self.current_pid = (self.current_pid + 1) % len(self.players)

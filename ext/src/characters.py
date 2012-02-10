@@ -11,6 +11,8 @@ class Character:
         player.character_name = self.name
         for s in self.skills: s.add_to(player)
 
+DEFAULT = Character('Default', [])
+
 GUO_JIA = Character('Guo Jia', [bequeathed_strategy])
 ZHANG_CHUNHUA = Character('Zhang Chunhua', [merciless])
 
