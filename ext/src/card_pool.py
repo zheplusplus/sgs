@@ -71,12 +71,12 @@ class CardPool:
             self.player_id_to_owning_cards[player.player_id] = []
 
 def all_cards():
-    card_id = 0
-    class CardGenerator:
+    class CardsGenerator:
         def __init__(self, suit):
             self.suit = suit
             self.rank = 0
             self.cards = []
+            self.cid = 0
 
         def set_suit(self, suit):
             self.suit = suit
@@ -87,193 +87,193 @@ def all_cards():
             return self
 
         def add_card(self, name):
-            self.cards.append(card.Card(card_id, name, self.rank, self.suit))
+            self.cards.append(card.Card(self.cid, name, self.rank, self.suit))
             self.rank += 1
-            card_id += 1
+            self.cid += 1
             return self
 
         def add_certain_card(self, name, rank, suit):
-            self.cards.append(card.Card(card_id, name, rank, suit))
-            card_id += 1
+            self.cards.append(card.Card(self.cid, name, rank, suit))
+            self.cid += 1
             return self
 
         def add_cards(self, names):
             for name in names: self.add_card(name)
             return self
-    return CardGenerator(card.SPADE
-                         ).add_cards([
-                                         '1',
-                                         '2',
-                                         'steal',
-                                         'steal',
-                                         '+jueying',
-                                         '6',
-                                         '7',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'steal',
-                                         'sabotage',
-                                         '-dawan',
-           ]).reset_rank().add_cards([
-                                         'duel',
-                                         '2',
-                                         'sabotage',
-                                         'sabotage',
-                                         '5',
-                                         '6',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         '11',
-                                         'zhangba_serpent_spear',
-                                         '13',
-           ]).reset_rank().add_cards([
-                                         '1',
-                                         'rattan armor',
-                                         '3',
-                                         '4',
-                                         '5',
-                                         '6',
-                                         '7',
-                                         '8',
-                                         '9',
-                                         '10',
-                                         '11',
-                                         '12',
-                                         '13',
-           ]).set_suit(card.HEART
-            ).reset_rank().add_cards([
-                                         '1',
-                                         'dodge',
-                                         'peach',
-                                         'peach',
-                                         '-chitu',
-                                         'peach',
-                                         'peach',
-                                         'peach',
-                                         'peach',
-                                         'slash',
-                                         'slash',
-                                         'peach',
-                                         'dodge',
-           ]).reset_rank().add_cards([
-                                         '1',
-                                         'dodge',
-                                         '3',
-                                         '4',
-                                         '5',
-                                         '6',
-                                         '7',
-                                         '8',
-                                         '9',
-                                         'slash',
-                                         '11',
-                                         'sabotage',
-                                         '+zhuahuangfeidian',
-           ]).reset_rank().add_cards([
-                                         '1',
-                                         'fire attack',
-                                         'fire attack',
-                                         '4',
-                                         'peach',
-                                         'peach',
-                                         '7',
-                                         'dodge',
-                                         'dodge',
-                                         '10',
-                                         'dodge',
-                                         'dodge',
-                                         '13',
-           ]).set_suit(card.CLUB
-            ).reset_rank().add_cards([
-                                         'duel',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         '12',
-                                         '13',
-           ]).reset_rank().add_cards([
-                                         '1',
-                                         '2',
-                                         'sabotage',
-                                         'sabotage',
-                                         '+dilu',
-                                         '6',
-                                         '7',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         '12',
-                                         '13',
-           ]).reset_rank().add_cards([
-                                         '1',
-                                         'rattan armor',
-                                         '3',
-                                         '4',
-                                         '5',
-                                         '6',
-                                         '7',
-                                         '8',
-                                         '9',
-                                         '10',
-                                         '11',
-                                         '12',
-                                         '13',
-           ]).set_suit(card.DIAMOND
-            ).reset_rank().add_cards([
-                                         'duel',
-                                         'dodge',
-                                         'steal',
-                                         'steal',
-                                         '5',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'slash',
-                                         'dodge',
-                                         'peach',
-                                         'slash',
-           ]).reset_rank().add_cards([
-                                         '1',
-                                         'dodge',
-                                         'dodge',
-                                         'dodge',
-                                         'dodge',
-                                         'dodge',
-                                         'dodge',
-                                         'dodge',
-                                         'dodge',
-                                         'dodge',
-                                         'dodge',
-                                         '12',
-                                         '-zixing',
-           ]).reset_rank().add_cards([
-                                         '1',
-                                         'peach',
-                                         'peach',
-                                         '4',
-                                         '5',
-                                         'dodge',
-                                         'dodge',
-                                         'dodge',
-                                         '9',
-                                         'dodge',
-                                         'dodge',
-                                         'fire attack',
-                                         '+hualiu',
-                                     ]).add_certain_card('2', 2, card.SPADE
-                                      ).add_certain_card('Q', 12, card.HEART
-                                      ).add_certain_card('2', 2, card.CLUB
-                                      ).add_certain_card('Q', 12, card.DIAMOND
-                                      ).cards
+    return CardsGenerator(card.SPADE
+                          ).add_cards([
+                                          '1',
+                                          '2',
+                                          'steal',
+                                          'steal',
+                                          '+jueying',
+                                          '6',
+                                          '7',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'steal',
+                                          'sabotage',
+                                          '-dawan',
+            ]).reset_rank().add_cards([
+                                          'duel',
+                                          '2',
+                                          'sabotage',
+                                          'sabotage',
+                                          '5',
+                                          '6',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          '11',
+                                          'zhangba_serpent_spear',
+                                          '13',
+            ]).reset_rank().add_cards([
+                                          '1',
+                                          'rattan armor',
+                                          '3',
+                                          '4',
+                                          '5',
+                                          '6',
+                                          '7',
+                                          '8',
+                                          '9',
+                                          '10',
+                                          '11',
+                                          '12',
+                                          '13',
+            ]).set_suit(card.HEART
+             ).reset_rank().add_cards([
+                                          '1',
+                                          'dodge',
+                                          'peach',
+                                          'peach',
+                                          '-chitu',
+                                          'peach',
+                                          'peach',
+                                          'peach',
+                                          'peach',
+                                          'slash',
+                                          'slash',
+                                          'peach',
+                                          'dodge',
+            ]).reset_rank().add_cards([
+                                          '1',
+                                          'dodge',
+                                          '3',
+                                          '4',
+                                          '5',
+                                          '6',
+                                          '7',
+                                          '8',
+                                          '9',
+                                          'slash',
+                                          '11',
+                                          'sabotage',
+                                          '+zhuahuangfeidian',
+            ]).reset_rank().add_cards([
+                                          '1',
+                                          'fire attack',
+                                          'fire attack',
+                                          '4',
+                                          'peach',
+                                          'peach',
+                                          '7',
+                                          'dodge',
+                                          'dodge',
+                                          '10',
+                                          'dodge',
+                                          'dodge',
+                                          '13',
+            ]).set_suit(card.CLUB
+             ).reset_rank().add_cards([
+                                          'duel',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          '12',
+                                          '13',
+            ]).reset_rank().add_cards([
+                                          '1',
+                                          '2',
+                                          'sabotage',
+                                          'sabotage',
+                                          '+dilu',
+                                          '6',
+                                          '7',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          '12',
+                                          '13',
+            ]).reset_rank().add_cards([
+                                          '1',
+                                          'rattan armor',
+                                          '3',
+                                          '4',
+                                          '5',
+                                          '6',
+                                          '7',
+                                          '8',
+                                          '9',
+                                          '10',
+                                          '11',
+                                          '12',
+                                          '13',
+            ]).set_suit(card.DIAMOND
+             ).reset_rank().add_cards([
+                                          'duel',
+                                          'dodge',
+                                          'steal',
+                                          'steal',
+                                          '5',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'slash',
+                                          'dodge',
+                                          'peach',
+                                          'slash',
+            ]).reset_rank().add_cards([
+                                          '1',
+                                          'dodge',
+                                          'dodge',
+                                          'dodge',
+                                          'dodge',
+                                          'dodge',
+                                          'dodge',
+                                          'dodge',
+                                          'dodge',
+                                          'dodge',
+                                          'dodge',
+                                          '12',
+                                          '-zixing',
+            ]).reset_rank().add_cards([
+                                          '1',
+                                          'peach',
+                                          'peach',
+                                          '4',
+                                          '5',
+                                          'dodge',
+                                          'dodge',
+                                          'dodge',
+                                          '9',
+                                          'dodge',
+                                          'dodge',
+                                          'fire attack',
+                                          '+hualiu',
+                                      ]).add_certain_card('2', 2, card.SPADE
+                                       ).add_certain_card('Q', 12, card.HEART
+                                       ).add_certain_card('2', 2, card.CLUB
+                                       ).add_certain_card('Q', 12, card.DIAMOND
+                                       ).cards

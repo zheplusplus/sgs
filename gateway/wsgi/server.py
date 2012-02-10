@@ -19,15 +19,11 @@ def app(env, start_response):
     if '/' == path:
         start_response('200 OK', [('Content-type', 'text/html')])
         return read_index()
-    try:
-        request_body_size = int(env['CONTENT_LENGTH'])
-        request_body = env['wsgi.input'].read(request_body_size)
-        response = game.game_room.response(path, request_body)
-        RESPONSE_MAPPING[response['code']](start_response)
-        return [str(response)]
-    except Exception, e:
-        RESPONSE_MAPPING[400](start_response)
-        return [e.message]
+    request_body_size = int(env['CONTENT_LENGTH'])
+    request_body = env['wsgi.input'].read(request_body_size)
+    response = game.game_room.response(path, request_body)
+    RESPONSE_MAPPING[response['code']](start_response)
+    return [str(response)]
 
 def read_index():
     path = os.path.join(os.path.dirname(__file__), 'htmls/index.html')

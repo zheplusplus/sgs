@@ -8,6 +8,7 @@ import core.src.card as card
 import core.src.ret_code as ret_code
 from ext.src.players_control import PlayersControl
 from ext.src.player import Player
+import ext.src.card_pool as card_pool
 import ext.src.skills.bequeathed_strategy as bequeathed_strategy
 import test_data
 
@@ -65,7 +66,9 @@ class GameRoom:
                        'reason': 'Need at least 2 players',
                    }
         pc = PlayersControl()
-        self.gc = GameControl(EventList(), card_pool, pc, ActionStack())
+        self.gc = GameControl(EventList(),
+                              card_pool.CardPool(card_pool.all_cards()),
+                              pc, ActionStack())
         for token in self.players_tokens: pc.add_player(Player(token, 4))
         self.gc.start()
         self.response = self.after_game_start
@@ -84,23 +87,3 @@ class GameRoom:
         return self.gc.player_act(args)
 
 game_room = GameRoom()
-card_pool = test_data.CardPool(test_data.gen_cards([
-       test_data.CardInfo('slash', 1, card.SPADE),
-       test_data.CardInfo('slash', 2, card.CLUB),
-       test_data.CardInfo('slash', 3, card.HEART),
-       test_data.CardInfo('slash', 4, card.HEART),
-
-       test_data.CardInfo('dodge', 5, card.HEART),
-       test_data.CardInfo('dodge', 6, card.HEART),
-       test_data.CardInfo('dodge', 7, card.HEART),
-       test_data.CardInfo('dodge', 8, card.HEART),
-
-       test_data.CardInfo('slash', 9, card.SPADE),
-       test_data.CardInfo('slash', 10, card.CLUB),
-       test_data.CardInfo('dodge', 11, card.HEART),
-       test_data.CardInfo('dodge', 12, card.HEART),
-       test_data.CardInfo('dodge', 13, card.HEART),
-       test_data.CardInfo('dodge', 1, card.DIAMOND),
-       test_data.CardInfo('dodge', 2, card.DIAMOND),
-       test_data.CardInfo('dodge', 3, card.DIAMOND),
-]))
