@@ -26,6 +26,16 @@ class EventList:
     def add(self, event):
         self.events.append(event)
 
+class GameStarted(Event):
+    def __init__(self, players):
+        self.players = players
+
+    def _as_log(self):
+        return { 'characters': map(lambda p: {
+                                                 'player_id': p.player_id,
+                                                 'character': p.character_name,
+                                             }, self.players) }
+
 def card_to_msg(c):
     return {
                'name': c.name,

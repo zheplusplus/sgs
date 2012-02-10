@@ -45,12 +45,18 @@ class GameRoom:
                    }
 
     def add_player(self, time, name):
-        token = sha256(name + str(time)).hexdigest()
-        self.players_tokens.append(token)
-        return {
-                   'code': ret_code.OK,
-                   'token': token,
-               }
+        try:
+            token = sha256(name + str(time)).hexdigest()
+            self.players_tokens.append(token)
+            return {
+                       'code': ret_code.OK,
+                       'token': token,
+                   }
+        except ValueError, e:
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': e.message,
+                   }
 
     def start(self):
         if len(self.players_tokens) < 2:

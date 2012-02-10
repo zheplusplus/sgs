@@ -10,9 +10,11 @@ class GameControl:
         self.action_stack = action_stack
 
     def start(self):
-        for player in self.players_control.players:
-            player.start(self)
+        self.players_control.start(self)
         self.players_control.current_player().round(self)
+
+    def characters_selected(self, players):
+        self._add_event(event.GameStarted(players))
 
     def next_round(self):
         self.players_control.next_player()

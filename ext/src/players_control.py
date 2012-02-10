@@ -45,6 +45,20 @@ class PlayersControl(CorePlayersControl):
     def __init__(self):
         CorePlayersControl.__init__(self)
 
+    def add_player(self, player):
+        if 8 == len(self.players):
+            raise ValueError('Room is full')
+        return CorePlayersControl.add_player(self, player)
+
+    def start(self, game_control):
+        from ext.src.characters import *
+        CHARACTERS = [GUO_JIA, ZHANG_CHUNHUA, ZHAO_YUN, GUAN_YU, HUANG_YUEYING,
+                      HUANG_YUEYING, MA_CHAO, WEI_YAN]
+        for i in range(0, len(self.players)):
+            CHARACTERS[i].select(self.players[i])
+        game_control.characters_selected(self.players)
+        for player in self.players: player.start(game_control)
+
     def next_player(self):
         self.current_pid = (self.current_pid + 1) % len(self.players)
         if None == self.current_player():
