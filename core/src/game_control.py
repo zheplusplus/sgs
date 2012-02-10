@@ -26,8 +26,8 @@ class GameControl:
 
     def player_act(self, args):
         try:
-            if not args['token'] in map(
-                    lambda p: p.token, self.action_stack.allowed_players()):
+            if not args['token'] in map(lambda p: p.token,
+                                        self.action_stack.allowed_players()):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_PLAYER_FORBID,
@@ -43,6 +43,13 @@ class GameControl:
                        'code': ret_code.BAD_REQUEST,
                        'reason': ret_code.BR_WRONG_ARG % e.message,
                    }
+
+    def hint(self):
+        return {
+                   'players': map(lambda p: p.player_id,
+                                  self.action_stack.allowed_players()),
+                   'action': self.action_stack.hint(),
+               }
 
     def push_frame(self, frame):
         self.action_stack.push(frame)

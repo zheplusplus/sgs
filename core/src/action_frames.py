@@ -13,6 +13,9 @@ class FrameBase:
     def resume(self):
         pass
 
+    def hint(self):
+        return self.__class__.__name__
+
 def check_owner(owner, cards):
     for c in cards:
         if owner != c.owner_or_nil:
@@ -103,8 +106,9 @@ class PlayCards(FrameBase):
         return self.done(args)
 
 class AcceptMessage(FrameBase):
-    def __init__(self, game_control, players, on_message, on_result):
+    def __init__(self, game_control, players, hint, on_message, on_result):
         FrameBase.__init__(self, game_control, on_result)
+        self.frame_hint = hint
         self.players = players
         self.on_message = on_message
 
@@ -114,3 +118,6 @@ class AcceptMessage(FrameBase):
     def react(self, args):
         self.on_message(args)
         return self.done(args)
+
+    def hint(self):
+        return self.frame_hint

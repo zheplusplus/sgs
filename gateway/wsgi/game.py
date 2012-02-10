@@ -25,14 +25,18 @@ class GameRoom:
 
     def after_game_start(self, path, request_body):
         try:
-            if path == '/events':
+            if path == '/act':
+                return self.player_act(eval(request_body, dict(), dict()))
+            if path == '/info/events':
                 return {
                            'code': 200,
                            'events': self.get_events(eval(request_body,
                                                      dict(), dict()))
                        }
-            if path == '/act':
-                return self.player_act(eval(request_body, dict(), dict()))
+            if path == '/info/hint':
+                hint = self.gc.hint()
+                hint['code'] = 200
+                return hint
             return { 'code': 404 }
         except (NameError, SyntaxError), e:
             return {

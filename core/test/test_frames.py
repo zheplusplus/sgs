@@ -42,6 +42,7 @@ def fake_action(gc, a):
 
 use_cards_frm = frames.UseCards(make_gc(), player, { 'test': fake_action },
                                 on_result_f)
+assert_eq('UseCards', use_cards_frm.hint())
 assert_eq([player], use_cards_frm.allowed_players())
 response = use_cards_frm.react({
                                    'token': 10,
@@ -194,7 +195,9 @@ assert_eq(None, result)
 def on_message(args):
     if 'bing' in args:
         raise ValueError('bang')
-acc_msg_frm = frames.AcceptMessage(make_gc(), [player], on_message, on_result_f)
+acc_msg_frm = frames.AcceptMessage(make_gc(), [player], 'DenyMsg',
+                                   on_message, on_result_f)
+assert_eq('DenyMsg', acc_msg_frm.hint())
 response = acc_msg_frm.react({ 'bang': 'bing' })
 assert_eq({ 'bang': 'bing' }, result)
 assert_eq(ret_code.OK, response['code'])

@@ -17,3 +17,6 @@ class ActionStack:
 
     def allowed_players(self):
         return self.frames[-1].allowed_players()
+
+    def hint(self):
+        return self.frames[-1].hint()

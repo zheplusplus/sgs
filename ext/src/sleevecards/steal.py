@@ -16,7 +16,7 @@ def steal(game_control, args):
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: None
     game_control.push_frame(
-      frames.AcceptMessage(game_control, [user],
+      frames.AcceptMessage(game_control, [user], 'StealRegion',
                            lambda a: on_message(game_control, user, target, a),
                            on_result))
     return { 'code': ret_code.OK }
