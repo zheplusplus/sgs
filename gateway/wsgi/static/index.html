@@ -2,6 +2,8 @@
 <head><title>SGS</title></head>
 <script src='/static/event_parse.js'></script>
 <script>
+var BEAT_INTERVAL = 2000;
+
 function post_act(data, url, on_sent) {
     var req = null;
     try {
@@ -57,21 +59,65 @@ function Game(me, others) {
 
 var eventlist = new EventList();
 var game = null;
+var token = null;
 
 function getEvents() {
     var request_body = {
-        'token': document.getElementById('request').value,
+        'token': token,
         'previous event id': eventlist.prevId(),
     };
     post_act(JSON.stringify(request_body), '/info/events', function(req) {
         eventlist.append(req.responseText, game);
+        setTimeout(getEvents, BEAT_INTERVAL);
     });
+}
+
+function joinGame() {
+    post_act('', '/ctrl/add', function(req) {
+        var result = eval('(' + req.responseText + ')');
+        if (result['code'] == 200) {
+            token = result['token'];
+            enter();
+        } else {
+            msgPane.innerHTML = result['reason'];
+        }
+    });
+}
+
+function enter() {
+    joinPane.style.visibility = 'hidden';
+    startPane.style.visibility = 'visible';
+
+    post_act('', '/info/hint', function(req) {
+        var result = eval('(' + req.responseText + ')');
+        if (result['code'] == 404) {
+            setTimeout(enter, BEAT_INTERVAL);
+        } else {
+            started();
+        }
+    });
+}
+
+function startGame() {
+    post_act('', '/ctrl/start', function(req) {
+        var result = eval('(' + req.responseText + ')');
+        if (result['code'] == 200) {
+            started();
+        } else {
+            msgPane.innerHTML = result['reason'];
+        }
+    });
+}
+
+function started() {
+    startPane.style.visibility = 'hidden';
+    gamePane.style.visibility = 'visible';
+
+    getEvents();
 }
 
 function initViews() {
     var views = new Array();
-
-    var table = document.getElementsByTagName('table')[0];
 
     var row1st = document.createElement('tr');
     for (col = 0; col < 5; ++col) {
@@ -79,7 +125,7 @@ function initViews() {
         row1st.appendChild(column);
         views.push(column);
     }
-    table.appendChild(row1st);
+    gamePane.appendChild(row1st);
 
     var row2nd = document.createElement('tr');
     var cell2 = document.createElement('td');
@@ -90,7 +136,7 @@ function initViews() {
     cellcenter.innerHTML = '-';
     var cell6 = document.createElement('td');
     row2nd.appendChild(cell6);
-    table.appendChild(row2nd);
+    gamePane.appendChild(row2nd);
 
     views.push(cell2);
     views.push(cell6);
@@ -100,17 +146,30 @@ function initViews() {
     cellme.setAttribute('colspan', '5');
     row3rd.appendChild(cellme);
     cellme.innerHTML = '.';
-    table.appendChild(row3rd);
+    gamePane.appendChild(row3rd);
 
     game = new Game(cellme, views);
 }
+
+var joinPane = null;
+var startPane = null;
+var gamePane = null;
+var msgPane = null;
+
+function init() {
+    paras = document.getElementsByTagName('p');
+    joinPane = paras[0];
+    startPane = paras[1];
+    gamePane = document.getElementsByTagName('table')[0];
+    msgPane = paras[2];
+    startPane.style.visibility = 'hidden';
+    gamePane.style.visibility = 'hidden';
+
+    initViews();
+}
 </script>
-<body onload='initViews()'>
-<p>
-Request: <textarea id='request'></textarea><br>
-URL: <input id='url'/>
-<button onclick='send()'>Send</button>
-<button onclick='getEvents()'>getEvents</button>
-</p>
-<table border=1 />
-<p id='receive'/>
+<body onload='init()'>
+<p><button onclick='joinGame()'>Join</button></p>
+<p><button onclick='startGame()'>Start</button></p>
+<table border=1></table>
+<p></p>
