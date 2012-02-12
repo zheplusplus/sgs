@@ -10,19 +10,29 @@ from ext.src.players_control import PlayersControl
 from ext.src.player import Player
 import ext.src.card_pool as card_pool
 import ext.src.skills.bequeathed_strategy as bequeathed_strategy
-import test_data
+from gateway.wsgi import log
 
 class GameRoom:
     def __init__(self):
         self.players_tokens = []
         self.response = self.before_game_start
 
+    def game_status(self, path, request_body):
+        if path == '/info/status':
+            return {
+                       'code': ret_code.OK,
+                       'players': len(self.players_tokens),
+                       'started': 0 if self.response == self.before_game_start
+                                    else 1,
+                   }
+        return { 'code': 404 }
+
     def before_game_start(self, path, request_body):
         if path == '/ctrl/start':
-            return self.start()
+            return self.start(request_body)
         if path == '/ctrl/add':
             return self.add_player(time.time(), request_body)
-        return { 'code': 404 }
+        return self.game_status(path, request_body)
 
     def after_game_start(self, path, request_body):
         try:
@@ -38,7 +48,7 @@ class GameRoom:
                 hint = self.gc.hint()
                 hint['code'] = 200
                 return hint
-            return { 'code': 404 }
+            return self.game_status(path, request_body)
         except (NameError, SyntaxError), e:
             return {
                        'code': ret_code.BAD_REQUEST,
@@ -46,24 +56,28 @@ class GameRoom:
                    }
 
     def add_player(self, time, name):
-        try:
-            token = sha256(name + str(time)).hexdigest()
-            self.players_tokens.append(token)
-            return {
-                       'code': ret_code.OK,
-                       'token': token,
-                   }
-        except ValueError, e:
-            return {
-                       'code': ret_code.BAD_REQUEST,
-                       'reason': e.message,
-                   }
+        token = sha256(name + str(time)).hexdigest()
+        log.i('Add player:token=' + token)
+        if len(self.players_tokens) == 0:
+            log.i('Be host:token=' + token)
+            self.host = token
+        self.players_tokens.append(token)
+        return {
+                   'code': ret_code.OK,
+                   'token': token,
+               }
 
-    def start(self):
+    def start(self, token):
         if len(self.players_tokens) < 2:
             return {
                        'code': ret_code.BAD_REQUEST,
                        'reason': 'Need at least 2 players',
+                   }
+        log.i('Request start:token=' + token)
+        if token != self.host:
+            return {
+                       'code': ret_code.BAD_REQUEST,
+                       'reason': 'Not the host',
                    }
         pc = PlayersControl()
         self.gc = GameControl(EventList(),

@@ -84,13 +84,18 @@ function joinGame() {
     });
 }
 
+function updateRoomPlayers(count) {
+    document.getElementById('players_count').innerHTML = count;
+}
+
 function enter() {
     joinPane.style.visibility = 'hidden';
     startPane.style.visibility = 'visible';
 
-    post_act('', '/info/hint', function(req) {
+    post_act('', '/info/status', function(req) {
         var result = eval('(' + req.responseText + ')');
-        if (result['code'] == 404) {
+        if (result['started'] == 0) {
+            updateRoomPlayers(result['players']);
             setTimeout(enter, BEAT_INTERVAL);
         } else {
             started();
@@ -99,7 +104,7 @@ function enter() {
 }
 
 function startGame() {
-    post_act('', '/ctrl/start', function(req) {
+    post_act(token, '/ctrl/start', function(req) {
         var result = eval('(' + req.responseText + ')');
         if (result['code'] == 200) {
             started();
@@ -170,6 +175,9 @@ function init() {
 </script>
 <body onload='init()'>
 <p><button onclick='joinGame()'>Join</button></p>
-<p><button onclick='startGame()'>Start</button></p>
+<p>
+<button onclick='startGame()'>Start</button>
+<span id='players_count'></span> player(s) in the room now.
+</p>
 <table border=1></table>
 <p></p>
