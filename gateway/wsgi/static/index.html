@@ -1,0 +1,116 @@
+<html>
+<head><title>SGS</title></head>
+<script src='/static/event_parse.js'></script>
+<script>
+function post_act(data, url, on_sent) {
+    var req = null;
+    try {
+        if (window.XMLHttpRequest) {
+            req = new XMLHttpRequest();
+        } else {
+            req = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+    } catch (e) {
+        alert('Browser not support AJAX!');
+        return;
+    }
+    req.open('POST', url, true);
+    req.onreadystatechange = function() {
+        if (req.readyState == 4) {
+            on_sent(req);
+        }
+    }
+    req.send(data);
+}
+
+function send() {
+    post_act(document.getElementById('request').value,
+             document.getElementById('url').value, function(req) {
+        document.getElementById('receive').innerHTML +=
+                                            (req.responseText + '<br>');
+    });
+}
+
+function Game(me, others) {
+    function Player(view) {
+        this.drawCount = function(count) {
+            view.innerHTML += ('Player ' + ' draws ' + count + ' card(s)<br/>');
+        };
+        this.drawCards = function(cards) {
+            for (i in cards) {
+                view.innerHTML +=
+                    ('Player ' + ' draws ' + cards[i].name + ' of rank ' +
+                     cards[i].rank + '<br/>');
+            }
+        };
+    };
+
+    var POSITIONS = new Array(2, 1, 0, 7, 6, 3, 5);
+    var players = new Array();
+    for (i in others) {
+        players.push(new Player(others[POSITIONS[i]]));
+    }
+    this.player = function(id) {
+        return players[id];
+    };
+}
+
+var eventlist = new EventList();
+var game = null;
+
+function getEvents() {
+    var request_body = {
+        'token': document.getElementById('request').value,
+        'previous event id': eventlist.prevId(),
+    };
+    post_act(JSON.stringify(request_body), '/info/events', function(req) {
+        eventlist.append(req.responseText, game);
+    });
+}
+
+function initViews() {
+    var views = new Array();
+
+    var table = document.getElementsByTagName('table')[0];
+
+    var row1st = document.createElement('tr');
+    for (col = 0; col < 5; ++col) {
+        var column = document.createElement('td');
+        row1st.appendChild(column);
+        views.push(column);
+    }
+    table.appendChild(row1st);
+
+    var row2nd = document.createElement('tr');
+    var cell2 = document.createElement('td');
+    row2nd.appendChild(cell2);
+    var cellcenter = document.createElement('td');
+    cellcenter.setAttribute('colspan', '3');
+    row2nd.appendChild(cellcenter);
+    cellcenter.innerHTML = '-';
+    var cell6 = document.createElement('td');
+    row2nd.appendChild(cell6);
+    table.appendChild(row2nd);
+
+    views.push(cell2);
+    views.push(cell6);
+
+    var row3rd = document.createElement('tr');
+    var cellme = document.createElement('td');
+    cellme.setAttribute('colspan', '5');
+    row3rd.appendChild(cellme);
+    cellme.innerHTML = '.';
+    table.appendChild(row3rd);
+
+    game = new Game(cellme, views);
+}
+</script>
+<body onload='initViews()'>
+<p>
+Request: <textarea id='request'></textarea><br>
+URL: <input id='url'/>
+<button onclick='send()'>Send</button>
+<button onclick='getEvents()'>getEvents</button>
+</p>
+<table border=1 />
+<p id='receive'/>

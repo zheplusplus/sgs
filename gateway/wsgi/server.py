@@ -2,6 +2,7 @@ import os
 from wsgiref.simple_server import make_server
 
 import game
+import static_files
 
 def start():
     make_server('', 8000, app).serve_forever()
@@ -19,6 +20,8 @@ def app(env, start_response):
     if '/' == path:
         start_response('200 OK', [('Content-type', 'text/html')])
         return read_index()
+    if path.startswith('/static/'):
+        return static_files.serve(path[1:], start_response)
     request_body_size = int(env['CONTENT_LENGTH'])
     request_body = env['wsgi.input'].read(request_body_size)
     response = game.game_room.response(path, request_body)
@@ -26,6 +29,6 @@ def app(env, start_response):
     return [str(response)]
 
 def read_index():
-    path = os.path.join(os.path.dirname(__file__), 'htmls/index.html')
+    path = os.path.join(os.path.dirname(__file__), 'static/index.html')
     with open(path) as f:
         return f.readlines()
