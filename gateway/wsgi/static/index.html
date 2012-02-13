@@ -3,6 +3,9 @@
 <script src='/static/event_parse.js'></script>
 <script>
 var BEAT_INTERVAL = 2000;
+var status_heartbeat = null;
+var hint_heartbeat = null;
+var events_heartbeat = null;
 
 function post_act(data, url, on_sent) {
     var req = null;
@@ -95,15 +98,17 @@ function updateRoomPlayers(count, is_host) {
 function enter() {
     joinPane.style.visibility = 'hidden';
     startPane.style.visibility = 'visible';
+    getStatus();
+}
 
-    post_act(token, '/info/status', function(result) {
-        if (result['started'] == 0) {
-            updateRoomPlayers(result['players'], result['host']);
-            setTimeout(enter, BEAT_INTERVAL);
-        } else {
-            started();
-        }
-    });
+function exitGame() {
+    joinPane.style.visibility = 'visible';
+    startPane.style.visibility = 'hidden';
+    post_act(token, '/ctrl/exit', function(r) {});
+    token = null;
+    clearTimeout(status_heartbeat);
+    clearTimeout(hint_heartbeat);
+    clearTimeout(events_heartbeat);
 }
 
 function startGame() {
@@ -116,6 +121,17 @@ function startGame() {
     });
 }
 
+function getStatus() {
+    post_act(token, '/info/status', function(result) {
+        if (result['started'] == 0) {
+            updateRoomPlayers(result['players'], result['host']);
+            status_heartbeat = setTimeout(enter, BEAT_INTERVAL);
+        } else {
+            started();
+        }
+    });
+}
+
 function getEvents() {
     var request_body = {
         'token': token,
@@ -123,7 +139,7 @@ function getEvents() {
     };
     post_act(JSON.stringify(request_body), '/info/events', function(result) {
         eventlist.append(result, game);
-        setTimeout(getEvents, BEAT_INTERVAL);
+        events_heartbeat = setTimeout(getEvents, BEAT_INTERVAL);
     });
 }
 
@@ -131,14 +147,14 @@ function getHint() {
     post_act('', '/info/hint', function(result) {
         game.activate_players(result['players'])
         var action = result['action'];
-        setTimeout(getEvents, BEAT_INTERVAL);
+        hint_heartbeat = setTimeout(getHint, BEAT_INTERVAL);
     });
 }
 
 function started() {
     startPane.style.visibility = 'hidden';
     gamePane.style.visibility = 'visible';
-
+    clearTimeout(status_heartbeat);
     getEvents();
     getHint();
 }
@@ -199,6 +215,7 @@ function init() {
 <p><button onclick='joinGame()'>Join</button></p>
 <p>
 <button id='start_button' onclick='startGame()'>Start</button>
+<button onclick='exitGame()'>Exit</button>
 <span id='players_count'></span> player(s) in the room now.
 </p>
 <table border=1></table>
