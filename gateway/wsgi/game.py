@@ -10,7 +10,6 @@ from ext.src.players_control import PlayersControl
 from ext.src.player import Player
 import ext.src.card_pool as card_pool
 import ext.src.skills.bequeathed_strategy as bequeathed_strategy
-from gateway.wsgi import log
 
 class GameRoom:
     def __init__(self):
@@ -66,9 +65,7 @@ class GameRoom:
     def add_player(self, request_body):
         self._check_game_not_started()
         token = sha256(request_body + str(time.time())).hexdigest()
-        log.i('Add player:token=' + token)
         if len(self.players_tokens) == 0:
-            log.i('Be host:token=' + token)
             self.host = token
         self.players_tokens.append(token)
         return {
@@ -83,7 +80,6 @@ class GameRoom:
                        'code': ret_code.BAD_REQUEST,
                        'reason': 'Need at least 2 players',
                    }
-        log.i('Request start:token=' + token)
         if token != self.host:
             return {
                        'code': ret_code.BAD_REQUEST,

@@ -42,7 +42,6 @@ function EventList() {
     };
 
     this.append = function(result, game) {
-        var result = eval('(' + result + ')');
         if (result['code'] != 200) {
             return;
         }

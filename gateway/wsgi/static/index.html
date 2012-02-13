@@ -19,7 +19,7 @@ function post_act(data, url, on_sent) {
     req.open('POST', url, true);
     req.onreadystatechange = function() {
         if (req.readyState == 4) {
-            on_sent(req);
+            on_sent(eval('(' + req.responseText + ')'));
         }
     }
     req.send(data);
@@ -35,6 +35,7 @@ function send() {
 
 function Game(me, others) {
     function Player(view) {
+        this.view = view;
         this.drawCount = function(count) {
             view.innerHTML += ('Player ' + ' draws ' + count + ' card(s)<br/>');
         };
@@ -45,9 +46,15 @@ function Game(me, others) {
                      cards[i].rank + '<br/>');
             }
         };
+        this.activate = function() {
+            view.style.backgroundColor = '#ffa';
+        };
+        this.deactivate = function() {
+            view.style.backgroundColor = '#fff';
+        };
     };
 
-    var POSITIONS = new Array(2, 1, 0, 7, 6, 3, 5);
+    var POSITIONS = new Array(2, 1, 0, 6, 5, 3, 4);
     var players = new Array();
     for (i in others) {
         players.push(new Player(others[POSITIONS[i]]));
@@ -55,26 +62,22 @@ function Game(me, others) {
     this.player = function(id) {
         return players[id];
     };
+    this.activate_players = function(ap) {
+        for (i in players) {
+            players[i].deactivate();
+        }
+        for (i in ap) {
+            players[i].activate();
+        }
+    }
 }
 
 var eventlist = new EventList();
 var game = null;
 var token = null;
 
-function getEvents() {
-    var request_body = {
-        'token': token,
-        'previous event id': eventlist.prevId(),
-    };
-    post_act(JSON.stringify(request_body), '/info/events', function(req) {
-        eventlist.append(req.responseText, game);
-        setTimeout(getEvents, BEAT_INTERVAL);
-    });
-}
-
 function joinGame() {
-    post_act('', '/ctrl/add', function(req) {
-        var result = eval('(' + req.responseText + ')');
+    post_act('', '/ctrl/add', function(result) {
         if (result['code'] == 200) {
             token = result['token'];
             enter();
@@ -93,8 +96,7 @@ function enter() {
     joinPane.style.visibility = 'hidden';
     startPane.style.visibility = 'visible';
 
-    post_act(token, '/info/status', function(req) {
-        var result = eval('(' + req.responseText + ')');
+    post_act(token, '/info/status', function(result) {
         if (result['started'] == 0) {
             updateRoomPlayers(result['players'], result['host']);
             setTimeout(enter, BEAT_INTERVAL);
@@ -105,8 +107,7 @@ function enter() {
 }
 
 function startGame() {
-    post_act(token, '/ctrl/start', function(req) {
-        var result = eval('(' + req.responseText + ')');
+    post_act(token, '/ctrl/start', function(result) {
         if (result['code'] == 200) {
             started();
         } else {
@@ -115,11 +116,31 @@ function startGame() {
     });
 }
 
+function getEvents() {
+    var request_body = {
+        'token': token,
+        'previous event id': eventlist.prevId(),
+    };
+    post_act(JSON.stringify(request_body), '/info/events', function(result) {
+        eventlist.append(result, game);
+        setTimeout(getEvents, BEAT_INTERVAL);
+    });
+}
+
+function getHint() {
+    post_act('', '/info/hint', function(result) {
+        game.activate_players(result['players'])
+        var action = result['action'];
+        setTimeout(getEvents, BEAT_INTERVAL);
+    });
+}
+
 function started() {
     startPane.style.visibility = 'hidden';
     gamePane.style.visibility = 'visible';
 
     getEvents();
+    getHint();
 }
 
 function initViews() {
