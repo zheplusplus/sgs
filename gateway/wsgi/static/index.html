@@ -1,6 +1,8 @@
 <html>
 <head><title>SGS</title></head>
+<meta http-equiv='Content-type' content='text/html; charset=UTF-8'>
 <script src='/static/event_parse.js'></script>
+<script src='/static/strings.js'></script>
 <script>
 var BEAT_INTERVAL = 2000;
 var status_heartbeat = null;
@@ -46,7 +48,8 @@ function Game(me, others) {
             for (i in cards) {
                 view.innerHTML +=
                     ('Player ' + ' draws ' + cards[i].name + ' of rank ' +
-                     cards[i].rank + ' at ' + cards[i].region + '<br/>');
+                     cards[i].rank + SGS_STR_CARD_SUITS[cards[i].suit] + ' at '
+                     + cards[i].region + '<br/>');
             }
         };
         this.activate = function() {

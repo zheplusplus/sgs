@@ -1,8 +1,3 @@
-SGS_CARD_SUIT_ENUM_SPADE = 0;
-SGS_CARD_SUIT_ENUM_HEART = 1;
-SGS_CARD_SUIT_ENUM_CLUB = 2;
-SGS_CARD_SUIT_ENUM_DIAMOND = 3;
-
 function EventList() {
     function buildEvent(detail) {
         function Card(detail) {
