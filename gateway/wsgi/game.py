@@ -17,6 +17,7 @@ class GameRoom:
         self.host = ''
         self.handlers = {
                             '/ctrl/add': self.add_player,
+                            '/ctrl/exit': self.player_exit,
                             '/ctrl/start': self.start,
                             '/info/status': self.game_status,
                             '/info/events': self.get_events,
@@ -43,8 +44,16 @@ class GameRoom:
         except (NameError, SyntaxError), e:
             return {
                        'code': ret_code.BAD_REQUEST,
-                       'reason': e.message,
+                       'reason': 'Syntax error: %s' % e.message,
                    }
+
+    def player_exit(self, token):
+        if not token in self.players_tokens:
+            raise ValueError('Not joined in')
+        self.players_tokens.remove(token)
+        if token == self.host and 0 < len(self.players_tokens):
+            self.host = self.players_tokens[0]
+        return { 'code': 200 }
 
     def _check_game_not_started(self):
         if self.game_started:

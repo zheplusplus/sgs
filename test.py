@@ -18,4 +18,6 @@ import ext.test.test_fury_pith
 import ext.test.test_brink_of_death_and_rescue
 import ext.test.test_suicide
 import ext.test.test_bequeathed_strategy
+print 'Kernal test finished.'
+import gateway.wsgi.test
 print 'Test finished.'
