@@ -46,7 +46,7 @@ function Game(me, others) {
             for (i in cards) {
                 view.innerHTML +=
                     ('Player ' + ' draws ' + cards[i].name + ' of rank ' +
-                     cards[i].rank + '<br/>');
+                     cards[i].rank + ' at ' + cards[i].region + '<br/>');
             }
         };
         this.activate = function() {
