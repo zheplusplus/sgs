@@ -26,15 +26,29 @@ class EventList:
     def add(self, event):
         self.events.append(event)
 
-class GameStarted(Event):
+class GameInit(Event):
     def __init__(self, players):
-        self.players = players
+        self.players = { p.token: p.player_id for p in players }
 
     def _as_log(self):
-        return { 'characters': map(lambda p: {
-                                                 'player_id': p.player_id,
-                                                 'character': p.character_name,
-                                             }, self.players) }
+        return self.players
+
+    def _serialize(self, token):
+        s = { 'players': len(self.players) }
+        if token in self.players:
+            s['position'] = self.players[token]
+        return s
+
+class SelectCharacter(Event):
+    def __init__(self, player, character):
+        self.player = player
+        self.character = character
+
+    def _as_log(self):
+        return {
+                   'player': self.player.player_id,
+                   'character': self.character.name,
+               }
 
 def card_to_msg(c):
     return {

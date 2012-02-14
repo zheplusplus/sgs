@@ -6,7 +6,7 @@ ROUNDDEAL = 2
 
 class Player(CorePlayer):
     def __init__(self, token):
-        CorePlayer.__init__(self, token, 1, dict())
+        CorePlayer.__init__(self, token, dict())
 
     def start(self, game_control):
         self.draw_cards(game_control, STARTDEAL)

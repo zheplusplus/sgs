@@ -9,12 +9,15 @@ class GameControl:
         self.card_pool = card_pool
         self.action_stack = action_stack
 
+    def game_init(self, players):
+        self._add_event(event.GameInit(players))
+
+    def select_character(self, player, character):
+        self._add_event(event.SelectCharacter(player, character))
+
     def start(self):
         self.players_control.start(self)
         self.players_control.current_player().round(self)
-
-    def characters_selected(self, players):
-        self._add_event(event.GameStarted(players))
 
     def next_round(self):
         self.players_control.next_player()

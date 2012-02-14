@@ -1,9 +1,7 @@
 class Player:
-    def __init__(self, token, max_vigor, responses_dict):
+    def __init__(self, token, responses_dict):
         self.token = token
         self.alive = True
-        self.max_vigor = max_vigor
-        self.vigor = max_vigor
         self.responses = responses_dict
         self.equipment = dict()
         self.cw_positive_dist_mod = 0

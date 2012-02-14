@@ -3,6 +3,10 @@ import random
 import core.src.card as card
 
 class CardPool:
+    @staticmethod
+    def create():
+        return CardPool(all_cards())
+
     def __init__(self, cards):
         self.discarded = []
         self.cards = cards

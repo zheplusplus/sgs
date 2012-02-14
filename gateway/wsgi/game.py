@@ -98,7 +98,7 @@ class GameRoom:
         self.gc = GameControl(EventList(),
                               card_pool.CardPool(card_pool.all_cards()),
                               pc, ActionStack())
-        for token in self.players_tokens: pc.add_player(Player(token, 4))
+        for token in self.players_tokens: pc.add_player(Player(token))
         self.gc.start()
         self.game_started = True
         return { 'code': ret_code.OK }

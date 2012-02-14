@@ -9,8 +9,8 @@ STARTDEAL = 4
 ROUNDDEAL = 2
 
 class Player(CorePlayer):
-    def __init__(self, token, max_vigor):
-        CorePlayer.__init__(self, token, max_vigor,
+    def __init__(self, token):
+        CorePlayer.__init__(self, token,
                             {
                                 'slash': response.ToCertainCard('slash'),
                                 'peach': response.ToCertainCard('peach'),

@@ -45,17 +45,6 @@ class PlayersControl(CorePlayersControl):
     def __init__(self):
         CorePlayersControl.__init__(self)
 
-    def add_player(self, player):
-        if 8 == len(self.players):
-            raise ValueError('Room is full')
-        return CorePlayersControl.add_player(self, player)
-
-    def start(self, game_control):
-        for p in self.players:
-            p.character.select(p)
-        game_control.characters_selected(self.players)
-        CorePlayersControl.start(self, game_control)
-
     def next_player(self):
         self.current_pid = (self.current_pid + 1) % len(self.players)
         if None == self.current_player():
