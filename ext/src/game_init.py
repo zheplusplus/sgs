@@ -40,6 +40,11 @@ class _SelectCharacter(FrameBase):
             base_hint['candidate'] = self.token_to_characters[token].keys()
         return base_hint
 
+def random_pick_characters(count):
+    all_chars = list(characters.ALL)
+    random.shuffle(all_chars)
+    return all_chars[:count]
+
 def characters_select_dict(chars):
     return { c.name: c for c in chars }
 
@@ -62,16 +67,16 @@ def statuses_mode(players_tokens):
     def after_host_selected(gc, r):
         gc.select_character(host, r[host.token])
         gc.push_frame(_SelectCharacter(
-                        gc, others,
-                        { p.token: characters_select_dict([characters.GUO_JIA])
-                                for p in others },
-                        all_selected))
+                    gc, others,
+                    { p.token: characters_select_dict(random_pick_characters(3))
+                            for p in others },
+                    all_selected))
     def all_selected(gc, r):
         for p in others:
             gc.select_character(p, r[p.token])
         gc.start()
     gc.push_frame(_SelectCharacter(
-                   gc, [host],
-                   { host.token: characters_select_dict([characters.GUO_JIA]) },
-                   after_host_selected))
+              gc, [host],
+              { host.token: characters_select_dict(random_pick_characters(3)) },
+              after_host_selected))
     return gc

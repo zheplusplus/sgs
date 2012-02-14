@@ -58,7 +58,8 @@ last_event_id += 1
 result = gc.hint(host_token)
 assert_eq(ret_code.OK, result['code'])
 assert_eq([0], result['players'])
-assert_eq(['Guo Jia'], result['candidate'])
+assert_eq(3, len(result['candidate']))
+select = result['candidate'][0]
 assert_eq(ret_code.OK, result['code'])
 assert_eq('_SelectCharacter', result['action'])
 
@@ -78,7 +79,7 @@ assert_eq('_SelectCharacter', result['action'])
 
 result = gc.player_act({
                            'token': host_token,
-                           'select': 'Guo Jia',
+                           'select': select,
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -87,7 +88,7 @@ assert_eq(1, len(host_events))
 if True: # just indent for a nice appearance
     event = host_events[0]
     assert_eq(0, event['player'])
-    assert_eq('Guo Jia', event['character'])
+    assert_eq(select, event['character'])
     assert_eq('SelectCharacter', event['type'])
 other_events_a = gc.get_events(other_token_a, last_event_id)
 assert_eq(host_events, other_events_a)
@@ -97,28 +98,30 @@ last_event_id += 1
 
 result = gc.hint(host_token)
 assert_eq(ret_code.OK, result['code'])
-assert_eq([1, 2], result['players'])
+assert_eq({1, 2}, set(result['players']))
 assert not 'candidate' in result
 assert_eq(ret_code.OK, result['code'])
 assert_eq('_SelectCharacter', result['action'])
 
 result = gc.hint(other_token_a)
 assert_eq(ret_code.OK, result['code'])
-assert_eq([1, 2], result['players'])
-assert_eq(['Guo Jia'], result['candidate'])
+assert_eq({1, 2}, set(result['players']))
+assert_eq(3, len(result['candidate']))
+select_a = result['candidate'][0]
 assert_eq(ret_code.OK, result['code'])
 assert_eq('_SelectCharacter', result['action'])
 
 result = gc.hint(other_token_b)
 assert_eq(ret_code.OK, result['code'])
-assert_eq([1, 2], result['players'])
-assert_eq(['Guo Jia'], result['candidate'])
+assert_eq({1, 2}, set(result['players']))
+assert_eq(3, len(result['candidate']))
+select_b = result['candidate'][0]
 assert_eq(ret_code.OK, result['code'])
 assert_eq('_SelectCharacter', result['action'])
 
 result = gc.player_act({
                            'token': other_token_a,
-                           'select': 'Guo Jia',
+                           'select': select_a,
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -139,7 +142,7 @@ assert_eq('_SelectCharacter', result['action'])
 result = gc.hint(other_token_b)
 assert_eq(ret_code.OK, result['code'])
 assert_eq(1, len(result['players']))
-assert_eq(['Guo Jia'], result['candidate'])
+assert_eq(3, len(result['candidate']))
 assert_eq(ret_code.OK, result['code'])
 assert_eq('_SelectCharacter', result['action'])
 
@@ -152,7 +155,7 @@ assert_eq(0, len(other_events_b))
 
 result = gc.player_act({
                            'token': other_token_b,
-                           'select': 'Guo Jia',
+                           'select': select_b,
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -161,11 +164,9 @@ assert_eq(6, len(host_events))
 if True: # just indent for a nice appearance
     event = host_events[0]
     assert_eq(1, event['player'])
-    assert_eq('Guo Jia', event['character'])
     assert_eq('SelectCharacter', event['type'])
     event = host_events[1]
     assert_eq(2, event['player'])
-    assert_eq('Guo Jia', event['character'])
     assert_eq('SelectCharacter', event['type'])
     event = host_events[2]
     assert_eq(0, event['player'])
@@ -234,15 +235,17 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'select wrong character',
           }, result)
 
+select = gc.hint(host_token)['candidate'][0]
+
 result = gc.player_act({
                            'token': host_token,
-                           'select': 'Guo Jia',
+                           'select': select,
                        })
 assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': host_token,
-                           'select': 'Guo Jia',
+                           'select': select,
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,

@@ -25,4 +25,7 @@ WEI_YAN = Character('Wei Yan', [fury_pith])
 JUNIOR_QIAO = Character('Junior Qiao', [heavenly_scent])
 
 MA_CHAO_SP = Character('Ma Chao SP', [horsemanship])
-PAND_DE = Character('Pang De', [horsemanship])
+PANG_DE = Character('Pang De', [horsemanship])
+
+ALL = [GUO_JIA, ZHANG_CHUNHUA, ZHAO_YUN, GUAN_YU, HUANG_YUEYING, MA_CHAO,
+       WEI_YAN, JUNIOR_QIAO, MA_CHAO_SP, PANG_DE]
