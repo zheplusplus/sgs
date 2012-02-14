@@ -11,10 +11,10 @@ from ext.src import characters
 from ext.src.card_pool import CardPool
 
 class _SelectCharacter(FrameBase):
-    def __init__(self, game_control, players, players_characters, on_result):
+    def __init__(self, game_control, players, token_to_characters, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.token_to_players = { p.token: p for p in players }
-        self.players_characters = players_characters
+        self.token_to_characters = token_to_characters
         self.selected = dict()
 
     def allowed_players(self):
@@ -23,16 +23,22 @@ class _SelectCharacter(FrameBase):
     def react(self, args):
         select = args['select']
         token = args['token']
-        if not select in self.players_characters[token]:
+        if not select in self.token_to_characters[token]:
             raise ValueError('select wrong character')
-        character = self.players_characters[token][select]
+        character = self.token_to_characters[token][select]
         character.select(self.token_to_players[token])
         self.selected[token] = character
-        del self.players_characters[token]
+        del self.token_to_characters[token]
         del self.token_to_players[token]
-        if len(self.players_characters) == 0:
+        if len(self.token_to_characters) == 0:
             return self.done(self.selected)
         return { 'code': ret_code.OK }
+
+    def hint(self, token):
+        base_hint = FrameBase.hint(self, token)
+        if token in self.token_to_characters:
+            base_hint['candidate'] = self.token_to_characters[token].keys()
+        return base_hint
 
 def characters_select_dict(chars):
     return { c.name: c for c in chars }

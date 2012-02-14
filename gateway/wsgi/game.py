@@ -103,11 +103,9 @@ class GameRoom:
         self.game_started = True
         return { 'code': ret_code.OK }
 
-    def get_hint(self, req):
+    def get_hint(self, request_body):
         self._check_game_started()
-        hint = self.gc.hint()
-        hint['code'] = 200
-        return hint
+        return self.gc.hint(request_body)
 
     def get_events(self, request_body):
         self._check_game_started()

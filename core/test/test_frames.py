@@ -8,6 +8,7 @@ import core.src.ret_code as ret_code
 import core.src.action_frames as frames
 
 player = fake_player.Player(10)
+player.player_id = 0
 cards = [
             card.Card(0, 'slash', 1, card.SPADE),
             card.Card(1, 'slash', 2, card.SPADE),
@@ -42,7 +43,11 @@ def fake_action(gc, a):
 
 use_cards_frm = frames.UseCards(make_gc(), player, { 'test': fake_action },
                                 on_result_f)
-assert_eq('UseCards', use_cards_frm.hint())
+assert_eq({
+              'code': ret_code.OK,
+              'players': [0],
+              'action': 'UseCards',
+          }, use_cards_frm.hint(''))
 assert_eq([player], use_cards_frm.allowed_players())
 response = use_cards_frm.react({
                                    'token': 10,
@@ -197,7 +202,11 @@ def on_message(args):
         raise ValueError('bang')
 acc_msg_frm = frames.AcceptMessage(make_gc(), [player], 'DenyMsg',
                                    on_message, on_result_f)
-assert_eq('DenyMsg', acc_msg_frm.hint())
+assert_eq({
+              'code': ret_code.OK,
+              'players': [0],
+              'action': 'DenyMsg',
+          }, acc_msg_frm.hint(''))
 response = acc_msg_frm.react({ 'bang': 'bing' })
 assert_eq({ 'bang': 'bing' }, result)
 assert_eq(ret_code.OK, response['code'])

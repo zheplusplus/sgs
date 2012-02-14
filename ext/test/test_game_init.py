@@ -55,6 +55,27 @@ if p2_position == 0:
 
 last_event_id += 1
 
+result = gc.hint(host_token)
+assert_eq(ret_code.OK, result['code'])
+assert_eq([0], result['players'])
+assert_eq(['Guo Jia'], result['candidate'])
+assert_eq(ret_code.OK, result['code'])
+assert_eq('_SelectCharacter', result['action'])
+
+result = gc.hint(other_token_a)
+assert_eq(ret_code.OK, result['code'])
+assert_eq([0], result['players'])
+assert not 'candidate' in result
+assert_eq(ret_code.OK, result['code'])
+assert_eq('_SelectCharacter', result['action'])
+
+result = gc.hint(other_token_b)
+assert_eq(ret_code.OK, result['code'])
+assert_eq([0], result['players'])
+assert not 'candidate' in result
+assert_eq(ret_code.OK, result['code'])
+assert_eq('_SelectCharacter', result['action'])
+
 result = gc.player_act({
                            'token': host_token,
                            'select': 'Guo Jia',
@@ -74,11 +95,53 @@ other_events_b = gc.get_events(other_token_b, last_event_id)
 assert_eq(host_events, other_events_b)
 last_event_id += 1
 
+result = gc.hint(host_token)
+assert_eq(ret_code.OK, result['code'])
+assert_eq([1, 2], result['players'])
+assert not 'candidate' in result
+assert_eq(ret_code.OK, result['code'])
+assert_eq('_SelectCharacter', result['action'])
+
+result = gc.hint(other_token_a)
+assert_eq(ret_code.OK, result['code'])
+assert_eq([1, 2], result['players'])
+assert_eq(['Guo Jia'], result['candidate'])
+assert_eq(ret_code.OK, result['code'])
+assert_eq('_SelectCharacter', result['action'])
+
+result = gc.hint(other_token_b)
+assert_eq(ret_code.OK, result['code'])
+assert_eq([1, 2], result['players'])
+assert_eq(['Guo Jia'], result['candidate'])
+assert_eq(ret_code.OK, result['code'])
+assert_eq('_SelectCharacter', result['action'])
+
 result = gc.player_act({
                            'token': other_token_a,
                            'select': 'Guo Jia',
                        })
 assert_eq(ret_code.OK, result['code'])
+
+result = gc.hint(host_token)
+assert_eq(ret_code.OK, result['code'])
+assert_eq(1, len(result['players']))
+assert not 'candidate' in result
+assert_eq(ret_code.OK, result['code'])
+assert_eq('_SelectCharacter', result['action'])
+
+result = gc.hint(other_token_a)
+assert_eq(ret_code.OK, result['code'])
+assert_eq(1, len(result['players']))
+assert not 'candidate' in result
+assert_eq(ret_code.OK, result['code'])
+assert_eq('_SelectCharacter', result['action'])
+
+result = gc.hint(other_token_b)
+assert_eq(ret_code.OK, result['code'])
+assert_eq(1, len(result['players']))
+assert_eq(['Guo Jia'], result['candidate'])
+assert_eq(ret_code.OK, result['code'])
+assert_eq('_SelectCharacter', result['action'])
 
 host_events = gc.get_events(host_token, last_event_id)
 assert_eq(0, len(host_events))

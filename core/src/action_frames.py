@@ -13,8 +13,12 @@ class FrameBase:
     def resume(self):
         pass
 
-    def hint(self):
-        return self.__class__.__name__
+    def hint(self, token):
+        return {
+            'code': ret_code.OK,
+            'players': map(lambda p: p.player_id, self.allowed_players()),
+            'action': self.__class__.__name__,
+        }
 
 def check_owner(owner, cards):
     for c in cards:
@@ -119,5 +123,9 @@ class AcceptMessage(FrameBase):
         self.on_message(args)
         return self.done(args)
 
-    def hint(self):
-        return self.frame_hint
+    def hint(self, token):
+        return {
+            'code': ret_code.OK,
+            'players': map(lambda p: p.player_id, self.allowed_players()),
+            'action': self.frame_hint,
+        }

@@ -49,12 +49,8 @@ class GameControl:
                        'reason': ret_code.BR_WRONG_ARG % e.message,
                    }
 
-    def hint(self):
-        return {
-                   'players': map(lambda p: p.player_id,
-                                  self.action_stack.allowed_players()),
-                   'action': self.action_stack.hint(),
-               }
+    def hint(self, token):
+        return self.action_stack.hint(token)
 
     def push_frame(self, frame):
         self.action_stack.push(frame)
@@ -83,8 +79,8 @@ class GameControl:
         self.card_pool.discard(cards)
 
     def show_cards(self, player, cards_ids):
-        self._add_event(
-                event.ShowCards(player, self.card_pool.cards_by_ids(cards_ids)))
+        self._add_event(event.ShowCards(player,
+                                        self.card_pool.cards_by_ids(cards_ids)))
 
     def play_cards(self, player, cards):
         self._add_event(event.PlayCards(player, cards))
