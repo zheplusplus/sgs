@@ -22,7 +22,6 @@ class Player(CorePlayer):
         self.computing_before_damaged = []
         self.actions_after_damaging = Player._damage_actions_dict()
         self.actions_after_damaged = Player._damage_actions_dict()
-        self.character = characters.DEFAULT
 
     @staticmethod
     def _damage_actions_dict():

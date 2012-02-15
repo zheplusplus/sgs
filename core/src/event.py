@@ -48,6 +48,7 @@ class SelectCharacter(Event):
         return {
                    'player': self.player.player_id,
                    'character': self.character.name,
+                   'max vigor': self.player.max_vigor,
                }
 
 def card_to_msg(c):

@@ -30,8 +30,10 @@ function SGS_EventParser() {
             }, 'SelectCharacter': function(detail) {
                 this.player = detail['player'];
                 this.character = detail['character'];
+                this.max_vigor = detail['max vigor'];
                 this.exhibit = function(game) {
-                    game.player(this.player).selectCharacter(this.character);
+                    game.player(this.player).selectCharacter(this.character,
+                                                             this.max_vigor);
                 };
             }, 'DrawCards': function(detail) {
                 this.player = detail['player'];
