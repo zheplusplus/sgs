@@ -2,14 +2,16 @@
 <head><title>SGS</title></head>
 <meta http-equiv='Content-type' content='text/html; charset=UTF-8'>
 <script src='/static/event_parse.js'></script>
+<script src='/static/hint_parse.js'></script>
 <script src='/static/strings.js'></script>
+<script src='/static/views.js'></script>
 <script>
 var BEAT_INTERVAL = 2000;
 var status_heartbeat = null;
 var hint_heartbeat = null;
 var events_heartbeat = null;
 
-function post_act(data, url, on_sent) {
+function post_data(data, url, on_sent) {
     var req = null;
     try {
         if (window.XMLHttpRequest) {
@@ -30,62 +32,59 @@ function post_act(data, url, on_sent) {
     req.send(data);
 }
 
-function send() {
-    post_act(document.getElementById('request').value,
-             document.getElementById('url').value, function(req) {
-        document.getElementById('receive').innerHTML +=
-                                            (req.responseText + '<br>');
+function post_act(data) {
+    data['token'] = token;
+    return post_data(JSON.stringify(data), '/act', function(result) {
+        if (result['code'] != 200) {
+            alert('SEND:' + JSON.stringify(data));
+            alert('REASON:' + result['reason']);
+        } else {
+            clearTimeout(events_heartbeat);
+            getEvents();
+        }
     });
 }
 
-function Game(me, others) {
-    function Player(view) {
-        this.view = view;
-        this.drawCount = function(count) {
-            view.innerHTML += ('Player ' + ' draws ' + count + ' card(s)<br/>');
-        };
-        this.drawCards = function(cards) {
-            for (i in cards) {
-                view.innerHTML +=
-                    ('Player ' + ' draws ' + cards[i].name + ' of rank ' +
-                     cards[i].rank + SGS_STR_CARD_SUITS[cards[i].suit] + ' at '
-                     + cards[i].region + '<br/>');
-            }
-        };
-        this.activate = function() {
-            view.style.backgroundColor = '#ffa';
-        };
-        this.deactivate = function() {
-            view.style.backgroundColor = '#fff';
-        };
-    };
-
-    var POSITIONS = new Array(2, 1, 0, 6, 5, 3, 4);
+function Game(me, others, center) {
     var players = new Array();
-    for (i in others) {
-        players.push(new Player(others[POSITIONS[i]]));
+
+    this.initPosition = function(playerCount, myPosition) {
+        /*
+         * 6 5 4 3 2
+         * 7       1
+         *  My Pos-
+         */
+        var positions = new Array(6, 5, 4, 3, 2, 7, 1, 0);
+        others.push(me);
+        for (i in positions) {
+            var index = (positions[i] + myPosition) % 8;
+            if (index != myPosition) {
+                players[index] = new Player(others[i]);
+            } else {
+                players[index] = new Me(me);
+            }
+        }
+        this.position = myPosition;
     }
     this.player = function(id) {
         return players[id];
     };
-    this.activate_players = function(ap) {
-        for (i in players) {
-            players[i].deactivate();
-        }
-        for (i in ap) {
-            players[i].activate();
-        }
-    }
+    var hintparser = new SGS_HintParser(this, players, new Center(center));
+    this.hint = function(result) {
+        center.innerHTML = '';
+        hintparser.hint(result);
+    };
 }
 
-var eventlist = new EventList();
+var eventlist = new SGS_EventParser();
 var game = null;
-var token = null;
+var token = localStorage.getItem('token');
 
 function joinGame() {
-    post_act('', '/ctrl/add', function(result) {
+    post_data('', '/ctrl/add', function(result) {
         if (result['code'] == 200) {
             token = result['token'];
+            localStorage.setItem('token', token);
             enter();
         } else {
             msgPane.innerHTML = result['reason'];
@@ -107,7 +106,7 @@ function enter() {
 function exitGame() {
     joinPane.style.visibility = 'visible';
     startPane.style.visibility = 'hidden';
-    post_act(token, '/ctrl/exit', function(r) {});
+    post_data(token, '/ctrl/exit', function(r) {});
     token = null;
     clearTimeout(status_heartbeat);
     clearTimeout(hint_heartbeat);
@@ -115,7 +114,7 @@ function exitGame() {
 }
 
 function startGame() {
-    post_act(token, '/ctrl/start', function(result) {
+    post_data(token, '/ctrl/start', function(result) {
         if (result['code'] == 200) {
             started();
         } else {
@@ -125,7 +124,7 @@ function startGame() {
 }
 
 function getStatus() {
-    post_act(token, '/info/status', function(result) {
+    post_data(token, '/info/status', function(result) {
         if (result['started'] == 0) {
             updateRoomPlayers(result['players'], result['host']);
             status_heartbeat = setTimeout(enter, BEAT_INTERVAL);
@@ -140,16 +139,15 @@ function getEvents() {
         'token': token,
         'previous event id': eventlist.prevId(),
     };
-    post_act(JSON.stringify(request_body), '/info/events', function(result) {
+    post_data(JSON.stringify(request_body), '/info/events', function(result) {
         eventlist.append(result, game);
         events_heartbeat = setTimeout(getEvents, BEAT_INTERVAL);
     });
 }
 
 function getHint() {
-    post_act('', '/info/hint', function(result) {
-        game.activate_players(result['players'])
-        var action = result['action'];
+    post_data(token, '/info/hint', function(result) {
+        game.hint(result);
         hint_heartbeat = setTimeout(getHint, BEAT_INTERVAL);
     });
 }
@@ -179,7 +177,6 @@ function initViews() {
     var cellcenter = document.createElement('td');
     cellcenter.setAttribute('colspan', '3');
     row2nd.appendChild(cellcenter);
-    cellcenter.innerHTML = '-';
     var cell6 = document.createElement('td');
     row2nd.appendChild(cell6);
     gamePane.appendChild(row2nd);
@@ -191,10 +188,9 @@ function initViews() {
     var cellme = document.createElement('td');
     cellme.setAttribute('colspan', '5');
     row3rd.appendChild(cellme);
-    cellme.innerHTML = '.';
     gamePane.appendChild(row3rd);
 
-    game = new Game(cellme, views);
+    game = new Game(cellme, views, cellcenter);
 }
 
 var joinPane = null;
@@ -212,6 +208,12 @@ function init() {
     gamePane.style.visibility = 'hidden';
 
     initViews();
+
+    post_data(token, '/info/checktoken', function(result) {
+        if (result['in'] == 1) {
+            enter();
+        }
+    });
 }
 </script>
 <body onload='init()'>

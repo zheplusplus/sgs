@@ -158,3 +158,13 @@ tokene = result['token']
 
 result = g.response('/ctrl/start', tokend)
 assert_eq(ret_code.OK, result['code'])
+
+g = game.GameRoom()
+for i in range(8):
+    result = g.response('/ctrl/add', str(i))
+    assert_eq(ret_code.OK, result['code'])
+result = g.response('/ctrl/add', 'x')
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': 'room full',
+          }, result)

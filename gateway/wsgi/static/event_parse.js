@@ -1,4 +1,4 @@
-function EventList() {
+function SGS_EventParser() {
     function buildEvent(detail) {
         function Card(detail) {
             if (!('id' in detail)) {
@@ -21,9 +21,17 @@ function EventList() {
             return result;
         }
         var NAMING_MAPPING = {
-            'GameStarted': function(detail) {
-                this.characters = detail['characters'];
+            'GameInit': function(detail) {
+                this.players = detail['players'];
+                this.position = detail['position'];
                 this.exhibit = function(game) {
+                    game.initPosition(this.players, this.position);
+                };
+            }, 'SelectCharacter': function(detail) {
+                this.player = detail['player'];
+                this.character = detail['character'];
+                this.exhibit = function(game) {
+                    game.player(this.player).selectCharacter(this.character);
                 };
             }, 'DrawCards': function(detail) {
                 this.player = detail['player'];

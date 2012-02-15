@@ -1,15 +1,8 @@
 from hashlib import sha256
 import time
 
-from core.src.game_control import GameControl
-from core.src.event import EventList
-from core.src.action_stack import ActionStack
-import core.src.card as card
 import core.src.ret_code as ret_code
-from ext.src.players_control import PlayersControl
-from ext.src.player import Player
-import ext.src.card_pool as card_pool
-import ext.src.skills.bequeathed_strategy as bequeathed_strategy
+from ext.src import game_init
 
 class GameRoom:
     def __init__(self):
@@ -22,6 +15,7 @@ class GameRoom:
                             '/info/status': self.game_status,
                             '/info/events': self.get_events,
                             '/info/hint': self.get_hint,
+                            '/info/checktoken': self.check_token,
                             '/act': self.player_act,
                         }
         self.game_started = False
@@ -46,6 +40,12 @@ class GameRoom:
                        'code': ret_code.BAD_REQUEST,
                        'reason': 'Syntax error: %s' % e.message,
                    }
+
+    def check_token(self, request_body):
+        return {
+                   'code': ret_code.OK,
+                   'in': 1 if request_body in self.players_tokens else 0,
+               }
 
     def player_exit(self, token):
         if not token in self.players_tokens:
@@ -73,6 +73,8 @@ class GameRoom:
 
     def add_player(self, request_body):
         self._check_game_not_started()
+        if 8 == len(self.players_tokens):
+            raise ValueError('room full')
         token = sha256(request_body + str(time.time())).hexdigest()
         if len(self.players_tokens) == 0:
             self.host = token
@@ -94,13 +96,8 @@ class GameRoom:
                        'code': ret_code.BAD_REQUEST,
                        'reason': 'Not the host',
                    }
-        pc = PlayersControl()
-        self.gc = GameControl(EventList(),
-                              card_pool.CardPool(card_pool.all_cards()),
-                              pc, ActionStack())
-        for token in self.players_tokens: pc.add_player(Player(token))
-        self.gc.start()
         self.game_started = True
+        self.gc = game_init.statuses_mode(self.players_tokens)
         return { 'code': ret_code.OK }
 
     def get_hint(self, request_body):
