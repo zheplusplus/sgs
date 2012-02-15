@@ -1,3 +1,66 @@
+function initViews(gamePane) {
+    function Game(me, others, center) {
+        var players = new Array();
+
+        this.initPosition = function(playerCount, myPosition) {
+            /*
+             * 6 5 4 3 2
+             * 7       1
+             *  My Pos-
+             */
+            var positions = new Array(6, 5, 4, 3, 2, 7, 1, 0);
+            others.push(me);
+            for (i in positions) {
+                var index = (positions[i] + myPosition) % 8;
+                if (index != myPosition) {
+                    players[index] = new Player(others[i]);
+                } else {
+                    players[index] = new Me(me);
+                }
+            }
+        }
+        this.player = function(id) {
+            return players[id];
+        };
+        var hintparser = new SGS_HintParser(this, players, new Center(center));
+        this.hint = function(result) {
+            center.innerHTML = '';
+            hintparser.hint(result);
+        };
+    }
+
+    var views = new Array();
+
+    var row1st = document.createElement('tr');
+    for (col = 0; col < 5; ++col) {
+        var column = document.createElement('td');
+        row1st.appendChild(column);
+        views.push(column);
+    }
+    gamePane.appendChild(row1st);
+
+    var row2nd = document.createElement('tr');
+    var cell2 = document.createElement('td');
+    row2nd.appendChild(cell2);
+    var cellcenter = document.createElement('td');
+    cellcenter.setAttribute('colspan', '3');
+    row2nd.appendChild(cellcenter);
+    var cell6 = document.createElement('td');
+    row2nd.appendChild(cell6);
+    gamePane.appendChild(row2nd);
+
+    views.push(cell2);
+    views.push(cell6);
+
+    var row3rd = document.createElement('tr');
+    var cellme = document.createElement('td');
+    cellme.setAttribute('colspan', '5');
+    row3rd.appendChild(cellme);
+    gamePane.appendChild(row3rd);
+
+    return new Game(cellme, views, cellcenter);
+}
+
 function Player(view) {
     var canvas = document.createElement('canvas');
     var context = canvas.getContext('2d');
