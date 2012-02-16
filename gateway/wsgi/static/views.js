@@ -39,7 +39,7 @@ function Game(pane) {
     var FIRST_Y = VERT_PADDING;
     var SECOND_X = HORI_PADDING;
     var SECOND_Y = CANVAS_H - VERT_PADDING - CHILD_H * 3 -
-                        CHILD_VERT_INTERVAL * 2 - 1;
+                        CHILD_VERT_INTERVAL * 2;
     var THIRD_X = HORI_PADDING;
     var THIRD_Y = SECOND_Y + CHILD_H + CHILD_VERT_INTERVAL;
     var ME_X = HORI_PADDING;
@@ -142,11 +142,15 @@ function Player(ctxt, coord) {
                       CHILD_W - NUM_W - BORDER * 2);
         ctxt.restore();
     };
+    this.useCards = function() {};
+    this.discardCards = function(count, filter) {}
 }
 
 function Me(ctxt, coord) {
     var LEFT_AREA = 80;
+    var RIGHT_AREA = 80;
     var CARD_W = 48;
+    this.click = function(c) {};
     function paintCard(card, position) {
         ctxt.save();
         ctxt.translate(coord.x, coord.y);
@@ -170,13 +174,15 @@ function Me(ctxt, coord) {
         ctxt.restore();
     }
 
-    this.click = function(c) {
+    function clickOnCard(c) {
         if (LEFT_AREA <= c.x && c.x < LEFT_AREA + cards.length * CARD_W) {
             var index = Math.floor((c.x - LEFT_AREA) / CARD_W);
             card = cards[index];
             card.selected = !card.selected;
             paintCard(card, index);
+            return true;
         }
+        return false;
     };
 
     var cards = new Array();
@@ -200,15 +206,78 @@ function Me(ctxt, coord) {
         ctxt.save();
         ctxt.translate(coord.x, coord.y);
         ctxt.textBaseline = 'top';
-        ctxt.fillText(name, 0, 0, 80);
+        ctxt.fillText(name, 0, 0, LEFT_AREA);
         ctxt.fillText(Array(max_vigor + 1).join('[]'), 0, TEXT_H, LEFT_AREA);
+        ctxt.restore();
+    };
+    this.useCards = function() {
+        var rightX = ME_W - RIGHT_AREA;
+
+        ctxt.save();
+        ctxt.translate(coord.x + rightX, coord.y);
+        ctxt.textBaseline = 'top';
+
+        ctxt.save();
+        ctxt.fillStyle = '#f88';
+        ctxt.fillRect(0, 0, RIGHT_AREA, ME_H / 2);
+        ctxt.restore();
+        ctxt.save();
+        ctxt.fillStyle = '#088';
+        ctxt.fillText('Use!', 0, 0, RIGHT_AREA);
+        ctxt.restore();
+
+        ctxt.save();
+        ctxt.fillStyle = '#afa';
+        ctxt.fillRect(0, ME_H / 2, RIGHT_AREA, ME_H / 4);
+        ctxt.restore();
+        ctxt.save();
+        ctxt.fillStyle = '#808';
+        ctxt.fillText('Cancel', 0, ME_H / 2, RIGHT_AREA);
+        ctxt.restore();
+
+        ctxt.save();
+        ctxt.fillStyle = '#888';
+        ctxt.fillRect(0, ME_H * 3 / 4, RIGHT_AREA, ME_H / 4);
+        ctxt.restore();
+        ctxt.save();
+        ctxt.fillStyle = '#000';
+        ctxt.fillText('Give up', 0, ME_H * 3 / 4, RIGHT_AREA);
+        ctxt.restore();
+
+        ctxt.restore();
+
+        this.click = function(c) {
+            if (clickOnCard(c)) {
+                return;
+            }
+            if (c.isIn(rightX, ME_H * 3 / 4, RIGHT_AREA, ME_H / 4)) {
+                post_act({
+                             'action': 'give up',
+                         });
+            }
+        };
+    };
+    this.discardCards = function(count, filter) {
+        var rightX = ME_W - RIGHT_AREA;
+
+        ctxt.save();
+        ctxt.translate(coord.x + rightX, coord.y);
+        ctxt.save();
+        ctxt.fillStyle = '#aaa';
+        ctxt.fillRect(0, 0, RIGHT_AREA, ME_H);
+        ctxt.restore();
+        ctxt.save();
+        ctxt.textBaseline = 'top';
+        ctxt.fillStyle = '#111';
+        ctxt.fillText('Discard', 0, 0, RIGHT_AREA);
+        ctxt.restore();
         ctxt.restore();
     };
 }
 
 function Center(ctxt, coord) {
     drawBorder(ctxt, coord, CENTER_W, CENTER_H, BORDER, '#798');
-    this.click = function(c) {}
+    this.click = function(c) {};
     this.selectCharacters = function(candidates) {
         ctxt.save();
         ctxt.translate(coord.x, coord.y);
@@ -232,7 +301,7 @@ function Center(ctxt, coord) {
                 ctxt.fillStyle = '#fff';
                 ctxt.fillRect(0, 0, CENTER_W, CENTER_H);
                 ctxt.restore();
-                this.click = function(c) {}
+                this.click = function(c) {};
             }
         }
     };

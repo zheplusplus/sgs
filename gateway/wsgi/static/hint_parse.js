@@ -14,6 +14,10 @@ function SGS_HintParser(game, players, center) {
             if ('candidate' in result) {
                 center.selectCharacters(result['candidate']);
             }
+        }, 'UseCards': function(result) {
+            players[result['players'][0]].useCards();
+        }, 'DiscardCards': function(result) {
+            players[result['players'][0]].discardCards();
         },
     };
     this.hint = function(result) {

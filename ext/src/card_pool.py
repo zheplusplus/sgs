@@ -89,7 +89,7 @@ def all_cards():
             return self
 
         def reset_rank(self):
-            self.rank = 1
+            self.rank = 0
             return self
 
         def add_card(self, name):
