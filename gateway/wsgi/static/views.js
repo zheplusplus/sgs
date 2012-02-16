@@ -212,6 +212,17 @@ function Me(ctxt, coord) {
             paintCard(cards[i], i);
         }
     }
+    function resetRight() {
+        var rightX = ME_W - RIGHT_AREA;
+
+        ctxt.save();
+        ctxt.translate(coord.x + rightX, coord.y);
+        ctxt.fillStyle = '#fff';
+        ctxt.fillRect(0, 0, RIGHT_AREA, ME_H);
+        ctxt.restore();
+
+        this.click = function(c) {};
+    }
 
     this.drawCards = function(new_cards) {
         for (c in new_cards) {
@@ -360,6 +371,7 @@ function Me(ctxt, coord) {
                     }
                     post_act({ 'discard': discarding });
                     this.discardCards = startDiscarding;
+                    resetRight();
                 }
             }
         };
