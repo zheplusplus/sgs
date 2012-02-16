@@ -14,11 +14,17 @@ class FrameBase:
         pass
 
     def hint(self, token):
-        return {
+        return dict({
             'code': ret_code.OK,
             'players': map(lambda p: p.player_id, self.allowed_players()),
-            'action': self.__class__.__name__,
-        }
+            'action': self._hint_action(token),
+        }.items() + self._hint(token).items())
+
+    def _hint_action(self, token):
+        return self.__class__.__name__
+
+    def _hint(self, token):
+        return dict()
 
 def check_owner(owner, cards):
     for c in cards:
@@ -123,9 +129,5 @@ class AcceptMessage(FrameBase):
         self.on_message(args)
         return self.done(args)
 
-    def hint(self, token):
-        return {
-            'code': ret_code.OK,
-            'players': map(lambda p: p.player_id, self.allowed_players()),
-            'action': self.frame_hint,
-        }
+    def _hint_action(self, token):
+        return self.frame_hint

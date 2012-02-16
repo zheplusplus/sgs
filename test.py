@@ -4,6 +4,7 @@ import core.test.test_frames
 import core.test.test_players_control
 import ext.test.test_game_init
 import ext.test.test_card_pool
+import ext.test.test_player
 import ext.test.test_players_control
 import ext.test.test_fire_attack
 import ext.test.test_duel

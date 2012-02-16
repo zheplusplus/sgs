@@ -48,17 +48,26 @@ class Player(CorePlayer):
                                 get_using_cards_interface_map(),
                                 lambda gc, _: self.discarding_cards_stage(gc)))
 
+    def discard_count(self, game_control):
+        return game_control.player_cards_count_at(self, 'cards') - self.vigor
+
     def discarding_cards_stage(self, game_control):
-        need_discard = game_control.player_cards_count_at(
-                                             self, 'cards') - self.vigor
-        def discard_check(cards_ids):
-            checking.cards_region(game_control.cards_by_ids(cards_ids), 'cards')
-            if len(cards_ids) != need_discard:
-                raise ValueError('must discard ' + str(need_discard) + ' cards')
+        need_discard = self.discard_count(game_control)
+        class DiscardCards(frames.DiscardCards):
+            def __init__(self, player, on_result):
+                frames.DiscardCards.__init__(self, game_control, player,
+                                             self.discard_check, on_result)
+
+            def _hint(self, token):
+                return { 'count': need_discard }
+
+            def discard_check(self, cards_ids):
+                if len(cards_ids) != need_discard:
+                    raise ValueError('must discard %d cards' % need_discard)
+                checking.cards_region(game_control.cards_by_ids(cards_ids),
+                                      'cards')
         if self.alive and 0 < need_discard:
-            game_control.push_frame(
-                    frames.DiscardCards(game_control, self, discard_check,
-                                        self.cards_discarded))
+            game_control.push_frame(DiscardCards(self, self.cards_discarded))
         else:
             game_control.next_round()
 

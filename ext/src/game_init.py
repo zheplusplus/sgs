@@ -34,11 +34,10 @@ class _SelectCharacter(FrameBase):
             return self.done(self.selected)
         return { 'code': ret_code.OK }
 
-    def hint(self, token):
-        base_hint = FrameBase.hint(self, token)
+    def _hint(self, token):
         if token in self.token_to_characters:
-            base_hint['candidate'] = self.token_to_characters[token].keys()
-        return base_hint
+            return { 'candidate': self.token_to_characters[token].keys() }
+        return dict()
 
 def random_pick_characters(count):
     all_chars = list(characters.ALL)

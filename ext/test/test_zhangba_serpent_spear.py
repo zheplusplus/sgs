@@ -351,7 +351,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                           'token': players[0].token,
-                          'discard': [0, 1],
+                          'discard': [1],
                       })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
