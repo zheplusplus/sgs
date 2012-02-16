@@ -5,7 +5,7 @@ function SGS_HintParser(game, players, center) {
             players[i].deactivate();
         }
         for (i in activated) {
-            players[i].activate();
+            players[activated[i]].activate();
         }
     }
     var NAMING_MAPPING = {

@@ -138,12 +138,12 @@ function init() {
     paras = document.getElementsByTagName('p');
     joinPane = paras[0];
     startPane = paras[1];
-    gamePane = document.getElementsByTagName('table')[0];
-    msgPane = paras[2];
+    gamePane = paras[2];
+    msgPane = paras[3];
     startPane.style.visibility = 'hidden';
     gamePane.style.visibility = 'hidden';
 
-    game = initViews(gamePane);
+    game = new Game(gamePane);
 
     post_data(token, '/info/checktoken', function(result) {
         if (result['in'] == 1) {
@@ -159,5 +159,5 @@ function init() {
 <button onclick='exitGame()'>Exit</button>
 <span id='players_count'></span> player(s) in the room now.
 </p>
-<table border=1></table>
+<p></p>
 <p></p>
