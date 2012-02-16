@@ -17,7 +17,8 @@ function SGS_HintParser(game, players, center) {
         }, 'UseCards': function(result) {
             players[result['players'][0]].useCards();
         }, 'DiscardCards': function(result) {
-            players[result['players'][0]].discardCards();
+            players[result['players'][0]].discardCards(
+                        result['count'], function(c) { return true; });
         },
     };
     this.hint = function(result) {

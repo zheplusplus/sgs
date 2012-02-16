@@ -113,19 +113,22 @@ function drawBorder(ctxt, coord, width, height, borderSize, color) {
 }
 
 function Player(ctxt, coord) {
-    this.cards_count = 0;
-    this.drawCount = function(count) {
+    var cards_count = 0;
+    function repaintCardCount() {
         ctxt.save();
         ctxt.translate(coord.x, coord.y);
-        this.cards_count += count;
         ctxt.save();
         ctxt.fillStyle = '#fff';
         ctxt.fillRect(0, TEXT_H, NUM_W, TEXT_H);
         ctxt.restore();
 
         ctxt.textBaseline = 'top';
-        ctxt.fillText(this.cards_count, 0, NUM_W, TEXT_H);
+        ctxt.fillText(cards_count, 0, NUM_W, TEXT_H);
         ctxt.restore();
+    }
+    this.drawCount = function(count) {
+        cards_count += count;
+        repaintCardCount();
     };
     this.activate = function() {
         drawBorder(ctxt, coord, CHILD_W, CHILD_H, BORDER, '#f33');
@@ -144,6 +147,10 @@ function Player(ctxt, coord) {
     };
     this.useCards = function() {};
     this.discardCards = function(count, filter) {}
+    this.discard = function(c) {
+        cards_count -= c.length;
+        repaintCardCount();
+    };
 }
 
 function Me(ctxt, coord) {
@@ -174,10 +181,17 @@ function Me(ctxt, coord) {
         ctxt.restore();
     }
 
-    function clickOnCard(c) {
+    function cardIndexAt(c) {
         if (LEFT_AREA <= c.x && c.x < LEFT_AREA + cards.length * CARD_W) {
-            var index = Math.floor((c.x - LEFT_AREA) / CARD_W);
-            card = cards[index];
+            return Math.floor((c.x - LEFT_AREA) / CARD_W);
+        }
+        return -1;
+    }
+
+    function clickOnCard(c) {
+        var index = cardIndexAt(c);
+        if (index != -1) {
+            var card = cards[index];
             card.selected = !card.selected;
             paintCard(card, index);
             return true;
@@ -187,14 +201,24 @@ function Me(ctxt, coord) {
 
     var cards = new Array();
 
+    function repaintCards() {
+        ctxt.save();
+        ctxt.translate(coord.x + LEFT_AREA, coord.y);
+        ctxt.fillStyle = '#fff';
+        ctxt.fillRect(0, 0, CARD_W * 6, ME_H);
+        ctxt.restore();
+
+        for (i = 0; i < cards.length; ++i) {
+            paintCard(cards[i], i);
+        }
+    }
+
     this.drawCards = function(new_cards) {
         for (c in new_cards) {
             new_cards[c].selected = false;
         }
         cards = cards.concat(new_cards);
-        for (i = 0; i < cards.length; ++i) {
-            paintCard(cards[i], i);
-        }
+        repaintCards();
     };
     this.activate = function() {
         drawBorder(ctxt, coord, ME_W, ME_H, BORDER, '#bb1');
@@ -257,8 +281,44 @@ function Me(ctxt, coord) {
             }
         };
     };
-    this.discardCards = function(count, filter) {
+
+    function selectedCount() {
+        var c = 0;
+        for (i in cards) {
+            if (cards[i].selected) ++c;
+        }
+        return c;
+    }
+
+    function selected() {
+        var c = new Array();
+        for (i in cards) {
+            if (cards[i].selected) c.push(cards[i]);
+        }
+        return c;
+    }
+
+    function removeCards(c) {
+        for (i = 0; i < c.length; ++i) {
+            for (j = 0; j < cards.length; ++j) {
+                if (c[i].id == cards[j].id) {
+                    cards.splice(j, 1);
+                    break;
+                }
+            }
+        }
+    }
+
+    this.discardCards = startDiscarding;
+
+    function startDiscarding(count, filter) {
         var rightX = ME_W - RIGHT_AREA;
+        for (i = 0; i < cards.length; ++i) {
+            if (cards[i].selected) {
+                cards[i].selected = false;
+                paintCard(cards[i], i);
+            }
+        }
 
         ctxt.save();
         ctxt.translate(coord.x + rightX, coord.y);
@@ -269,9 +329,45 @@ function Me(ctxt, coord) {
         ctxt.save();
         ctxt.textBaseline = 'top';
         ctxt.fillStyle = '#111';
-        ctxt.fillText('Discard', 0, 0, RIGHT_AREA);
+        ctxt.fillText('Discard ' + count, 0, 0, RIGHT_AREA);
         ctxt.restore();
         ctxt.restore();
+
+        this.discardCards = function(count, filter) {};
+
+        this.click = function(c) {
+            var index = cardIndexAt(c);
+            if (index != -1) {
+                var card = cards[index];
+                if (card.selected) {
+                    card.selected = false;
+                    paintCard(card, index);
+                    return;
+                }
+
+                if (selectedCount() != count && filter(card)) {
+                    card.selected = true;
+                    paintCard(card, index);
+                }
+                return;
+            }
+            if (c.isIn(rightX, 0, RIGHT_AREA, ME_H)) {
+                if (selectedCount() == count) {
+                    var discarding = new Array();
+                    var selectedCards = selected();
+                    for (i in selectedCards) {
+                        discarding.push(selectedCards[i].id);
+                    }
+                    post_act({ 'discard': discarding });
+                    this.discardCards = startDiscarding;
+                }
+            }
+        };
+    };
+
+    this.discard = function(c) {
+        removeCards(c);
+        repaintCards();
     };
 }
 

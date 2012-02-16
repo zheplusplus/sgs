@@ -28,7 +28,7 @@ function post_data(data, url, on_sent) {
         if (req.readyState == 4) {
             on_sent(eval('(' + req.responseText + ')'));
         }
-    }
+    };
     req.send(data);
 }
 
@@ -40,7 +40,9 @@ function post_act(data) {
             alert('REASON:' + result['reason']);
         } else {
             clearTimeout(events_heartbeat);
+            clearTimeout(hint_heartbeat);
             getEvents();
+            getHint();
         }
     });
 }
