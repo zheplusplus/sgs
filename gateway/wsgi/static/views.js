@@ -118,7 +118,7 @@ function Game(pane) {
 
         var x = position * CARD_W;
         ctxt.save();
-        ctxt.fillStyle = card.selected ? '#fff' : '#ddd';
+        ctxt.fillStyle = card.selected ? '#fff' : '#aaa';
         ctxt.fillRect(x, 0, CARD_W, ME_H);
         ctxt.restore();
 
@@ -384,6 +384,9 @@ function Game(pane) {
         this.discard = function(c) {
             removeCards(c);
             repaintCards();
+            for (i = 0; i < c.length; ++i) {
+                paintCard(new Coord(CENTER_X, CENTER_Y), c[i], i);
+            }
         };
     }
 
