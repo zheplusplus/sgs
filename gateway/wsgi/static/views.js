@@ -146,9 +146,8 @@ function Player(ctxt, coord) {
 
 function Me(ctxt, coord) {
     var LEFT_AREA = 80;
-    var CARD_W = 40;
+    var CARD_W = 48;
     function paintCard(card, position) {
-
         ctxt.save();
         ctxt.translate(coord.x, coord.y);
 
@@ -160,8 +159,11 @@ function Me(ctxt, coord) {
 
         ctxt.save();
         ctxt.textBaseline = 'top';
-        ctxt.fillText(card.rank + 1, x, 0, NUM_W);
+        ctxt.save();
+        ctxt.fillStyle = SGS_STR_CARD_SUITS_COLOR[card.suit];
+        ctxt.fillText(SGS_STR_CARD_RANKS[card.rank], x, 0, NUM_W);
         ctxt.fillText(SGS_STR_CARD_SUITS[card.suit], x + NUM_W, 0, NUM_W);
+        ctxt.restore();
         ctxt.fillText(card.name, x, TEXT_H, CARD_W);
         ctxt.restore();
 

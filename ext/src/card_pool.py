@@ -5,7 +5,9 @@ import core.src.card as card
 class CardPool:
     @staticmethod
     def create():
-        return CardPool(all_cards())
+        cards = all_cards()
+        random.shuffle(cards)
+        return CardPool(cards)
 
     def __init__(self, cards):
         self.discarded = []
