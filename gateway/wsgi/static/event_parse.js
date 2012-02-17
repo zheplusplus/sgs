@@ -32,8 +32,8 @@ function SGS_EventParser() {
                 this.character = detail['character'];
                 this.max_vigor = detail['max vigor'];
                 this.exhibit = function(game) {
-                    game.player(this.player).selectCharacter(this.character,
-                                                             this.max_vigor);
+                    game.player(this.player).eventCharSelected(this.character,
+                                                               this.max_vigor);
                 };
             }, 'DrawCards': function(detail) {
                 this.player = detail['player'];
@@ -41,16 +41,16 @@ function SGS_EventParser() {
                 this.exhibit = function(game) {
                     var player = game.player(this.player);
                     if (typeof this.cards === 'number') {
-                        player.drawCount(this.cards);
+                        player.eventDrawCount(this.cards);
                     } else {
-                        player.drawCards(buildCards(this.cards));
+                        player.eventDrawCards(buildCards(this.cards));
                     }
                 };
             }, 'DiscardCards': function(detail) {
                 var player = detail['player'];
                 var cards = detail['discard'];
                 this.exhibit = function(game) {
-                    game.player(player).discard(buildCards(cards));
+                    game.player(player).eventDiscard(buildCards(cards));
                 };
             }, 'PublicCardsTransfer': function(detail) {
                 var source = detail['source'];

@@ -15,9 +15,9 @@ function SGS_HintParser(game, players, center) {
                 center.selectCharacters(result['candidate']);
             }
         }, 'UseCards': function(result) {
-            players[result['players'][0]].useCards();
+            players[result['players'][0]].hintUseCards();
         }, 'DiscardCards': function(result) {
-            players[result['players'][0]].discardCards(
+            players[result['players'][0]].hintDiscardCards(
                         result['count'], function(c) { return true; });
         },
     };

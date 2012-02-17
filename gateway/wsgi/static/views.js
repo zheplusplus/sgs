@@ -30,7 +30,7 @@ var ME_H = CHILD_H;
 var BORDER = 4;
 var CARD_W = 48;
 
-function drawBorder(ctxt, coord, width, height, borderSize, color) {
+function paintBorder(ctxt, coord, width, height, borderSize, color) {
     ctxt.save();
     ctxt.translate(coord.x - borderSize, coord.y - borderSize);
     ctxt.fillStyle = color;
@@ -149,17 +149,17 @@ function Game(pane) {
             ctxt.fillText(cards_count, 0, NUM_W, TEXT_H);
             ctxt.restore();
         }
-        this.drawCount = function(count) {
+        this.eventDrawCount = function(count) {
             cards_count += count;
             repaintCardCount();
         };
         this.activate = function() {
-            drawBorder(ctxt, coord, CHILD_W, CHILD_H, BORDER, '#f33');
+            paintBorder(ctxt, coord, CHILD_W, CHILD_H, BORDER, '#f33');
         };
         this.deactivate = function() {
-            drawBorder(ctxt, coord, CHILD_W, CHILD_H, BORDER, '#aaa');
+            paintBorder(ctxt, coord, CHILD_W, CHILD_H, BORDER, '#aaa');
         };
-        this.selectCharacter = function(name, max_vigor) {
+        this.eventCharSelected = function(name, max_vigor) {
             ctxt.save();
             ctxt.translate(coord.x, coord.y);
             ctxt.textBaseline = 'top';
@@ -168,9 +168,10 @@ function Game(pane) {
                           CHILD_W - NUM_W - BORDER * 2);
             ctxt.restore();
         };
-        this.useCards = function() {};
-        this.discardCards = function(count, filter) {}
-        this.discard = function(c) {
+        this.hintUseCards = function() {};
+        this.hintDiscardCards = function(count, filter) {}
+        this.eventDiscard = function(c) {
+            center.clear();
             for (i = 0; i < c.length; ++i) {
                 paintCard(new Coord(CENTER_X, CENTER_Y), c[i], i);
             }
@@ -227,7 +228,7 @@ function Game(pane) {
             this.click = function(c) {};
         }
 
-        this.drawCards = function(new_cards) {
+        this.eventDrawCards = function(new_cards) {
             for (c in new_cards) {
                 new_cards[c].selected = false;
             }
@@ -235,12 +236,12 @@ function Game(pane) {
             repaintCards();
         };
         this.activate = function() {
-            drawBorder(ctxt, coord, ME_W, ME_H, BORDER, '#bb1');
+            paintBorder(ctxt, coord, ME_W, ME_H, BORDER, '#bb1');
         };
         this.deactivate = function() {
-            drawBorder(ctxt, coord, ME_W, ME_H, BORDER, '#aaa');
+            paintBorder(ctxt, coord, ME_W, ME_H, BORDER, '#aaa');
         };
-        this.selectCharacter = function(name, max_vigor) {
+        this.eventCharSelected = function(name, max_vigor) {
             ctxt.save();
             ctxt.translate(coord.x, coord.y);
             ctxt.textBaseline = 'top';
@@ -249,7 +250,7 @@ function Game(pane) {
                           LEFT_AREA);
             ctxt.restore();
         };
-        this.useCards = function() {
+        this.hintUseCards = function() {
             var rightX = ME_W - RIGHT_AREA;
 
             ctxt.save();
@@ -324,7 +325,7 @@ function Game(pane) {
             }
         }
 
-        this.discardCards = startDiscarding;
+        this.hintDiscardCards = startDiscarding;
 
         function startDiscarding(count, filter) {
             var rightX = ME_W - RIGHT_AREA;
@@ -348,7 +349,7 @@ function Game(pane) {
             ctxt.restore();
             ctxt.restore();
 
-            this.discardCards = function(count, filter) {};
+            this.hintDiscardCards = function(count, filter) {};
 
             this.click = function(c) {
                 var index = cardIndexAt(c);
@@ -374,14 +375,15 @@ function Game(pane) {
                             discarding.push(selectedCards[i].id);
                         }
                         post_act({ 'discard': discarding });
-                        this.discardCards = startDiscarding;
+                        this.hintDiscardCards = startDiscarding;
                         resetRight();
                     }
                 }
             };
         };
 
-        this.discard = function(c) {
+        this.eventDiscard = function(c) {
+            center.clear();
             removeCards(c);
             repaintCards();
             for (i = 0; i < c.length; ++i) {
@@ -391,7 +393,7 @@ function Game(pane) {
     }
 
     function Center(ctxt, coord) {
-        drawBorder(ctxt, coord, CENTER_W, CENTER_H, BORDER, '#798');
+        paintBorder(ctxt, coord, CENTER_W, CENTER_H, BORDER, '#798');
         this.click = function(c) {};
         this.clear = function() {
             ctxt.save();
