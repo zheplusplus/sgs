@@ -4,6 +4,7 @@
 <script src='/static/event_parse.js'></script>
 <script src='/static/hint_parse.js'></script>
 <script src='/static/strings.js'></script>
+<script src='/static/canvaslite.js'></script>
 <script src='/static/views.js'></script>
 <script>
 var BEAT_INTERVAL = 2000;
@@ -153,6 +154,10 @@ function init() {
         }
     });
 }
+
+function log(msg) {
+    //document.getElementById('log').innerHTML += (msg + '<br/>');
+}
 </script>
 <body onload='init()'>
 <p><button onclick='joinGame()'>Join</button></p>
@@ -163,3 +168,4 @@ function init() {
 </p>
 <p></p>
 <p></p>
+<p id='log'></p>
