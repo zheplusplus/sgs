@@ -59,7 +59,12 @@ class Player(CorePlayer):
                                              self.discard_check, on_result)
 
             def _hint(self, token):
-                return { 'count': need_discard }
+                return {
+                           'require': ['count', 'region'],
+                           'count': need_discard,
+                           'region': 'cards',
+                           'give up': 'disallow',
+                       }
 
             def discard_check(self, cards_ids):
                 if len(cards_ids) != need_discard:

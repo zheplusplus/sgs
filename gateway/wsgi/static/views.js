@@ -217,16 +217,15 @@ function Me(pc, coord, center) {
                                canvas);
     var me = this;
 
-    function enableCardClick(maxSelect) {
+    function enableCardClick(filter) {
         middle.click(function (x, y) {
             if (x < CARD_W * cards.length) {
                 var index = Math.floor(x / CARD_W);
                 var card = cards[index];
-                if (selectedCount() == maxSelect && !card.selected) {
-                    return;
+                if (card.selected || filter(card, selected())) {
+                    card.selected = !card.selected;
+                    paintCard(middle.context(), card, index);
                 }
-                card.selected = !card.selected;
-                paintCard(middle.context(), card, index);
             }
         });
     }
@@ -267,7 +266,7 @@ function Me(pc, coord, center) {
         ctxt.restore();
     };
     this.hintUseCards = function() {
-        enableCardClick(1);
+        enableCardClick(function(c, s) { return true; });
         var ctxt = right.context();
 
         ctxt.save();
@@ -339,9 +338,9 @@ function Me(pc, coord, center) {
 
     this.hintDiscardCards = startDiscarding;
 
-    function startDiscarding(count, filter) {
-        this.hintDiscardCards = function(count, filter) {};
-        enableCardClick(count);
+    function startDiscarding(filter, validator, giveUpAllow) {
+        this.hintDiscardCards = function(filter, giveUpAllow) {};
+        enableCardClick(filter);
 
         var ctxt = right.context();
         for (i = 0; i < cards.length; ++i) {
@@ -355,11 +354,11 @@ function Me(pc, coord, center) {
         ctxt.save();
         ctxt.textBaseline = 'top';
         ctxt.fillStyle = '#111';
-        ctxt.fillText('Discard ' + count, 0, 0, RIGHT_AREA);
+        ctxt.fillText('Discard', 0, 0, RIGHT_AREA);
         ctxt.restore();
 
         right.click(function(x, y) {
-            if (selectedCount() == count) {
+            if (validator(selected())) {
                 var discarding = new Array();
                 var selectedCards = selected();
                 for (i in selectedCards) {
