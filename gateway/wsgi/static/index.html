@@ -12,7 +12,7 @@ var status_heartbeat = null;
 var hint_heartbeat = null;
 var events_heartbeat = null;
 
-function post_data(data, url, on_sent) {
+function post_data(data, url, onResult) {
     var req = null;
     try {
         if (window.XMLHttpRequest) {
@@ -27,7 +27,7 @@ function post_data(data, url, on_sent) {
     req.open('POST', url, true);
     req.onreadystatechange = function() {
         if (req.readyState == 4) {
-            on_sent(eval('(' + req.responseText + ')'));
+            onResult(eval('(' + req.responseText + ')'));
         }
     };
     req.send(data);
@@ -37,8 +37,8 @@ function post_act(data) {
     data['token'] = token;
     return post_data(JSON.stringify(data), '/act', function(result) {
         if (result['code'] != 200) {
-            alert('SEND:' + JSON.stringify(data));
-            alert('REASON:' + result['reason']);
+            critical('SEND:' + JSON.stringify(data));
+            critical('REASON:' + result['reason']);
         } else {
             clearTimeout(events_heartbeat);
             clearTimeout(hint_heartbeat);
@@ -156,7 +156,12 @@ function init() {
 }
 
 function log(msg) {
-    //document.getElementById('log').innerHTML += (msg + '<br/>');
+    document.getElementById('log').innerHTML += (msg + '<br/>');
+}
+
+function crit(msg) {
+    document.getElementById('log').innerHTML +=
+        ('<span style="color: red;">' + msg + '</span><br/>');
 }
 </script>
 <body onload='init()'>
@@ -168,4 +173,4 @@ function log(msg) {
 </p>
 <p></p>
 <p></p>
-<p id='log'></p>
+<p id='log' style='position: absolute; top: 540px;'></p>

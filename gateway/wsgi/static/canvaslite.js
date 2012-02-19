@@ -16,7 +16,6 @@ function CanvasLite(x, y, w, h, p) {
     var children = new Array();
 
     this._AddChild = function(child) {
-        log('AddChild ' + child.name);
         children.push(child);
     };
 
@@ -46,7 +45,6 @@ function CanvasLite(x, y, w, h, p) {
         this.addToParent();
         canvas.style.left = x + referX;
         canvas.style.top = y + referY;
-        log('RESET x=' + this._AbsX() + ' y=' + this._AbsY() + ' w=' + w + ' h=' + h);
     };
 
     var z = 0;
@@ -55,7 +53,6 @@ function CanvasLite(x, y, w, h, p) {
         referY = p._AbsY();
         z = p.z() + 1;
     }
-    log('Rel x=' + x + ' y=' + y);
     canvas.style.left = x + referX;
     canvas.style.top = y + referY;
     canvas.style.zIndex = z;
@@ -78,7 +75,6 @@ function CanvasLite(x, y, w, h, p) {
         }
         return y;
     };
-    log('CREATE x=' + this._AbsX() + ' y=' + this._AbsY() + ' w=' + w + ' h=' + h);
 
     var ctxt = canvas.getContext('2d');
     this.context = function() {
