@@ -59,10 +59,11 @@ class Player(CorePlayer):
                                              self.discard_check, on_result)
 
             def _hint(self, token):
+                candidates = game_control.player_cards_at(self.player, 'cards')
                 return {
-                           'require': ['count', 'region'],
+                           'require': ['count', 'candidates'],
                            'count': need_discard,
-                           'region': 'cards',
+                           'candidates': map(lambda c: c.card_id, candidates),
                            'give up': 'disallow',
                        }
 

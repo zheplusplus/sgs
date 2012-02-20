@@ -48,12 +48,15 @@ class CardPool:
         return len(filter(lambda c: c.available(),
                           self.player_id_to_owning_cards[player.player_id])) > 0
 
+    def player_cards_at(self, player, region):
+        return filter(lambda c: c.available() and c.region == region,
+                      self.player_id_to_owning_cards[player.player_id])
+
     def player_has_cards_at(self, player, region):
         return self.player_cards_count_at(player, region) > 0
 
     def player_cards_count_at(self, player, region):
-        return len(filter(lambda c: c.available() and c.region == region,
-                          self.player_id_to_owning_cards[player.player_id]))
+        return len(self.player_cards_at(player, region))
 
     def random_pick_cards(self, player, count):
         cards = filter(lambda c: c.region == 'cards',

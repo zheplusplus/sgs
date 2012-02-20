@@ -25,10 +25,16 @@ function SGS_HintParser(game, players, center) {
                         return function(c, selected) {
                             return f(c, selected) && selected.length < count;
                         };
-                    }, 'region': function region(f) {
-                        var region = result['region'];
+                    }, 'candidates': function region(f) {
+                        var candidates = result['candidates'];
+                        function cardIn(card) {
+                            for (i in candidates) {
+                                if (card.id == candidates[i]) return true;
+                            }
+                            return false;
+                        }
                         return function(card, s) {
-                            return f(card, s) && card.region == region;
+                            return f(card, s) && cardIn(card);
                         };
                     },
                 };
@@ -45,7 +51,7 @@ function SGS_HintParser(game, players, center) {
                         return function(selected) {
                             return f(selected) && selected.length == count;
                         };
-                    }, 'region': function region(f) {
+                    }, 'candidates': function region(f) {
                         return f;
                     },
                 };

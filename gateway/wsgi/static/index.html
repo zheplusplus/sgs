@@ -37,8 +37,8 @@ function post_act(data) {
     data['token'] = token;
     return post_data(JSON.stringify(data), '/act', function(result) {
         if (result['code'] != 200) {
-            critical('SEND:' + JSON.stringify(data));
-            critical('REASON:' + result['reason']);
+            crit('SEND:' + JSON.stringify(data));
+            crit('REASON:' + result['reason']);
         } else {
             clearTimeout(events_heartbeat);
             clearTimeout(hint_heartbeat);

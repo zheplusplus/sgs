@@ -149,6 +149,9 @@ class GameControl:
     def player_has_cards_at(self, player, region):
         return self.card_pool.player_has_cards_at(player, region)
 
+    def player_cards_at(self, player, region):
+        return self.card_pool.player_cards_at(player, region)
+
     def player_cards_count_at(self, player, region):
         return self.card_pool.player_cards_count_at(player, region)
 
