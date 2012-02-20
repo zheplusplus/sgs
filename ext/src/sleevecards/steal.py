@@ -21,6 +21,21 @@ def steal(game_control, args):
                            on_result))
     return { 'code': ret_code.OK }
 
+def steal_target(game_control, user, all_players, card):
+    candidates = filter(
+                   lambda p: user != p and game_control.player_has_cards(p)
+                             and p.target_filter(user, 'fire attack', card)
+                             and user.ranges['steal'] <
+                                        game_control.distance_between(user, p),
+                   all_players)
+    if 0 < len(candidates):
+        return {
+                   'type': 'fix target',
+                   'count': 1,
+                   'candidates': map(lambda p: p.player_id, candidates),
+               }
+    return { 'type': 'forbid' }
+
 def on_message(game_control, user, target, args):
     region = args['steal']
     if region == 'cards':

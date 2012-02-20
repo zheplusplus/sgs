@@ -23,6 +23,23 @@ def fire_attack(game_control, args):
                                              on_result))
     return { 'code': ret_code.OK }
 
+def fire_attack_target(game_control, user, all_players, card):
+    def general(user, target):
+        count_cards = game_control.player_cards_count_at(target, 'cards')
+        if user == target:
+            return 1 < count_cards
+        return 0 < count_cards
+    candidates = filter(lambda p: general(user, p) and
+                                  p.target_filter(user, 'fire attack', card),
+                        all_players)
+    if 0 < len(candidates):
+        return {
+                   'type': 'fix target',
+                   'count': 1,
+                   'candidates': map(lambda p: p.player_id, candidates),
+               }
+    return { 'type': 'forbid' }
+
 def discard_same_suit(game_control, args, player, target, fire_attack_cards):
     show_suit = game_control.cards_by_ids(args['show'])[0].suit
     def discard_check(cards_ids):

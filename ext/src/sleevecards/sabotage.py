@@ -20,6 +20,19 @@ def sabotage(game_control, args):
                                  on_result))
     return { 'code': ret_code.OK }
 
+def sabotage_target(game_control, user, all_players, card):
+    candidates = filter(
+                   lambda p: user != p and game_control.player_has_cards(p)
+                             and p.target_filter(user, 'fire attack', card),
+                   all_players)
+    if 0 < len(candidates):
+        return {
+                   'type': 'fix target',
+                   'count': 1,
+                   'candidates': map(lambda p: p.player_id, candidates),
+               }
+    return { 'type': 'forbid' }
+
 def on_message(game_control, target, args):
     region = args['sabotage']
     if region == 'cards':

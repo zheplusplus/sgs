@@ -48,9 +48,29 @@ gc.start()
 assert_eq({
               'code': ret_code.OK,
               'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          1: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [0, 1],
+                             },
+                          2: { 'type': 'forbid' },
+                          3: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [0, 1],
+                             },
+                          8: { 'type': 'forbid' },
+                          9: { 'type': 'forbid' },
+                      },
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
-assert_eq(gc.hint(players[0].token), gc.hint(players[1].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 
 result = gc.player_act({
         'token': players[0].token,

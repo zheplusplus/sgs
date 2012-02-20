@@ -143,6 +143,12 @@ class GameControl:
     def distance_between(self, source, target):
         return self.players_control.distance_between(source, target)
 
+    def players_from_current(self):
+        return self.players_control.players_from_current()
+
+    def succeeding_players(self):
+        return self.players_control.succeeding_players()
+
     def player_has_cards(self, player):
         return self.card_pool.player_has_cards(player)
 

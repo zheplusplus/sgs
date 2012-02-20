@@ -1,6 +1,7 @@
 from core.src.player import Player as CorePlayer
 import core.src.action_frames as frames
 from player_using_cards import get_using_cards_interface_map
+from player_as_target import player_as_target
 import common_checking as checking
 import player_response as response
 import characters
@@ -16,6 +17,7 @@ class Player(CorePlayer):
                                 'peach': response.ToCertainCard('peach'),
                             })
         self.ranges = { 'steal': 1 }
+        self.as_target_filters = []
         self.actions_before_damaging = Player._damage_actions_dict()
         self.actions_before_damaged = Player._damage_actions_dict()
         self.computing_before_damaging = []
@@ -42,11 +44,40 @@ class Player(CorePlayer):
     def drawing_cards_stage(self, game_control):
         self.draw_cards(game_control, ROUNDDEAL)
 
+    def target_filter(self, source, action, card):
+        for f in self.as_target_filters:
+            if f(self, source, action, card):
+                return False
+        return True
+
+    def _build_using_card_hint(self, game_control):
+        cards = game_control.player_cards_at(self, 'cards')
+        all_players = game_control.players_from_current()
+        card_to_hint = lambda c: {
+            c.card_id: player_as_target(c.name)
+                                       (game_control, self, all_players, c)
+        }
+        return reduce(lambda a, c: dict(a.items() + card_to_hint(c).items()),
+                      cards, dict())
+
     def using_cards_stage(self, game_control):
-        game_control.push_frame(
-                frames.UseCards(game_control, self,
-                                get_using_cards_interface_map(),
-                                lambda gc, _: self.discarding_cards_stage(gc)))
+        on_result = lambda gc, _: self.discarding_cards_stage(gc)
+        me = self
+        class UseCards(frames.UseCards):
+            def __init__(self):
+                frames.UseCards.__init__(self, game_control, me,
+                                         get_using_cards_interface_map(),
+                                         on_result)
+
+                self.hint_cache = {
+                    'card': me._build_using_card_hint(game_control),
+                }
+
+            def _hint(self, token):
+                if token != me.token:
+                    return dict()
+                return self.hint_cache
+        game_control.push_frame(UseCards())
 
     def discard_count(self, game_control):
         return game_control.player_cards_count_at(self, 'cards') - self.vigor

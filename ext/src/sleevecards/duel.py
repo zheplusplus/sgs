@@ -16,6 +16,18 @@ def duel(game_control, args):
     game_control.push_frame(play_slash_frame(game_control, target, user, cards))
     return { 'code': ret_code.OK }
 
+def duel_target(game_control, user, all_players, card):
+    candidates = filter(lambda p: user != p and
+                                  p.target_filter(user, 'fire attack', card),
+                        all_players)
+    if 0 < len(candidates):
+        return {
+                   'type': 'fix target',
+                   'count': 1,
+                   'candidates': map(lambda p: p.player_id, candidates),
+               }
+    return { 'type': 'forbid' }
+
 def play_slash_frame(game_control, player, next_player, duel_cards):
     on_result = lambda gc, a: play_slash(gc, a, player, next_player, duel_cards)
     return player.response_frame('slash', game_control, on_result)
