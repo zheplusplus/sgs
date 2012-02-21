@@ -33,6 +33,32 @@ gc.start()
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          1: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [0, 1],
+                             },
+                          2: { 'type': 'forbid' },
+                          3: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [0, 1],
+                             },
+                          8: { 'type': 'forbid' },
+                          9: { 'type': 'forbid' },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 # cards:
 # name        | rank (id = rank - 1) | suit
 
@@ -169,6 +195,27 @@ last_event_id += 2
 # fire attack | 6    | HEART
 # dodge       | 7    | DIAMOND
 # dodge       | 8    | DIAMOND
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          3: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [0, 1],
+                             },
+                          8: { 'type': 'forbid' },
+                          9: { 'type': 'forbid' },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 result = gc.player_act({
         'token': players[0].token,
         'action': 'fire attack',
@@ -405,6 +452,22 @@ if True: # just indent for a nice appearance
 assert_eq(p0_events[1], p1_events[1])
 last_event_id += 2
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          8: { 'type': 'forbid' },
+                          9: { 'type': 'forbid' },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 result = gc.player_act({
         'token': players[0].token,
         'discard': [3],
@@ -534,6 +597,29 @@ assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': ret_code.BR_WRONG_ARG % 'forbid target no card',
           }, result)
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          4: { 'type': 'forbid' },
+                          5: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          6: { 'type': 'forbid' },
+                          7: { 'type': 'forbid' },
+                          8: { 'type': 'forbid' },
+                          9: { 'type': 'forbid' },
+                      },
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
 
 # fire attack to a player itself, with only the fire attack card
 pc = PlayersControl()

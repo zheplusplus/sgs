@@ -63,7 +63,7 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG % 'bad region',
+              'reason': ret_code.BR_WRONG_ARG % 'wrong region',
           }, result)
 
 result = gc.player_act({
@@ -104,4 +104,25 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'forbid target no card',
           }, result)
 
-last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          4: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          11: {
+                                  'type': 'fix target',
+                                  'count': 1,
+                                  'candidates': [0],
+                              },
+                      },
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))

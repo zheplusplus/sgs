@@ -38,6 +38,34 @@ gc.start()
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          1: { 'type': 'forbid' },
+                          2: { 'type': 'forbid' },
+                          3: { 'type': 'forbid' },
+                          12: {
+                                  'type': 'fix target',
+                                  'count': 1,
+                                  'candidates': [1, 2],
+                              },
+                          13: {
+                                  'type': 'fix target',
+                                  'count': 1,
+                                  'candidates': [1, 2],
+                              },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
+
 # cards:
 # name     | rank | id | suit
 
@@ -130,6 +158,34 @@ if True: # just indent for a nice appearance
     assert_eq(players[0].player_id, event['target'])
     assert_eq(1, event['transfer'])
 last_event_id += 1
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          1: { 'type': 'forbid' },
+                          2: { 'type': 'forbid' },
+                          3: { 'type': 'forbid' },
+                          4: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1, 2],
+                             },
+                          13: {
+                                  'type': 'fix target',
+                                  'count': 1,
+                                  'candidates': [1, 2],
+                              },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
 
 # cards:
 # name     | rank | id | suit
@@ -248,6 +304,34 @@ if True: # just indent for a nice appearance
     assert_eq(1, event['transfer'])
 last_event_id += 1
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          1: { 'type': 'forbid' },
+                          2: { 'type': 'forbid' },
+                          3: { 'type': 'forbid' },
+                          5: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1, 2],
+                             },
+                          13: {
+                                  'type': 'fix target',
+                                  'count': 1,
+                                  'candidates': [1, 2],
+                              },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
+
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'steal',
@@ -309,6 +393,33 @@ result = gc.player_act({
                        })
 assert_eq(ret_code.OK, result['code'])
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          1: { 'type': 'forbid' },
+                          3: { 'type': 'forbid' },
+                          5: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1, 2],
+                             },
+                          13: {
+                                  'type': 'fix target',
+                                  'count': 1,
+                                  'candidates': [1, 2],
+                              },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
+
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'give up',
@@ -345,6 +456,32 @@ assert_eq(ret_code.OK, result['code'])
 # +dilu    | 5    | 7  | CLUB
 # steal    | 9    | 14 | HEART
 # steal    | 10   | 15 | CLUB
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          6: { 'type': 'forbid' },
+                          7: { 'type': 'forbid' },
+                          14: {
+                                  'type': 'fix target',
+                                  'count': 1,
+                                  'candidates': [2],
+                              },
+                          15: {
+                                  'type': 'fix target',
+                                  'count': 1,
+                                  'candidates': [2],
+                              },
+                      },
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
+assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
+
 result = gc.player_act({
                            'token': players[1].token,
                            'action': 'steal',
@@ -391,7 +528,7 @@ assert_eq(ret_code.OK, result['code'])
 # slash    | 1    | 3  | CLUB
 
 # -zixing  | 13   | 6  | DIAMOND
-# +dilu    | 5    | 7  | CLUB
+# +dilu    | 5    | 7  | CLUB  <- equipped
 # steal    | 9    | 14 | HEART <- use this
 # steal    | 10   | 15 | CLUB
 
@@ -425,6 +562,26 @@ assert_eq({
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until player
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          8: { 'type': 'forbid' },
+                          15: {
+                                  'type': 'fix target',
+                                  'count': 1,
+                                  'candidates': [2, 0],
+                              },
+                      },
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
+assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
+
 # cards:
 # name     | rank | id | suit
 
@@ -433,8 +590,8 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until player
 # +jueying | 5    | 2  | SPADE <- equipped, steal this
 # slash    | 1    | 3  | CLUB
 
-# -zixing  | 13   | 6  | DIAMOND
-# +dilu    | 5    | 7  | CLUB
+# -zixing  | 13   | 6  | DIAMOND <- equipped
+# +dilu    | 5    | 7  | CLUB  <- equipped
 # steal    | 10   | 15 | CLUB  <- use this
 # slash    | 1    | 8  | CLUB
 result = gc.player_act({
@@ -560,6 +717,37 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          1: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          2: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          3: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          8: { 'type': 'forbid' },
+                          9: { 'type': 'forbid' },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'equip',
@@ -675,6 +863,33 @@ gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
 map(lambda p: pc.add_player(p), players)
 gc.start()
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: { 'type': 'forbid' },
+                          1: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1, 2, 4, 5],
+                             },
+                          2: { 'type': 'forbid' },
+                          3: { 'type': 'forbid' },
+                          24: { 'type': 'forbid' },
+                          25: { 'type': 'forbid' },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
+assert_eq(gc.hint(players[1].token), gc.hint(players[3].token))
+assert_eq(gc.hint(players[1].token), gc.hint(players[4].token))
+assert_eq(gc.hint(players[1].token), gc.hint(players[5].token))
+
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'steal',
@@ -718,6 +933,33 @@ result = gc.player_act({
                            'discard': [2, 12],
                        })
 assert_eq(ret_code.OK, result['code'])
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          4: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [2, 3, 4, 5, 0],
+                             },
+                          5: { 'type': 'forbid' },
+                          6: { 'type': 'forbid' },
+                          7: { 'type': 'forbid' },
+                          26: { 'type': 'forbid' },
+                          27: { 'type': 'forbid' },
+                      },
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
+assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
+assert_eq(gc.hint(players[0].token), gc.hint(players[3].token))
+assert_eq(gc.hint(players[0].token), gc.hint(players[4].token))
+assert_eq(gc.hint(players[0].token), gc.hint(players[5].token))
 
 result = gc.player_act({
                            'token': players[1].token,

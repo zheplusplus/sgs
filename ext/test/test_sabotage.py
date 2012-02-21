@@ -30,6 +30,49 @@ gc.start()
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          1: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          2: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          3: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          8: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          9: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 # cards:
 # name     | rank (id = rank - 1) | suit
 
@@ -107,6 +150,44 @@ if True: # just indent for a nice appearance
     assert_eq(card.SPADE, event['discard'][0]['suit'])
 last_event_id += 1
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          1: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          2: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          3: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          8: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          9: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 # cards:
 # name     | rank | suit
 
@@ -181,6 +262,39 @@ if True: # just indent for a nice appearance
     assert_eq('dodge', event['discard'][0]['name'])
     assert_eq(card.HEART, event['discard'][0]['suit'])
 last_event_id += 1
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          2: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          3: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          8: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          9: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 
 # cards:
 # name     | rank | suit
@@ -443,6 +557,21 @@ if True: # just indent for a nice appearance
     assert_eq('dodge', event['discard'][0]['name'])
     assert_eq(card.DIAMOND, event['discard'][0]['suit'])
 last_event_id += 2
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          8: { 'type': 'forbid' },
+                          9: { 'type': 'forbid' },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 
 # cards:
 # name     | rank | suit

@@ -52,10 +52,8 @@ class Player(CorePlayer):
 
     def _build_using_card_hint(self, game_control):
         cards = game_control.player_cards_at(self, 'cards')
-        all_players = game_control.players_from_current()
         card_to_hint = lambda c: {
-            c.card_id: player_as_target(c.name)
-                                       (game_control, self, all_players, c)
+            c.card_id: player_as_target(c.name)(game_control, self, c)
         }
         return reduce(lambda a, c: dict(a.items() + card_to_hint(c).items()),
                       cards, dict())
@@ -74,6 +72,10 @@ class Player(CorePlayer):
                 r = frames.UseCards.react(self, args)
                 self._update_hint()
                 return r
+
+            def resume(self):
+                self._update_hint()
+                frames.UseCards.resume(self)
 
             def _update_hint(self):
                 self.hint_cache = {
@@ -97,6 +99,8 @@ class Player(CorePlayer):
                                              self.discard_check, on_result)
 
             def _hint(self, token):
+                if self.player.token != token:
+                    return dict()
                 candidates = game_control.player_cards_at(self.player, 'cards')
                 return {
                            'require': ['count', 'candidates'],

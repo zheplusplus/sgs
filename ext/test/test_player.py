@@ -86,4 +86,8 @@ assert_eq({
               'count': 2,
               'candidates': [0, 1, 2, 3, 8, 9],
           }, gc.hint(players[0].token))
-assert_eq(gc.hint(players[0].token), gc.hint(players[1].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'DiscardCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))

@@ -12,4 +12,4 @@ def player_as_target(card_name):
            }
     if card_name in DICT:
         return DICT[card_name]
-    return lambda gc, u, t, c: { 'type': 'forbid' }
+    return lambda gc, u, c: { 'type': 'forbid' }

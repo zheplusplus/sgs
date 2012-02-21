@@ -1,6 +1,7 @@
 import core.src.action_frames as frames
 import core.src.ret_code as ret_code
 import ext.src.common_checking as checking
+from ext.src.hint_common import fix_target_action, target_filter
 
 def sabotage(game_control, args):
     targets_ids = args['targets']
@@ -20,18 +21,10 @@ def sabotage(game_control, args):
                                  on_result))
     return { 'code': ret_code.OK }
 
-def sabotage_target(game_control, user, all_players, card):
-    candidates = filter(
-                   lambda p: user != p and game_control.player_has_cards(p)
-                             and p.target_filter(user, 'fire attack', card),
-                   all_players)
-    if 0 < len(candidates):
-        return {
-                   'type': 'fix target',
-                   'count': 1,
-                   'candidates': map(lambda p: p.player_id, candidates),
-               }
-    return { 'type': 'forbid' }
+def sabotage_target(gc, user, card):
+    all_players = gc.succeeding_players()
+    all_players = filter(lambda p: gc.player_has_cards(p), all_players)
+    return fix_target_action(target_filter('sabotage', user, all_players, card))
 
 def on_message(game_control, target, args):
     region = args['sabotage']

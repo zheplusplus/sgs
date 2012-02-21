@@ -2,6 +2,7 @@ import core.src.action_frames as frames
 import core.src.ret_code as ret_code
 import ext.src.damage as damage
 import ext.src.common_checking as checking
+from ext.src.hint_common import fix_target_action, target_filter
 
 def duel(game_control, args):
     targets_ids = args['targets']
@@ -16,17 +17,9 @@ def duel(game_control, args):
     game_control.push_frame(play_slash_frame(game_control, target, user, cards))
     return { 'code': ret_code.OK }
 
-def duel_target(game_control, user, all_players, card):
-    candidates = filter(lambda p: user != p and
-                                  p.target_filter(user, 'fire attack', card),
-                        all_players)
-    if 0 < len(candidates):
-        return {
-                   'type': 'fix target',
-                   'count': 1,
-                   'candidates': map(lambda p: p.player_id, candidates),
-               }
-    return { 'type': 'forbid' }
+def duel_target(game_control, user, card):
+    all_players = game_control.succeeding_players()
+    return fix_target_action(target_filter('duel', user, all_players, card))
 
 def play_slash_frame(game_control, player, next_player, duel_cards):
     on_result = lambda gc, a: play_slash(gc, a, player, next_player, duel_cards)
