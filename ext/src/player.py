@@ -68,7 +68,14 @@ class Player(CorePlayer):
                 frames.UseCards.__init__(self, game_control, me,
                                          get_using_cards_interface_map(),
                                          on_result)
+                self._update_hint()
 
+            def react(self, args):
+                r = frames.UseCards.react(self, args)
+                self._update_hint()
+                return r
+
+            def _update_hint(self):
                 self.hint_cache = {
                     'card': me._build_using_card_hint(game_control),
                 }
