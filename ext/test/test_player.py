@@ -81,7 +81,6 @@ assert_eq({
               'code': ret_code.OK,
               'action': 'DiscardCards',
               'players': [players[0].player_id],
-              'give up': 'disallow',
               'require': ['count', 'candidates'],
               'count': 2,
               'candidates': [0, 1, 2, 3, 8, 9],

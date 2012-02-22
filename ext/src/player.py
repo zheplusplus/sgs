@@ -106,7 +106,6 @@ class Player(CorePlayer):
                            'require': ['count', 'candidates'],
                            'count': need_discard,
                            'candidates': map(lambda c: c.card_id, candidates),
-                           'give up': 'disallow',
                        }
 
             def discard_check(self, cards_ids):

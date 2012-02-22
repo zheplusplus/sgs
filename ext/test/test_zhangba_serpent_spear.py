@@ -122,6 +122,17 @@ assert_eq({
 assert_eq({
               'code': ret_code.OK,
               'action': 'PlayCards',
+              'methods': {
+                             'slash': {
+                                 'require': ['count', 'candidates'],
+                                 'count': 1,
+                                 'candidates': [4, 7],
+                             },
+                             'give up': {
+                                 'require': ['count'],
+                                 'count': 0,
+                             },
+                         },
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 
@@ -178,6 +189,22 @@ assert_eq({
 assert_eq({
               'code': ret_code.OK,
               'action': 'PlayCards',
+              'methods': {
+                             'slash': {
+                                 'require': ['count', 'candidates'],
+                                 'count': 1,
+                                 'candidates': [2],
+                             },
+                             'zhangba serpent spear': {
+                                 'require': ['count', 'candidates'],
+                                 'count': 2,
+                                 'candidates': [2, 3, 8, 9],
+                             },
+                             'give up': {
+                                 'require': ['count'],
+                                 'count': 0,
+                             },
+                         },
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({

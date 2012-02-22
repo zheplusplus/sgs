@@ -9,3 +9,14 @@ def fix_target_action(candidates):
                    'candidates': map(lambda p: p.player_id, candidates),
                }
     return { 'type': 'forbid' }
+
+def one_card_filter(game_control, player, name, card_traits):
+    cards = game_control.player_cards_at(player, 'cards')
+    cards = filter(card_traits, cards)
+    return {
+               name: {
+                   'require': ['count', 'candidates'],
+                   'count': 1,
+                   'candidates': map(lambda c: c.card_id, cards),
+               }
+           }

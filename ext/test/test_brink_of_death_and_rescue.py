@@ -146,6 +146,17 @@ assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
 assert_eq({
               'code': ret_code.OK,
               'action': 'PlayCards',
+              'methods': {
+                             'peach': {
+                                 'require': ['count', 'candidates'],
+                                 'count': 1,
+                                 'candidates': [7],
+                             },
+                             'give up': {
+                                 'require': ['count'],
+                                 'count': 0,
+                             },
+                         },
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 
@@ -201,6 +212,17 @@ assert_eq({
 assert_eq({
               'code': ret_code.OK,
               'action': 'PlayCards',
+              'methods': {
+                             'peach': {
+                                 'require': ['count', 'candidates'],
+                                 'count': 1,
+                                 'candidates': [],
+                             },
+                             'give up': {
+                                 'require': ['count'],
+                                 'count': 0,
+                             },
+                         },
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
@@ -241,6 +263,17 @@ assert_eq(gc.hint(players[0].token), gc.hint(players[1].token))
 assert_eq({
               'code': ret_code.OK,
               'action': 'PlayCards',
+              'methods': {
+                             'peach': {
+                                 'require': ['count', 'candidates'],
+                                 'count': 1,
+                                 'candidates': [8, 9, 10, 11],
+                             },
+                             'give up': {
+                                 'require': ['count'],
+                                 'count': 0,
+                             },
+                         },
               'players': [players[2].player_id],
           }, gc.hint(players[2].token))
 

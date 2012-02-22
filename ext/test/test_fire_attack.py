@@ -115,6 +115,8 @@ assert_eq({
 assert_eq({
               'code': ret_code.OK,
               'action': 'ShowCards',
+              'count': 1,
+              'candidates': [4, 5, 6, 7],
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 
@@ -152,6 +154,9 @@ last_event_id += 1
 assert_eq({
               'code': ret_code.OK,
               'action': 'DiscardCards',
+              'require': ['allow count', 'candidates'],
+              'allow count': [0, 1],
+              'candidates': [2],
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -413,8 +418,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG %
-                                        'need exactly one card of same suit',
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -430,8 +434,7 @@ result = gc.player_act({
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG %
-                                        'need exactly one card of same suit',
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
 result = gc.player_act({
         'token': players[0].token,
@@ -790,6 +793,20 @@ if True: # just indent for a nice appearance
 p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(p0_events, p1_events)
 last_event_id += 1
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'DiscardCards',
+              'require': ['allow count', 'candidates'],
+              'allow count': [0, 1],
+              'candidates': [2, 3, 8, 9],
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'DiscardCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 
 # cards:
 # name        | rank | suit
