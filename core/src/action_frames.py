@@ -1,4 +1,5 @@
 import ret_code
+import card
 
 class FrameBase:
     def __init__(self, game_control, on_result):
@@ -6,11 +7,13 @@ class FrameBase:
         self.on_result = on_result
 
     def done(self, result):
-        self.game_control.pop_frame()
-        self.on_result(self.game_control, result)
+        self.game_control.pop_frame(result)
         return { 'code': ret_code.OK }
 
-    def resume(self):
+    def resume(self, result):
+        pass
+
+    def activated(self):
         pass
 
     def hint(self, token):
@@ -52,11 +55,10 @@ class UseCards(FrameBase):
             cards = self.game_control.cards_by_ids(args['use'])
             check_owner(self.player, cards)
 
-        import card
         with card.InUseStatusRestore(cards):
             return self.interface_map[args['action']](self.game_control, args)
 
-    def resume(self):
+    def resume(self, result):
         if not self.player.alive:
             self.done(None)
 

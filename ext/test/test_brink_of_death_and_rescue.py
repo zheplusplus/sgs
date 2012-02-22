@@ -137,6 +137,18 @@ assert_eq(ret_code.OK, result['code'])
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until brink of death
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
+
 # cards:
 # name         | rank | id | suit
 
@@ -181,6 +193,18 @@ p2_events = gc.get_events(players[2].token, last_event_id)
 assert_eq(p0_events, p2_events)
 last_event_id += 2
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
+assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
+
 result = gc.player_act({
                            'token': players[2].token,
                            'method': 'peach',
@@ -207,6 +231,18 @@ result = gc.player_act({
                            'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[2].player_id],
+          }, gc.hint(players[0].token))
+assert_eq(gc.hint(players[0].token), gc.hint(players[1].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[2].player_id],
+          }, gc.hint(players[2].token))
 
 result = gc.player_act({
                            'token': players[2].token,

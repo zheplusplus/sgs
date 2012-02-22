@@ -78,6 +78,17 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'no such method',
           }, result)
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
+
 # cards:
 # name        | rank (id = rank - 1) | suit
 
@@ -138,6 +149,17 @@ assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 
 # cards:
 # name        | rank (id = rank - 1) | suit

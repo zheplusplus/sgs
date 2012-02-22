@@ -107,6 +107,17 @@ if True: # just indent for a nice appearance
     assert_eq(card.HEART, event['use'][0]['suit'])
 last_event_id += 1
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'ShowCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'ShowCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
+
 # cards:
 # name        | rank | suit
 
@@ -137,6 +148,17 @@ if True: # just indent for a nice appearance
 p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(p0_events, p1_events)
 last_event_id += 1
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'DiscardCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'DiscardCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 
 # cards:
 # name        | rank | suit

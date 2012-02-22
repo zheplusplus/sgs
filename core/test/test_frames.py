@@ -27,7 +27,7 @@ def make_gc():
         def discard(self, cards):
             pass
     class FakeActionStack:
-        def pop(self):
+        def pop(self, result):
             pass
     return GameControl(EventList(), FakeCardPool(), None, FakeActionStack())
 
@@ -102,11 +102,6 @@ response = show_card_frm.react({
                                    'show': [0],
                                })
 assert_eq(ret_code.OK, response['code'])
-assert_eq({
-              'token': 10,
-              'show': [0],
-          }, result)
-result = None
 try:
     response = show_card_frm.react({ 'token': 10 })
     assert False
@@ -155,21 +150,11 @@ response = discard_card_frm.react({
                                       'discard': [0],
                                   })
 assert_eq(ret_code.OK, response['code'])
-assert_eq({
-              'token': 10,
-              'discard': [0],
-          }, result)
-result = None
 response = discard_card_frm.react({
                                       'token': 10,
                                       'discard': [],
                                   })
 assert_eq(ret_code.OK, response['code'])
-assert_eq({
-              'token': 10,
-              'discard': [],
-          }, result)
-result = None
 try:
     response = discard_card_frm.react({ 'token': 10 })
     assert False
@@ -208,9 +193,7 @@ assert_eq({
               'action': 'DenyMsg',
           }, acc_msg_frm.hint(''))
 response = acc_msg_frm.react({ 'bang': 'bing' })
-assert_eq({ 'bang': 'bing' }, result)
 assert_eq(ret_code.OK, response['code'])
-result = None
 try:
     response = acc_msg_frm.react({ 'bing': 'bang' })
     assert False

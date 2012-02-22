@@ -126,6 +126,17 @@ if True: # just indent for a nice appearance
     assert_eq(2, event['draw'])
 last_event_id += 3
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': '_BequeathedStrategyTransferCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': '_BequeathedStrategyTransferCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 result = gc.player_act({
                            'token': players[0].token,
                            'transfer': [],
@@ -153,6 +164,17 @@ if True: # just indent for a nice appearance
     assert_eq(players[0].player_id, event['player'])
     assert_eq(2, event['draw'])
 last_event_id += 1
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': '_BequeathedStrategyTransferCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': '_BequeathedStrategyTransferCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 
 result = gc.player_act({
                            'token': players[0].token,

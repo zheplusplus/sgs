@@ -157,6 +157,18 @@ assert_eq({
           }, result)
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until discard a card
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': '_AskHeavenlyScent',
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': '_AskHeavenlyScent',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 # cards:
 # name         | rank | id | suit
 

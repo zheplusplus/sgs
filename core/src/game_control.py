@@ -55,8 +55,8 @@ class GameControl:
     def push_frame(self, frame):
         self.action_stack.push(frame)
 
-    def pop_frame(self):
-        self.action_stack.pop()
+    def pop_frame(self, result):
+        self.action_stack.pop(result)
 
     def deal_cards(self, player, cnt):
         cards = self.card_pool.deal(player, cnt)

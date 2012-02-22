@@ -112,6 +112,17 @@ if True: # just indent for a nice appearance
     assert_eq(card.SPADE, event['use'][0]['suit'])
 last_event_id += 1
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
+
 # cards:
 # name        | rank | suit
 
@@ -152,6 +163,17 @@ if True: # just indent for a nice appearance
     assert_eq(7, event['play'][0]['id'])
 last_event_id += 1
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 # cards:
 # name        | rank | suit
 
@@ -190,6 +212,17 @@ if True: # just indent for a nice appearance
     assert_eq(3, event['play'][0]['rank'])
     assert_eq(card.DIAMOND, event['play'][0]['suit'])
 last_event_id += 1
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
 
 result = gc.player_act({
         'token': players[1].token,

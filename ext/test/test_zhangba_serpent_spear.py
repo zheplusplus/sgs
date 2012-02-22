@@ -30,6 +30,33 @@ gc.start()
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'card': {
+                          0: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          1: { 'type': 'forbid' },
+                          2: { 'type': 'forbid' },
+                          3: { 'type': 'forbid' },
+                          8: {
+                                 'type': 'fix target',
+                                 'count': 1,
+                                 'candidates': [1],
+                             },
+                          9: { 'type': 'forbid' },
+                      },
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'UseCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 result = gc.player_act({
                           'token': players[0].token,
                           'action': 'equip',
@@ -87,6 +114,17 @@ result = gc.player_act({
                       })
 assert_eq(ret_code.OK, result['code'])
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
+
 # cards:
 # name                  | rank (id = rank - 1) | suit
 
@@ -136,6 +174,17 @@ assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': ret_code.BR_WRONG_ARG % 'wrong region',
           }, result)
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'PlayCards',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # about to use the spear
 # cards:

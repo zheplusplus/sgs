@@ -73,9 +73,9 @@ class Player(CorePlayer):
                 self._update_hint()
                 return r
 
-            def resume(self):
+            def resume(self, result):
                 self._update_hint()
-                frames.UseCards.resume(self)
+                frames.UseCards.resume(self, result)
 
             def _update_hint(self):
                 self.hint_cache = {

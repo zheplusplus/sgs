@@ -121,6 +121,17 @@ if True: # just indent for a nice appearance
     assert_eq(card.SPADE, event['use'][0]['suit'])
 last_event_id += 1
 
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'SabotageRegion',
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'SabotageRegion',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
+
 result = gc.player_act({
                            'token': players[0].token,
                            'sabotage': 'cards',

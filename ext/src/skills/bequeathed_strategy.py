@@ -8,7 +8,10 @@ class _BequeathedStrategyAfterDamage(FrameBase):
         self.damage = damage
         self.times = damage.point
 
-    def resume(self):
+    def resume(self, r):
+        self.activated()
+
+    def activated(self):
         if self.times == 0:
             return self.done(None)
         self.times -= 1
@@ -53,4 +56,3 @@ def bequeathed_strategy(damage, game_control):
 def _push_bequeathed_strategy(game_control, damage):
     frame = _BequeathedStrategyAfterDamage(game_control, damage)
     game_control.push_frame(frame)
-    frame.resume()
