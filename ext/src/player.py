@@ -50,13 +50,11 @@ class Player(CorePlayer):
                 return False
         return True
 
-    def _build_using_card_hint(self, game_control):
+    def _build_using_card_hint(self, game_control, frame):
         cards = game_control.player_cards_at(self, 'cards')
-        card_to_hint = lambda c: {
-            c.card_id: player_as_target(c.name)(game_control, self, c)
-        }
-        return reduce(lambda a, c: dict(a.items() + card_to_hint(c).items()),
-                      cards, dict())
+        for c in cards:
+            frame.add_hint('card', c,
+                           player_as_target(c.name)(game_control, self, c))
 
     def using_cards_stage(self, game_control):
         on_result = lambda gc, _: self.discarding_cards_stage(gc)
@@ -78,14 +76,10 @@ class Player(CorePlayer):
                 frames.UseCards.resume(self, result)
 
             def _update_hint(self):
-                self.hint_cache = {
-                    'card': me._build_using_card_hint(game_control),
-                }
+                self.clear_hint()
+                self.add_quit()
+                me._build_using_card_hint(game_control, self)
 
-            def _hint(self, token):
-                if token != me.token:
-                    return dict()
-                return self.hint_cache
         game_control.push_frame(UseCards())
 
     def discard_count(self, game_control):
@@ -98,15 +92,17 @@ class Player(CorePlayer):
                 frames.DiscardCards.__init__(self, game_control, player,
                                              self.discard_check, on_result)
 
-            def _hint(self, token):
-                if self.player.token != token:
-                    return dict()
+            def _hint_detail(self):
                 candidates = game_control.player_cards_at(self.player, 'cards')
                 return {
-                           'require': ['count', 'candidates'],
-                           'count': need_discard,
-                           'candidates': map(lambda c: c.card_id, candidates),
-                       }
+                    'methods': {
+                        'discard': {
+                            'require': ['count', 'candidates'],
+                            'count': need_discard,
+                            'candidates': map(lambda c: c.card_id, candidates),
+                        }
+                    }
+                }
 
             def discard_check(self, cards_ids):
                 if len(cards_ids) != need_discard:

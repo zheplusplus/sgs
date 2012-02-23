@@ -124,5 +124,6 @@ assert_eq({
                                   'candidates': [0],
                               },
                       },
+              'give up': 'allow',
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))

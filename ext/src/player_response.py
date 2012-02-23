@@ -49,9 +49,7 @@ class _PlayFrame(frames.PlayCards):
         frames.PlayCards.__init__(self, gc, player, methods, on_result)
         self.hints = hints
 
-    def _hint(self, token):
-        if self.player.token != token:
-            return dict()
+    def _hint_detail(self):
         return { 'methods': self.hints }
 
     def _hint_action(self, action):

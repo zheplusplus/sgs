@@ -26,23 +26,53 @@ class FrameBase:
     def _hint_action(self, token):
         return self.__class__.__name__
 
-    def _hint(self, token):
-        return dict()
-
 def check_owner(owner, cards):
     for c in cards:
         if owner != c.owner_or_nil:
             raise ValueError('not own this card')
 
-class UseCards(FrameBase):
-    def __init__(self, game_control, player, interface_map, on_result):
+class OnePlayerFrame(FrameBase):
+    def __init__(self, game_control, player, on_result):
         FrameBase.__init__(self, game_control, on_result)
         self.player = player
-        self.interface_map = interface_map
-        self.interface_map['give up'] = lambda gc, a: self.done(None)
 
     def allowed_players(self):
         return [self.player]
+
+class CardsTargetFrame(OnePlayerFrame):
+    def __init__(self, game_control, player, on_result):
+        OnePlayerFrame.__init__(self, game_control, player, on_result)
+        self._hint_cache = dict()
+
+    def clear_hint(self):
+        self._hint_cache = dict()
+
+    def add_hint_forbidden(self, category, card):
+        self.add_hint(category, card, { 'type': 'forbid' })
+
+    def add_hint_fix_target(self, category, card, count, candidates):
+        self.add_hint(category, card, {
+            'type': 'fix target',
+            'count': count,
+            'candidates': candidates,
+        })
+
+    def add_hint(self, category, card, target_info):
+        if not category in self._hint_cache:
+            self._hint_cache[category] = dict()
+        self._hint_cache[category][card.card_id] = target_info
+
+    def add_quit(self):
+        self._hint_cache['give up'] = 'allow'
+
+    def _hint(self, token):
+        return self._hint_cache if self.player.token == token else dict()
+
+class UseCards(CardsTargetFrame):
+    def __init__(self, game_control, player, interface_map, on_result):
+        CardsTargetFrame.__init__(self, game_control, player, on_result)
+        self.interface_map = interface_map
+        self.interface_map['give up'] = lambda gc, a: self.done(None)
 
     def react(self, args):
         if not args['action'] in self.interface_map:
@@ -78,6 +108,9 @@ class ShowCards(FrameBase):
         self.game_control.show_cards(self.player, cards)
         return self.done(args)
 
+    def _hint(self, token):
+        return self._hint_detail() if self.player.token == token else dict()
+
 class DiscardCards(FrameBase):
     def __init__(self, game_control, player, cards_check, on_result):
         FrameBase.__init__(self, game_control, on_result)
@@ -94,6 +127,9 @@ class DiscardCards(FrameBase):
         if len(cards_ids) > 0:
             self.game_control.discard_cards_by_ids(self.player, cards_ids)
         return self.done(args)
+
+    def _hint(self, token):
+        return self._hint_detail() if self.player.token == token else dict()
 
 class PlayCards(FrameBase):
     def __init__(self, game_control, player, methods, on_result):
@@ -117,6 +153,9 @@ class PlayCards(FrameBase):
             self.game_control.play_cards(self.player, cards)
         return self.done(args)
 
+    def _hint(self, token):
+        return self._hint_detail() if self.player.token == token else dict()
+
 class AcceptMessage(FrameBase):
     def __init__(self, game_control, players, hint, on_message, on_result):
         FrameBase.__init__(self, game_control, on_result)
@@ -133,3 +172,6 @@ class AcceptMessage(FrameBase):
 
     def _hint_action(self, token):
         return self.frame_hint
+
+    def _hint(self, token):
+        return dict()

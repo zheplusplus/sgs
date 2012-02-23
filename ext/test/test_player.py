@@ -64,6 +64,7 @@ assert_eq({
                           8: { 'type': 'forbid' },
                           9: { 'type': 'forbid' },
                       },
+              'give up': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -80,10 +81,14 @@ result = gc.player_act({
 assert_eq({
               'code': ret_code.OK,
               'action': 'DiscardCards',
+              'methods': {
+                             'discard': {
+                                 'require': ['count', 'candidates'],
+                                 'count': 2,
+                                 'candidates': [0, 1, 2, 3, 8, 9],
+                             },
+                         },
               'players': [players[0].player_id],
-              'require': ['count', 'candidates'],
-              'count': 2,
-              'candidates': [0, 1, 2, 3, 8, 9],
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,

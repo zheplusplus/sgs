@@ -129,6 +129,19 @@ last_event_id += 3
 assert_eq({
               'code': ret_code.OK,
               'action': '_BequeathedStrategyTransferCards',
+              'transfer': {
+                  10: {
+                      'type': 'fix target',
+                      'count': 1,
+                      'candidates': [players[1].player_id],
+                  },
+                  11: {
+                      'type': 'fix target',
+                      'count': 1,
+                      'candidates': [players[1].player_id],
+                  },
+              },
+              'give up': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -139,7 +152,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'transfer': [],
+                           'action': 'give up',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -168,6 +181,19 @@ last_event_id += 1
 assert_eq({
               'code': ret_code.OK,
               'action': '_BequeathedStrategyTransferCards',
+              'transfer': {
+                  12: {
+                      'type': 'fix target',
+                      'count': 1,
+                      'candidates': [players[1].player_id],
+                  },
+                  13: {
+                      'type': 'fix target',
+                      'count': 1,
+                      'candidates': [players[1].player_id],
+                  },
+              },
+              'give up': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -179,13 +205,14 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'target': players[1].player_id,
+                           'action': 'transfer',
                            'transfer': [13],
                        })
 assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'transfer': [],
+                           'action': 'give up',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -324,6 +351,17 @@ assert_eq(ret_code.OK, result['code'])
 result = gc.player_act({
                            'token': players[0].token,
                            'transfer': [10],
+                           'target': players[1].player_id,
+                       })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_MISSING_ARG % 'action',
+          }, result)
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'transfer',
+                           'transfer': [10],
                            'target': players[0].player_id,
                        })
 assert_eq({
@@ -333,6 +371,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'action': 'transfer',
                            'transfer': [1],
                            'target': players[1].player_id,
                        })
@@ -343,6 +382,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'action': 'transfer',
                            'transfer': [10],
                        })
 assert_eq({
@@ -352,6 +392,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'action': 'transfer',
                            'target': players[1].player_id,
                        })
 assert_eq({
@@ -361,6 +402,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'action': 'transfer',
                            'transfer': [9, 10],
                            'target': players[1].player_id,
                        })
@@ -371,6 +413,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'action': 'transfer',
                            'transfer': [14],
                            'target': players[1].player_id,
                        })
@@ -381,6 +424,18 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'action': 'transfer',
+                           'transfer': [],
+                           'target': players[1].player_id,
+                       })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG % 'bad cards',
+          }, result)
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'transfer',
                            'transfer': [11],
                            'target': players[1].player_id,
                        })
@@ -388,12 +443,13 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'transfer': [],
+                           'action': 'give up',
                        })
 assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'action': 'transfer',
                            'transfer': [10],
                            'target': players[1].player_id,
                        })
@@ -404,6 +460,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'action': 'transfer',
                            'transfer': [12, 13],
                            'target': players[1].player_id,
                        })

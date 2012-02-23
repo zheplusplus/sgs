@@ -18,6 +18,22 @@ class _AskHeavenlyScent(DiscardCards):
             checking.forbid_target_self(self.player.player_id, targets_ids[0])
         return DiscardCards.react(self, args)
 
+    def _hint_detail(self):
+        cards = self.game_control.player_cards_at(self.player, 'cards')
+        cards = filter(lambda c: c.suit == card.HEART, cards)
+        candidates = self.game_control.players_from_current()
+        candidates.remove(self.player)
+        return {
+                   'discard': {
+                       c.card_id: {
+                         'type': 'fix target',
+                         'count': 1,
+                         'candidates': map(lambda p: p.player_id, candidates),
+                       } for c in cards
+                   },
+                   'give up': 'allow',
+               }
+
 def _check_one_heart_card(game_control, cards_ids):
     if len(cards_ids) > 0:
         cards = game_control.cards_by_ids(cards_ids)

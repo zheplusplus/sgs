@@ -51,9 +51,7 @@ class _TargetShowCards(frames.ShowCards):
             raise ValueError('need exactly one card')
         checking.cards_region(self.game_control.cards_by_ids(cids), 'cards')
 
-    def _hint(self, token):
-        if token != self.player.token:
-            return dict()
+    def _hint_detail(self):
         cards = self.game_control.player_cards_at(self.player, 'cards')
         return {
                    'count': 1,
@@ -69,9 +67,7 @@ class _SourceDiscardCards(frames.DiscardCards):
                                      on_result)
         self.suit = suit
 
-    def _hint(self, token):
-        if self.player.token != token:
-            return dict()
+    def _hint_detail(self):
         candidates = self.game_control.player_cards_at(self.player, 'cards')
         candidates = filter(lambda c: c.suit == self.suit, candidates)
         return {
