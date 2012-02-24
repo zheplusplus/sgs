@@ -58,22 +58,22 @@ last_event_id += 1
 result = gc.hint(host_token)
 assert_eq(ret_code.OK, result['code'])
 assert_eq([0], result['players'])
-assert_eq(3, len(result['candidate']))
-select = result['candidate'][0]
+assert_eq(3, len(result['candidates']))
+select = result['candidates'][0]
 assert_eq(ret_code.OK, result['code'])
 assert_eq('select character', result['action'])
 
 result = gc.hint(other_token_a)
 assert_eq(ret_code.OK, result['code'])
 assert_eq([0], result['players'])
-assert not 'candidate' in result
+assert not 'candidates' in result
 assert_eq(ret_code.OK, result['code'])
 assert_eq('select character', result['action'])
 
 result = gc.hint(other_token_b)
 assert_eq(ret_code.OK, result['code'])
 assert_eq([0], result['players'])
-assert not 'candidate' in result
+assert not 'candidates' in result
 assert_eq(ret_code.OK, result['code'])
 assert_eq('select character', result['action'])
 
@@ -99,23 +99,23 @@ last_event_id += 1
 result = gc.hint(host_token)
 assert_eq(ret_code.OK, result['code'])
 assert_eq({1, 2}, set(result['players']))
-assert not 'candidate' in result
+assert not 'candidates' in result
 assert_eq(ret_code.OK, result['code'])
 assert_eq('select character', result['action'])
 
 result = gc.hint(other_token_a)
 assert_eq(ret_code.OK, result['code'])
 assert_eq({1, 2}, set(result['players']))
-assert_eq(3, len(result['candidate']))
-select_a = result['candidate'][0]
+assert_eq(3, len(result['candidates']))
+select_a = result['candidates'][0]
 assert_eq(ret_code.OK, result['code'])
 assert_eq('select character', result['action'])
 
 result = gc.hint(other_token_b)
 assert_eq(ret_code.OK, result['code'])
 assert_eq({1, 2}, set(result['players']))
-assert_eq(3, len(result['candidate']))
-select_b = result['candidate'][0]
+assert_eq(3, len(result['candidates']))
+select_b = result['candidates'][0]
 assert_eq(ret_code.OK, result['code'])
 assert_eq('select character', result['action'])
 
@@ -128,21 +128,21 @@ assert_eq(ret_code.OK, result['code'])
 result = gc.hint(host_token)
 assert_eq(ret_code.OK, result['code'])
 assert_eq(1, len(result['players']))
-assert not 'candidate' in result
+assert not 'candidates' in result
 assert_eq(ret_code.OK, result['code'])
 assert_eq('select character', result['action'])
 
 result = gc.hint(other_token_a)
 assert_eq(ret_code.OK, result['code'])
 assert_eq(1, len(result['players']))
-assert not 'candidate' in result
+assert not 'candidates' in result
 assert_eq(ret_code.OK, result['code'])
 assert_eq('select character', result['action'])
 
 result = gc.hint(other_token_b)
 assert_eq(ret_code.OK, result['code'])
 assert_eq(1, len(result['players']))
-assert_eq(3, len(result['candidate']))
+assert_eq(3, len(result['candidates']))
 assert_eq(ret_code.OK, result['code'])
 assert_eq('select character', result['action'])
 
@@ -235,7 +235,7 @@ assert_eq({
               'reason': ret_code.BR_WRONG_ARG % 'select wrong character',
           }, result)
 
-select = gc.hint(host_token)['candidate'][0]
+select = gc.hint(host_token)['candidates'][0]
 
 result = gc.player_act({
                            'token': host_token,

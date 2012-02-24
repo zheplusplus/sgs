@@ -11,8 +11,8 @@ function SGS_HintParser(game, players, center) {
     var NAMING_MAPPING = {
         '_SelectCharacter': function(result) {
             setActivatedPlayers(result);
-            if ('candidate' in result) {
-                center.selectCharacters(result['candidate']);
+            if ('candidates' in result) {
+                center.selectCharacters(result['candidates']);
             }
         }, 'UseCards': function(result) {
             players[result['players'][0]].hintUseCards();

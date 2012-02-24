@@ -36,7 +36,7 @@ class _SelectCharacter(FrameBase):
 
     def _hint(self, token):
         if token in self.token_to_characters:
-            return { 'candidate': self.token_to_characters[token].keys() }
+            return { 'candidates': self.token_to_characters[token].keys() }
         return dict()
 
     def _hint_action(self, token):
