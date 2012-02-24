@@ -9,24 +9,25 @@ function SGS_HintParser(game, players, center) {
         }
     }
     var NAMING_MAPPING = {
-        '_SelectCharacter': function(result) {
+        'select character': function(result) {
             setActivatedPlayers(result);
             if ('candidates' in result) {
                 center.selectCharacters(result['candidates']);
             }
-        }, 'UseCards': function(result) {
+        }, 'use': function(result) {
             players[result['players'][0]].hintUseCards();
-        }, 'DiscardCards': function(result) {
-            var require = result['require'];
-            function filters() {
+        }, 'discard': function(result) {
+            var actions = result['methods'];
+            var require = actions['require'];
+            function filters(actions) {
                 var FILTER_MAPPING = {
                     'count': function(f) {
-                        var count = result['count'];
+                        var count = actions['count'];
                         return function(c, selected) {
                             return f(c, selected) && selected.length < count;
                         };
                     }, 'candidates': function region(f) {
-                        var candidates = result['candidates'];
+                        var candidates = actions['candidates'];
                         function cardIn(card) {
                             for (i in candidates) {
                                 if (card.id == candidates[i]) return true;
@@ -47,7 +48,7 @@ function SGS_HintParser(game, players, center) {
             function validators() {
                 var VALIDATOR_MAPPING = {
                     'count': function(f) {
-                        var count = result['count'];
+                        var count = actions['count'];
                         return function(selected) {
                             return f(selected) && selected.length == count;
                         };

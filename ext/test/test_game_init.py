@@ -79,7 +79,7 @@ assert_eq('select character', result['action'])
 
 result = gc.player_act({
                            'token': host_token,
-                           'select character': select,
+                           'select': select,
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -121,7 +121,7 @@ assert_eq('select character', result['action'])
 
 result = gc.player_act({
                            'token': other_token_a,
-                           'select character': select_a,
+                           'select': select_a,
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -155,7 +155,7 @@ assert_eq(0, len(other_events_b))
 
 result = gc.player_act({
                            'token': other_token_b,
-                           'select character': select_b,
+                           'select': select_b,
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -211,7 +211,7 @@ other_token = 1 - host_token
 
 result = gc.player_act({
                            'token': other_token,
-                           'select character': 'Guo Jia',
+                           'select': 'Guo Jia',
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -223,12 +223,12 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % 'select character',
+              'reason': ret_code.BR_MISSING_ARG % 'select',
           }, result)
 
 result = gc.player_act({
                            'token': host_token,
-                           'select character': '',
+                           'select': '',
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -239,13 +239,13 @@ select = gc.hint(host_token)['candidates'][0]
 
 result = gc.player_act({
                            'token': host_token,
-                           'select character': select,
+                           'select': select,
                        })
 assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': host_token,
-                           'select character': select,
+                           'select': select,
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,

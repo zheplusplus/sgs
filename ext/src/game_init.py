@@ -21,7 +21,7 @@ class _SelectCharacter(FrameBase):
         return self.token_to_players.values()
 
     def react(self, args):
-        select = args['select character']
+        select = args['select']
         token = args['token']
         if not select in self.token_to_characters[token]:
             raise ValueError('select wrong character')
