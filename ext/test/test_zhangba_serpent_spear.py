@@ -39,7 +39,7 @@ assert_eq({
                                  'count': 1,
                                  'candidates': [1],
                              },
-                          1: { 'type': 'forbid' },
+                          1: { 'type': 'implicit target' },
                           2: { 'type': 'forbid' },
                           3: { 'type': 'forbid' },
                           8: {
@@ -47,7 +47,7 @@ assert_eq({
                                  'count': 1,
                                  'candidates': [1],
                              },
-                          9: { 'type': 'forbid' },
+                          9: { 'type': 'implicit target' },
                       },
               'abort': 'allow',
               'players': [players[0].player_id],

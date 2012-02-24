@@ -17,6 +17,10 @@ def interface(game_control, args):
     equip(player, game_control, cards[0])
     return { 'code': ret_code.OK }
 
+def hint(cards):
+    return map(lambda c: c.card_id,
+               filter(lambda c: c.name in equipment_dict, cards))
+
 import zhangba_serpent_spear as serpent_spear
 serpent_spear.imported(equipment_dict)
 import horses

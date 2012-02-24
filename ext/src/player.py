@@ -2,6 +2,7 @@ from core.src.player import Player as CorePlayer
 import core.src.action_frames as frames
 from player_using_cards import get_using_cards_interface_map
 from player_as_target import player_as_target
+from equipment import equip
 import common_checking as checking
 import player_response as response
 import characters
@@ -52,7 +53,11 @@ class Player(CorePlayer):
 
     def _build_using_card_hint(self, game_control, frame):
         cards = game_control.player_cards_at(self, 'cards')
+        equips = equip.hint(cards)
         for c in cards:
+            if c.card_id in equips:
+                frame.add_hint('card', c, { 'type': 'implicit target' })
+                continue
             frame.add_hint('card', c,
                            player_as_target(c.name)(game_control, self, c))
 

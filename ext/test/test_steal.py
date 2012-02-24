@@ -42,9 +42,9 @@ assert_eq({
               'code': ret_code.OK,
               'action': 'UseCards',
               'card': {
-                          0: { 'type': 'forbid' },
-                          1: { 'type': 'forbid' },
-                          2: { 'type': 'forbid' },
+                          0: { 'type': 'implicit target' },
+                          1: { 'type': 'implicit target' },
+                          2: { 'type': 'implicit target' },
                           3: { 'type': 'forbid' },
                           12: {
                                   'type': 'fix target',
@@ -175,9 +175,9 @@ assert_eq({
               'code': ret_code.OK,
               'action': 'UseCards',
               'card': {
-                          0: { 'type': 'forbid' },
-                          1: { 'type': 'forbid' },
-                          2: { 'type': 'forbid' },
+                          0: { 'type': 'implicit target' },
+                          1: { 'type': 'implicit target' },
+                          2: { 'type': 'implicit target' },
                           3: { 'type': 'forbid' },
                           4: {
                                  'type': 'fix target',
@@ -321,9 +321,9 @@ assert_eq({
               'code': ret_code.OK,
               'action': 'UseCards',
               'card': {
-                          0: { 'type': 'forbid' },
-                          1: { 'type': 'forbid' },
-                          2: { 'type': 'forbid' },
+                          0: { 'type': 'implicit target' },
+                          1: { 'type': 'implicit target' },
+                          2: { 'type': 'implicit target' },
                           3: { 'type': 'forbid' },
                           5: {
                                  'type': 'fix target',
@@ -411,8 +411,8 @@ assert_eq({
               'code': ret_code.OK,
               'action': 'UseCards',
               'card': {
-                          0: { 'type': 'forbid' },
-                          1: { 'type': 'forbid' },
+                          0: { 'type': 'implicit target' },
+                          1: { 'type': 'implicit target' },
                           3: { 'type': 'forbid' },
                           5: {
                                  'type': 'fix target',
@@ -480,8 +480,8 @@ assert_eq({
               'code': ret_code.OK,
               'action': 'UseCards',
               'card': {
-                          6: { 'type': 'forbid' },
-                          7: { 'type': 'forbid' },
+                          6: { 'type': 'implicit target' },
+                          7: { 'type': 'implicit target' },
                           14: {
                                   'type': 'fix target',
                                   'count': 1,
@@ -738,7 +738,7 @@ assert_eq({
               'code': ret_code.OK,
               'action': 'UseCards',
               'card': {
-                          0: { 'type': 'forbid' },
+                          0: { 'type': 'implicit target' },
                           1: {
                                  'type': 'fix target',
                                  'count': 1,
@@ -885,7 +885,7 @@ assert_eq({
               'code': ret_code.OK,
               'action': 'UseCards',
               'card': {
-                          0: { 'type': 'forbid' },
+                          0: { 'type': 'implicit target' },
                           1: {
                                  'type': 'fix target',
                                  'count': 1,
