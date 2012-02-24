@@ -521,7 +521,7 @@ assert_eq(ret_code.OK, result['code'])
 last_event_id = len(gc.get_events(players[0].token, 0)) # about to sabotage
 result = gc.player_act({
                           'token': players[1].token,
-                          'sabotage': 'weapon',
+                          'region': 'weapon',
                       })
 assert_eq(ret_code.OK, result['code'])
 

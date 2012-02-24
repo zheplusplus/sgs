@@ -144,7 +144,7 @@ assert_eq({
 # +dilu    | 5    | 7  | CLUB
 result = gc.player_act({
                            'token': players[0].token,
-                           'steal': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
@@ -255,12 +255,12 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % 'steal',
+              'reason': ret_code.BR_MISSING_ARG % 'region',
           }, result)
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'steal': 'weapon',
+                           'region': 'weapon',
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -269,7 +269,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[2].token,
-                           'steal': 'cards',
+                           'region': 'cards',
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -290,7 +290,7 @@ assert_eq({
 # +dilu    | 5    | 7  | CLUB
 result = gc.player_act({
                            'token': players[0].token,
-                           'steal': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
@@ -555,7 +555,7 @@ assert_eq(ret_code.OK, result['code'])
 # slash    | 1    | 11 | CLUB
 result = gc.player_act({
                            'token': players[1].token,
-                           'steal': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -634,7 +634,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'steal': '+1 horse',
+                           'region': '+1 horse',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -808,7 +808,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'steal': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -823,7 +823,7 @@ for i in (1, 2):
 
     result = gc.player_act({
                                'token': players[1].token,
-                               'steal': 'cards',
+                               'region': 'cards',
                            })
     assert_eq(ret_code.OK, result['code'])
 
@@ -837,7 +837,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'steal': 'cards',
+                           'region': 'cards',
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -950,7 +950,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'steal': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 

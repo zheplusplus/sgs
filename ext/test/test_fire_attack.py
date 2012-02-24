@@ -604,7 +604,7 @@ assert_eq(ret_code.OK, gc.player_act({
 # steal       | 12   | CLUB
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [10],
                        })
@@ -612,13 +612,13 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'steal': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [11],
                        })
@@ -626,7 +626,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'steal': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 

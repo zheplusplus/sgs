@@ -28,7 +28,7 @@ def sabotage_target(gc, user, card):
     return fix_target_action(target_filter('sabotage', user, all_players, card))
 
 def on_message(game_control, target, args):
-    region = args['sabotage']
+    region = args['region']
     if region == 'cards':
         cards = game_control.random_pick_cards(target, 1)
         if len(cards) == 0:

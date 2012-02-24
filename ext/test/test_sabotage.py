@@ -136,7 +136,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'sabotage': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
@@ -250,7 +250,7 @@ last_event_id += 1
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'sabotage': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
@@ -357,7 +357,7 @@ last_event_id += 1
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'sabotage': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 p0_events = gc.get_events(players[0].token, last_event_id)
@@ -501,12 +501,12 @@ result = gc.player_act({
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % 'sabotage',
+              'reason': ret_code.BR_MISSING_ARG % 'region',
           }, result)
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'sabotage': 'undef',
+                           'region': 'undef',
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -515,7 +515,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'sabotage': 'cards',
+                           'region': 'cards',
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -524,7 +524,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'sabotage': 'cards',
+                           'region': 'cards',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -758,7 +758,7 @@ assert_eq({
 
 result = gc.player_act({
                           'token': players[1].token,
-                          'sabotage': 'cards',
+                          'region': 'cards',
                       })
 assert_eq(ret_code.OK, result['code'])
 
@@ -772,7 +772,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                           'token': players[1].token,
-                          'sabotage': 'cards',
+                          'region': 'cards',
                       })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -782,7 +782,7 @@ assert_eq({
 last_event_id = len(gc.get_events(players[0].token, 0)) # about to sabotage
 result = gc.player_act({
                           'token': players[1].token,
-                          'sabotage': 'weapon',
+                          'region': 'weapon',
                       })
 assert_eq(ret_code.OK, result['code'])
 

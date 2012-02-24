@@ -89,7 +89,7 @@ for i in range(0, 3):
     assert_eq(ret_code.OK, result['code'])
     result = gc.player_act({
                                'token': players[1].token,
-                               'sabotage': 'cards',
+                               'region': 'cards',
                            })
     assert_eq(ret_code.OK, result['code'])
 

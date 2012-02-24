@@ -217,7 +217,7 @@ assert_eq(p0_events, p1_events)
 # dodge        | 12   | 11 | HEART
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [4],
                        })
@@ -225,7 +225,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'steal': 'armor',
+                           'region': 'armor',
                        })
 assert_eq(ret_code.OK, result['code'])
 
