@@ -101,6 +101,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [10],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -334,6 +335,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [11],
                        })
 assert_eq(ret_code.OK, result['code'])

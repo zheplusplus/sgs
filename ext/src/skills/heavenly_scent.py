@@ -42,10 +42,9 @@ class _AskHeavenlyScent(DiscardCards):
         return 'use'
 
 def _check_one_heart_card(game_control, cards_ids):
-    if len(cards_ids) > 0:
-        cards = game_control.cards_by_ids(cards_ids)
-        checking.only_one_card_of_suit(cards, card.HEART)
-        checking.cards_region(cards, 'cards')
+    cards = game_control.cards_by_ids(cards_ids)
+    checking.only_one_card_of_suit(cards, card.HEART)
+    checking.cards_region(cards, 'cards')
 
 def _damage_transfer(game_control, args, damage):
     if args['action'] != 'abort':

@@ -185,13 +185,19 @@ assert_eq(None, result)
 def on_message(args):
     if 'bing' in args:
         raise ValueError('bang')
-acc_msg_frm = frames.AcceptMessage(make_gc(), [player], 'DenyMsg',
+acc_msg_frm = frames.AcceptMessage(make_gc(), [player], 'DenyMsg', { 'a': 'b' },
                                    on_message, on_result_f)
 assert_eq({
               'code': ret_code.OK,
               'players': [0],
               'action': 'DenyMsg',
           }, acc_msg_frm.hint(''))
+assert_eq({
+              'code': ret_code.OK,
+              'players': [0],
+              'a': 'b',
+              'action': 'DenyMsg',
+          }, acc_msg_frm.hint(player.token))
 response = acc_msg_frm.react({ 'bang': 'bing' })
 assert_eq(ret_code.OK, response['code'])
 try:

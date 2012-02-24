@@ -67,6 +67,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'method': 'discard',
                            'discard': [1],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -74,14 +75,12 @@ assert_eq(ret_code.OK, result['code'])
 result = gc.player_act({
                            'token': players[0].token,
                            'method': 'abort',
-                           'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
                            'method': 'abort',
-                           'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -90,7 +89,6 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until player2
 result = gc.player_act({
                            'token': players[2].token,
                            'method': 'abort',
-                           'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
 

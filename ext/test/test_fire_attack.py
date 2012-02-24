@@ -192,6 +192,7 @@ assert_eq({
 # dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
+        'method': 'discard',
         'discard': [2],
     })
 assert_eq(ret_code.OK, result['code'])
@@ -427,6 +428,7 @@ assert_eq({
           }, result)
 result = gc.player_act({
         'token': players[0].token,
+        'method': 'discard',
         'discard': [0],
     })
 assert_eq({
@@ -435,6 +437,7 @@ assert_eq({
           }, result)
 result = gc.player_act({
         'token': players[0].token,
+        'method': 'discard',
         'discard': [2],
     })
 assert_eq({
@@ -443,6 +446,7 @@ assert_eq({
           }, result)
 result = gc.player_act({
         'token': players[0].token,
+        'method': 'discard',
         'discard': [0, 8],
     })
 assert_eq({
@@ -451,7 +455,7 @@ assert_eq({
           }, result)
 result = gc.player_act({
         'token': players[0].token,
-        'discard': [],
+        'method': 'abort',
     })
 assert_eq(ret_code.OK, result['code'])
 
@@ -579,7 +583,7 @@ for i in range(0, 4):
                                          })['code'])
     assert_eq(ret_code.OK, gc.player_act({
                                              'token': players[0].token,
-                                             'discard': [],
+                                             'method': 'abort',
                                          })['code'])
 
 assert_eq(ret_code.OK, gc.player_act({
@@ -706,7 +710,7 @@ assert_eq(ret_code.OK, gc.player_act({
                                      })['code'])
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
-                                         'discard': [],
+                                         'method': 'abort',
                                      })['code'])
 
 last_event_id = len(gc.get_events(players[0].token, 0)) # until fire attack to 1
@@ -842,6 +846,7 @@ assert_eq({
 # dodge       | 8    | DIAMOND
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
+                                         'method': 'discard',
                                          'discard': [3],
                                      })['code'])
 
@@ -895,7 +900,7 @@ assert_eq(ret_code.OK, gc.player_act({
                                      })['code'])
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
-                                         'discard': [],
+                                         'method': 'abort',
                                      })['code'])
 # cards:
 # name        | rank | suit
@@ -919,7 +924,7 @@ assert_eq(ret_code.OK, gc.player_act({
                                      })['code'])
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
-                                         'discard': [],
+                                         'method': 'abort',
                                      })['code'])
 
 # cards:

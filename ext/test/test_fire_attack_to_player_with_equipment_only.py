@@ -74,7 +74,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'discard': [],
+                           'method': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 

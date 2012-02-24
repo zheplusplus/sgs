@@ -135,8 +135,7 @@ class DiscardCards(FrameBase):
         cards_ids = args['discard']
         check_owner(self.player, self.game_control.cards_by_ids(cards_ids))
         self.cards_check(cards_ids)
-        if len(cards_ids) > 0:
-            self.game_control.discard_cards_by_ids(self.player, cards_ids)
+        self.game_control.discard_cards_by_ids(self.player, cards_ids)
         return self.done(args)
 
     def _hint(self, token):
@@ -166,8 +165,7 @@ class PlayCards(FrameBase):
         if not method in self.methods:
             raise ValueError('no such method')
         self.methods[method](cards)
-        if len(cards) > 0:
-            self.game_control.play_cards(self.player, cards)
+        self.game_control.play_cards(self.player, cards)
         return self.done(args)
 
     def _hint(self, token):
@@ -177,8 +175,10 @@ class PlayCards(FrameBase):
         return 'discard'
 
 class AcceptMessage(FrameBase):
-    def __init__(self, game_control, players, hint, on_message, on_result):
+    def __init__(self, game_control, players, action, hint, on_message,
+                 on_result):
         FrameBase.__init__(self, game_control, on_result)
+        self.frame_action = action
         self.frame_hint = hint
         self.players = players
         self.on_message = on_message
@@ -191,7 +191,9 @@ class AcceptMessage(FrameBase):
         return self.done(args)
 
     def _hint_action(self, token):
-        return self.frame_hint
+        return self.frame_action
 
     def _hint(self, token):
+        if token in map(lambda p: p.token, self.players):
+            return self.frame_hint
         return dict()

@@ -36,8 +36,7 @@ def discard_same_suit(game_control, args, player, target, cards):
                               lambda gc, a: done(gc, a, player, target, cards)))
 
 def done(game_control, args, source, target, fire_attack_cards):
-    cards_ids = args['discard']
-    if len(cards_ids) > 0:
+    if args['method'] != 'abort':
         damage.Damage(source, target, 'fire attack', fire_attack_cards, 'fire',
                       1).operate(game_control)
 
@@ -83,6 +82,11 @@ class _SourceDiscardCards(frames.DiscardCards):
             },
             'abort': 'allow',
         }
+
+    def react(self, args):
+        if args['method'] == 'abort':
+            return self.done(args)
+        return frames.DiscardCards.react(self, args)
 
     def _check(self, cards_ids):
         if len(cards_ids) == 0:

@@ -99,6 +99,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [14],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -131,6 +132,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [15],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -389,6 +391,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [14],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -408,6 +411,7 @@ result = gc.player_act({
 assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
+                           'method': 'discard',
                            'token': players[1].token,
                            'discard': [15],
                        })
@@ -520,6 +524,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [14],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -534,12 +539,14 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
+                           'method': 'discard',
                            'discard': [2],
                        })
 assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [15],
                        })
 assert_eq(ret_code.OK, result['code'])

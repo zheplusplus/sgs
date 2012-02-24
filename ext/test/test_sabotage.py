@@ -124,12 +124,13 @@ last_event_id += 1
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'SabotageRegion',
+              'action': 'region',
+              'candidates': ['cards'],
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'SabotageRegion',
+              'action': 'region',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 
@@ -742,6 +743,18 @@ result = gc.player_act({
                           'use': [5],
                       })
 assert_eq(ret_code.OK, result['code'])
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'region',
+              'players': [players[1].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'region',
+              'candidates': ['cards', 'weapon'],
+              'players': [players[1].player_id],
+          }, gc.hint(players[1].token))
 
 result = gc.player_act({
                           'token': players[1].token,

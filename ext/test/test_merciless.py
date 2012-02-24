@@ -99,6 +99,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until show a card
 result = gc.player_act({
                            'token': players[1].token,
                            'discard': [11],
+                           'method': 'discard',
                        })
 assert_eq(ret_code.OK, result['code'])
 
