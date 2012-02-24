@@ -46,7 +46,7 @@ use_cards_frm = frames.UseCards(make_gc(), player, { 'test': fake_action },
 assert_eq({
               'code': ret_code.OK,
               'players': [0],
-              'action': 'UseCards',
+              'action': 'use',
           }, use_cards_frm.hint(''))
 assert_eq([player], use_cards_frm.allowed_players())
 response = use_cards_frm.react({
@@ -99,20 +99,20 @@ show_card_frm = frames.ShowCards(make_gc(), player, show_card_check,
 assert_eq([player], show_card_frm.allowed_players())
 response = show_card_frm.react({
                                    'token': 10,
-                                   'show': [0],
+                                   'discard': [0],
                                })
 assert_eq(ret_code.OK, response['code'])
 try:
     response = show_card_frm.react({ 'token': 10 })
     assert False
 except KeyError, e:
-    assert_eq('show', e.message)
+    assert_eq('discard', e.message)
 assert_eq(None, result)
 
 try:
     response = show_card_frm.react({
                                        'token': 10,
-                                       'show': [0, 2],
+                                       'discard': [0, 2],
                                    })
     assert False
 except ValueError, e:
@@ -122,7 +122,7 @@ assert_eq(None, result)
 try:
     response = show_card_frm.react({
                                        'token': 10,
-                                       'show': [],
+                                       'discard': [],
                                    })
     assert False
 except ValueError, e:
@@ -132,7 +132,7 @@ assert_eq(None, result)
 try:
     response = show_card_frm.react({
                                        'token': 10,
-                                       'show': [1],
+                                       'discard': [1],
                                    })
     assert False
 except ValueError:

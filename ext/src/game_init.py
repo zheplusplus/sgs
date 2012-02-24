@@ -21,7 +21,7 @@ class _SelectCharacter(FrameBase):
         return self.token_to_players.values()
 
     def react(self, args):
-        select = args['select']
+        select = args['select character']
         token = args['token']
         if not select in self.token_to_characters[token]:
             raise ValueError('select wrong character')
@@ -38,6 +38,9 @@ class _SelectCharacter(FrameBase):
         if token in self.token_to_characters:
             return { 'candidate': self.token_to_characters[token].keys() }
         return dict()
+
+    def _hint_action(self, token):
+        return 'select character'
 
 def random_pick_characters(count):
     all_chars = list(characters.ALL)

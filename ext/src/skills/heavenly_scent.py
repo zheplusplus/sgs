@@ -11,11 +11,15 @@ class _AskHeavenlyScent(DiscardCards):
               lambda gc, a: _damage_transfer(gc, a, damage))
 
     def react(self, args):
-        cards = args['discard']
-        if len(cards) > 0:
-            targets_ids = args['targets']
-            checking.only_one_target(targets_ids)
-            checking.forbid_target_self(self.player.player_id, targets_ids[0])
+        if args['action'] == 'abort':
+            return self.done(args)
+
+        args['discard'] = args['use']
+        if len(args['discard']) == 0:
+            raise ValueError('wrong cards')
+        targets_ids = args['targets']
+        checking.only_one_target(targets_ids)
+        checking.forbid_target_self(self.player.player_id, targets_ids[0])
         return DiscardCards.react(self, args)
 
     def _hint_detail(self):
@@ -24,7 +28,7 @@ class _AskHeavenlyScent(DiscardCards):
         candidates = self.game_control.players_from_current()
         candidates.remove(self.player)
         return {
-                   'discard': {
+                   'use': {
                        c.card_id: {
                          'type': 'fix target',
                          'count': 1,
@@ -34,6 +38,9 @@ class _AskHeavenlyScent(DiscardCards):
                    'abort': 'allow',
                }
 
+    def _hint_action(self, token):
+        return 'use'
+
 def _check_one_heart_card(game_control, cards_ids):
     if len(cards_ids) > 0:
         cards = game_control.cards_by_ids(cards_ids)
@@ -41,7 +48,7 @@ def _check_one_heart_card(game_control, cards_ids):
         checking.cards_region(cards, 'cards')
 
 def _damage_transfer(game_control, args, damage):
-    if len(args['discard']) > 0:
+    if args['action'] != 'abort':
         target = game_control.player_by_id(args['targets'][0])
         def draw_cards(d, game_control):
             game_control.deal_cards(target, target.max_vigor - target.vigor)

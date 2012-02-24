@@ -7,6 +7,10 @@ class Response:
         def __init__(self, method, hint):
             self.method = method
             self.hint = hint
+
+    def __init__(self):
+        self.abort = 'disallow'
+
     def add_method(self, method_name, method, hint):
         self.methods[method_name] = Response.Method(method, hint)
 
@@ -19,22 +23,17 @@ class Response:
         hints = dict()
         for k, v in self.methods.items():
             hints = dict(hints.items() + v.hint(game_control, player).items())
-        return _PlayFrame(game_control, player, methods, hints, on_result)
+        return _PlayFrame(game_control, player, methods, hints, self.abort,
+                          on_result)
 
-    def allow_aborting(self, methods):
-        methods['abort'] = Response.Method(lambda c: None,
-                                           lambda gc, p: {
-                                               'abort': {
-                                                   'require': ['count'],
-                                                   'count': 0,
-                                               }
-                                           })
-        return methods
+    def allow_aborting(self):
+        self.abort = 'allow'
 
 class ToCertainCard(Response):
     def __init__(self, card_name):
         self.card_name = card_name
-        self.methods = self.allow_aborting(dict())
+        self.allow_aborting()
+        self.methods = dict()
         self.add_method(card_name, self._one_card_check, self._one_card_hint)
 
     def _one_card_check(self, cards):
@@ -45,12 +44,13 @@ class ToCertainCard(Response):
                                            lambda c: c.name == self.card_name)
 
 class _PlayFrame(frames.PlayCards):
-    def __init__(self, gc, player, methods, hints, on_result):
+    def __init__(self, gc, player, methods, hints, abort, on_result):
         frames.PlayCards.__init__(self, gc, player, methods, on_result)
         self.hints = hints
+        self.abort = abort
 
     def _hint_detail(self):
-        return { 'methods': self.hints }
-
-    def _hint_action(self, action):
-        return 'PlayCards'
+        return {
+                   'methods': self.hints,
+                   'abort': self.abort,
+               }

@@ -40,7 +40,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until getting cards
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           0: { 'type': 'implicit target' },
                           1: { 'type': 'implicit target' },
@@ -62,7 +62,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
@@ -173,7 +173,7 @@ last_event_id += 1
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           0: { 'type': 'implicit target' },
                           1: { 'type': 'implicit target' },
@@ -195,7 +195,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
@@ -319,7 +319,7 @@ last_event_id += 1
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           0: { 'type': 'implicit target' },
                           1: { 'type': 'implicit target' },
@@ -341,7 +341,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
@@ -409,7 +409,7 @@ assert_eq(ret_code.OK, result['code'])
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           0: { 'type': 'implicit target' },
                           1: { 'type': 'implicit target' },
@@ -430,7 +430,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
@@ -473,12 +473,12 @@ assert_eq(ret_code.OK, result['code'])
 # steal    | 10   | 15 | CLUB
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[1].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           6: { 'type': 'implicit target' },
                           7: { 'type': 'implicit target' },
@@ -580,12 +580,12 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until player
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[1].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           8: { 'type': 'forbid' },
                           15: {
@@ -736,7 +736,7 @@ gc.start()
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           0: { 'type': 'implicit target' },
                           1: {
@@ -762,7 +762,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 
@@ -883,7 +883,7 @@ gc.start()
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           0: { 'type': 'implicit target' },
                           1: {
@@ -901,7 +901,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
@@ -955,12 +955,12 @@ assert_eq(ret_code.OK, result['code'])
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[1].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           4: {
                                  'type': 'fix target',

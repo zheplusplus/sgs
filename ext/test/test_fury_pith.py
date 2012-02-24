@@ -57,7 +57,6 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until duel
 result = gc.player_act({
                            'token': players[1].token,
                            'method': 'abort',
-                           'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -95,7 +94,7 @@ assert_eq(ret_code.OK, result['code'])
 result = gc.player_act({
                            'token': players[1].token,
                            'method': 'slash',
-                           'play': [5],
+                           'discard': [5],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -104,7 +103,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until duel
 result = gc.player_act({
                            'token': players[0].token,
                            'method': 'abort',
-                           'play': [],
+                           'discard': [],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -146,7 +145,6 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until duel
 result = gc.player_act({
                            'token': players[1].token,
                            'method': 'abort',
-                           'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -188,7 +186,7 @@ assert_eq(ret_code.OK, result['code'])
 result = gc.player_act({
                            'token': players[1].token,
                            'method': 'slash',
-                           'play': [6],
+                           'discard': [6],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -197,7 +195,6 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until duel
 result = gc.player_act({
                            'token': players[0].token,
                            'method': 'abort',
-                           'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
 

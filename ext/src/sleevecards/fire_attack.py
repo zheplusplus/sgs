@@ -30,7 +30,7 @@ def fire_attack_target(game_control, user, card):
                                            card))
 
 def discard_same_suit(game_control, args, player, target, cards):
-    show_suit = game_control.cards_by_ids(args['show'])[0].suit
+    show_suit = game_control.cards_by_ids(args['discard'])[0].suit
     game_control.push_frame(_SourceDiscardCards(
                               game_control, player, show_suit,
                               lambda gc, a: done(gc, a, player, target, cards)))
@@ -54,12 +54,15 @@ class _TargetShowCards(frames.ShowCards):
     def _hint_detail(self):
         cards = self.game_control.player_cards_at(self.player, 'cards')
         return {
-                   'count': 1,
-                   'candidates': map(lambda c: c.card_id, cards),
-               }
-
-    def _hint_action(self, token):
-        return 'ShowCards'
+            'methods': {
+                'show': {
+                    'require': ['count', 'candidates'],
+                    'count': 1,
+                    'candidates': map(lambda c: c.card_id, cards),
+                }
+            },
+            'abort': 'disallow',
+        }
 
 class _SourceDiscardCards(frames.DiscardCards):
     def __init__(self, game_control, player, suit, on_result):
@@ -68,19 +71,21 @@ class _SourceDiscardCards(frames.DiscardCards):
         self.suit = suit
 
     def _hint_detail(self):
-        candidates = self.game_control.player_cards_at(self.player, 'cards')
-        candidates = filter(lambda c: c.suit == self.suit, candidates)
+        cards = self.game_control.player_cards_at(self.player, 'cards')
+        cards = filter(lambda c: c.suit == self.suit, cards)
         return {
-                   'require': ['allow count', 'candidates'],
-                   'allow count': [0, 1],
-                   'candidates': map(lambda c: c.card_id, candidates),
-               }
+            'methods': {
+                'discard': {
+                    'require': ['count', 'candidates'],
+                    'count': 1,
+                    'candidates': map(lambda c: c.card_id, cards),
+                }
+            },
+            'abort': 'allow',
+        }
 
     def _check(self, cards_ids):
         if len(cards_ids) == 0:
             return
         cards = self.game_control.cards_by_ids(cards_ids)
         checking.only_one_card_of_suit(cards, self.suit)
-
-    def _hint_action(self, token):
-        return 'DiscardCards'

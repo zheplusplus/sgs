@@ -47,7 +47,7 @@ gc.start()
 # dodge       | 8                    | DIAMOND
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           0: { 'type': 'forbid' },
                           1: {
@@ -69,7 +69,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 
@@ -80,18 +80,18 @@ result = gc.player_act({
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'DiscardCards',
+              'action': 'discard',
               'methods': {
-                             'discard': {
-                                 'require': ['count', 'candidates'],
-                                 'count': 2,
-                                 'candidates': [0, 1, 2, 3, 8, 9],
-                             },
-                         },
+                  'discard': {
+                      'require': ['count', 'candidates'],
+                      'count': 2,
+                      'candidates': [0, 1, 2, 3, 8, 9],
+                  },
+              },
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'DiscardCards',
+              'action': 'discard',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))

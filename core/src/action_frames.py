@@ -23,9 +23,6 @@ class FrameBase:
             'action': self._hint_action(token),
         }.items() + self._hint(token).items())
 
-    def _hint_action(self, token):
-        return self.__class__.__name__
-
 def check_owner(owner, cards):
     for c in cards:
         if owner != c.owner_or_nil:
@@ -100,6 +97,9 @@ class UseCards(CardsTargetFrame):
         if not self.player.alive:
             self.done(None)
 
+    def _hint_action(self, token):
+        return 'use'
+
 class ShowCards(FrameBase):
     def __init__(self, game_control, player, cards_check, on_result):
         FrameBase.__init__(self, game_control, on_result)
@@ -110,7 +110,7 @@ class ShowCards(FrameBase):
         return [self.player]
 
     def react(self, args):
-        cards = args['show']
+        cards = args['discard']
         check_owner(self.player, self.game_control.cards_by_ids(cards))
         self.cards_check(cards)
         self.game_control.show_cards(self.player, cards)
@@ -118,6 +118,9 @@ class ShowCards(FrameBase):
 
     def _hint(self, token):
         return self._hint_detail() if self.player.token == token else dict()
+
+    def _hint_action(self, token):
+        return 'discard'
 
 class DiscardCards(FrameBase):
     def __init__(self, game_control, player, cards_check, on_result):
@@ -139,6 +142,9 @@ class DiscardCards(FrameBase):
     def _hint(self, token):
         return self._hint_detail() if self.player.token == token else dict()
 
+    def _hint_action(self, token):
+        return 'discard'
+
 class PlayCards(FrameBase):
     def __init__(self, game_control, player, methods, on_result):
         FrameBase.__init__(self, game_control, on_result)
@@ -149,9 +155,12 @@ class PlayCards(FrameBase):
         return [self.player]
 
     def react(self, args):
+        if args['method'] == 'abort':
+            return self.done(args)
+
         cards = []
-        if 'play' in args:
-            cards = self.game_control.cards_by_ids(args['play'])
+        if 'discard' in args:
+            cards = self.game_control.cards_by_ids(args['discard'])
             check_owner(self.player, cards)
         method = args['method']
         if not method in self.methods:
@@ -163,6 +172,9 @@ class PlayCards(FrameBase):
 
     def _hint(self, token):
         return self._hint_detail() if self.player.token == token else dict()
+
+    def _hint_action(self, token):
+        return 'discard'
 
 class AcceptMessage(FrameBase):
     def __init__(self, game_control, players, hint, on_message, on_result):

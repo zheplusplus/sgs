@@ -95,7 +95,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'show': [2],
+                           'discard': [2],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -119,7 +119,8 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'targets': [players[0].player_id],
-                           'discard': [2],
+                           'action': 'use',
+                           'use': [2],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -129,7 +130,8 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'targets': map(lambda p: p.player_id, players),
-                           'discard': [2],
+                           'action': 'use',
+                           'use': [2],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -139,7 +141,8 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'targets': [players[1].player_id],
-                           'discard': [9],
+                           'action': 'use',
+                           'use': [9],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -149,7 +152,29 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'targets': [players[1].player_id],
-                           'discard': [2, 3],
+                           'action': 'use',
+                           'use': [2, 3],
+                       })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
+          }, result)
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'targets': [players[1].player_id],
+                           'use': [2],
+                       })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_MISSING_ARG % 'action',
+          }, result)
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'targets': [players[1].player_id],
+                           'action': 'use',
+                           'use': [],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -160,8 +185,8 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until discard a card
 
 assert_eq({
               'code': ret_code.OK,
-              'action': '_AskHeavenlyScent',
-              'discard': {
+              'action': 'use',
+              'use': {
                   2: {
                       'type': 'fix target',
                       'count': 1,
@@ -178,7 +203,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': '_AskHeavenlyScent',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 
@@ -196,8 +221,9 @@ assert_eq({
 # dodge        | 12   | 11 | HEART
 result = gc.player_act({
                            'token': players[0].token,
+                           'action': 'use',
                            'targets': [players[1].player_id],
-                           'discard': [2],
+                           'use': [2],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -261,7 +287,7 @@ assert_eq(ret_code.OK, result['code'])
 last_event_id = len(gc.get_events(players[0].token, 0)) # until heavenly scent
 result = gc.player_act({
                            'token': players[0].token,
-                           'discard': [],
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -302,7 +328,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'show': [3],
+                           'discard': [3],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -324,7 +350,8 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until heavenly scent
 result = gc.player_act({
                            'token': players[0].token,
                            'targets': [players[1].player_id],
-                           'discard': [3],
+                           'action': 'use',
+                           'use': [3],
                        })
 assert_eq(ret_code.OK, result['code'])
 

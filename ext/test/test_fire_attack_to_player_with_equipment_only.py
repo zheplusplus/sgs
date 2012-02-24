@@ -59,7 +59,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'show': [0],
+                           'discard': [0],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -68,7 +68,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'show': [1],
+                           'discard': [1],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -106,12 +106,12 @@ assert_eq({
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'players': [players[1].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'UseCards',
+              'action': 'use',
               'card': {
                           4: {
                                  'type': 'fix target',

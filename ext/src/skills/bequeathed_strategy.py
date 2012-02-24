@@ -56,6 +56,9 @@ class _BequeathedStrategyTransferCards(CardsTargetFrame):
             self.add_hint_fix_target('transfer', c, 1, candidates)
         self.add_quit()
 
+    def _hint_action(self, token):
+        return 'transfer'
+
 def add_to(player):
     player.actions_after_damaged['character']['ability'] = bequeathed_strategy
 
