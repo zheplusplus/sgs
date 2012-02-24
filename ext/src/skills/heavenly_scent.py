@@ -31,7 +31,7 @@ class _AskHeavenlyScent(DiscardCards):
                          'candidates': map(lambda p: p.player_id, candidates),
                        } for c in cards
                    },
-                   'give up': 'allow',
+                   'abort': 'allow',
                }
 
 def _check_one_heart_card(game_control, cards_ids):

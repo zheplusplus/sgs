@@ -63,7 +63,7 @@ class CardsTargetFrame(OnePlayerFrame):
         self._hint_cache[category][card.card_id] = target_info
 
     def add_quit(self):
-        self._hint_cache['give up'] = 'allow'
+        self._hint_cache['abort'] = 'allow'
 
     def _hint(self, token):
         return self._hint_cache if self.player.token == token else dict()
@@ -72,7 +72,7 @@ class UseCards(CardsTargetFrame):
     def __init__(self, game_control, player, interface_map, on_result):
         CardsTargetFrame.__init__(self, game_control, player, on_result)
         self.interface_map = interface_map
-        self.interface_map['give up'] = lambda gc, a: self.done(None)
+        self.interface_map['abort'] = lambda gc, a: self.done(None)
 
     def react(self, args):
         if not args['action'] in self.interface_map:

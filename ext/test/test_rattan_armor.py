@@ -73,7 +73,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -187,7 +187,7 @@ assert_eq(ret_code.OK, result['code'])
 last_event_id = len(gc.get_events(players[0].token, 0)) # until duel
 result = gc.player_act({
                            'token': players[0].token,
-                           'method': 'give up',
+                           'method': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 

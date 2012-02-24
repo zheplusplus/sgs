@@ -296,7 +296,7 @@ function Me(pc, coord, center) {
         ctxt.restore();
         ctxt.save();
         ctxt.fillStyle = '#000';
-        ctxt.fillText('Give up', 0, ME_H * 3 / 4, RIGHT_AREA);
+        ctxt.fillText('Abort', 0, ME_H * 3 / 4, RIGHT_AREA);
         ctxt.restore();
 
         ctxt.restore();
@@ -305,7 +305,7 @@ function Me(pc, coord, center) {
             if (ME_H * 3 / 4 < y) {
                 disableCardClick();
                 post_act({
-                             'action': 'give up',
+                             'action': 'abort',
                          });
             }
         });
@@ -338,8 +338,8 @@ function Me(pc, coord, center) {
 
     this.hintDiscardCards = startDiscarding;
 
-    function startDiscarding(filter, validator, giveUpAllow) {
-        this.hintDiscardCards = function(filter, giveUpAllow) {};
+    function startDiscarding(filter, validator, allowAborting) {
+        this.hintDiscardCards = function(filter, allowAborting) {};
         enableCardClick(filter);
 
         var ctxt = right.context();

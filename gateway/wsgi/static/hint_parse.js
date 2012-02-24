@@ -62,7 +62,7 @@ function SGS_HintParser(game, players, center) {
                 return validator;
             }
             players[result['players'][0]].hintDiscardCards(
-                        filters(), validators(), result['give up'] == 'allow');
+                        filters(), validators(), result['abort'] == 'allow');
         },
     };
     this.hint = function(result) {

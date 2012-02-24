@@ -241,7 +241,7 @@ assert_eq(1, gc.distance_between(players[2], players[1]))
 # slash                 | 6    | 11 | SPADE
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'give up',
+                          'action': 'abort',
                       })
 assert_eq(ret_code.OK, result['code'])
 

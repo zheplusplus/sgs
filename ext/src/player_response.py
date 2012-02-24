@@ -21,20 +21,20 @@ class Response:
             hints = dict(hints.items() + v.hint(game_control, player).items())
         return _PlayFrame(game_control, player, methods, hints, on_result)
 
-    def allow_give_up(self, methods):
-        methods['give up'] = Response.Method(lambda c: None,
-                                             lambda gc, p: {
-                                                 'give up': {
-                                                     'require': ['count'],
-                                                     'count': 0,
-                                                 }
-                                             })
+    def allow_aborting(self, methods):
+        methods['abort'] = Response.Method(lambda c: None,
+                                           lambda gc, p: {
+                                               'abort': {
+                                                   'require': ['count'],
+                                                   'count': 0,
+                                               }
+                                           })
         return methods
 
 class ToCertainCard(Response):
     def __init__(self, card_name):
         self.card_name = card_name
-        self.methods = self.allow_give_up(dict())
+        self.methods = self.allow_aborting(dict())
         self.add_method(card_name, self._one_card_check, self._one_card_hint)
 
     def _one_card_check(self, cards):

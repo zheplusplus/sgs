@@ -35,7 +35,7 @@ map(lambda p: pc.add_player(p), players)
 gc.start()
 assert_eq(200, gc.player_act({
                                  'token': players[0].token,
-                                 'action': 'give up',
+                                 'action': 'abort',
                              })['code'])
 assert_eq(200, gc.player_act({
                                  'token': players[0].token,
@@ -43,7 +43,7 @@ assert_eq(200, gc.player_act({
                              })['code'])
 assert_eq(200, gc.player_act({
                                  'token': players[1].token,
-                                 'action': 'give up',
+                                 'action': 'abort',
                              })['code'])
 assert_eq(200, gc.player_act({
                                  'token': players[1].token,

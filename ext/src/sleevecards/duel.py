@@ -26,7 +26,7 @@ def play_slash_frame(game_control, player, next_player, duel_cards):
     return player.response_frame('slash', game_control, on_result)
 
 def play_slash(game_control, args, player, target, duel_cards):
-    if args['method'] == 'give up':
+    if args['method'] == 'abort':
         done(game_control, target, player, duel_cards)
     else:
         game_control.push_frame(play_slash_frame(game_control, target, player,

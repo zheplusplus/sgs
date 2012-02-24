@@ -52,7 +52,7 @@ assert_eq({
                           8: { 'type': 'forbid' },
                           9: { 'type': 'forbid' },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -236,7 +236,7 @@ assert_eq({
                           8: { 'type': 'forbid' },
                           9: { 'type': 'forbid' },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -487,7 +487,7 @@ assert_eq({
                           8: { 'type': 'forbid' },
                           9: { 'type': 'forbid' },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -506,7 +506,7 @@ assert_eq({
           }, result)
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'give up',
+        'action': 'abort',
     })
 assert_eq(ret_code.OK, result['code'])
 
@@ -573,7 +573,7 @@ for i in range(0, 4):
 
 assert_eq(ret_code.OK, gc.player_act({
                                          'token': players[0].token,
-                                         'action': 'give up',
+                                         'action': 'abort',
                                      })['code'])
 # cards:
 # name        | rank | suit
@@ -646,7 +646,7 @@ assert_eq({
                           8: { 'type': 'forbid' },
                           9: { 'type': 'forbid' },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 

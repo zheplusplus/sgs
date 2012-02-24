@@ -29,7 +29,7 @@ class _BequeathedStrategyTransferCards(CardsTargetFrame):
         self._update_hint()
 
     def react(self, args):
-        if args['action'] == 'give up':
+        if args['action'] == 'abort':
             return self.done(None)
         cards = self.game_control.cards_by_ids(args['transfer'])
         if len(cards) == 0:

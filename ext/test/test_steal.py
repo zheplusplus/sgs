@@ -57,7 +57,7 @@ assert_eq({
                                   'candidates': [1, 2],
                               },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -190,7 +190,7 @@ assert_eq({
                                   'candidates': [1, 2],
                               },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -336,7 +336,7 @@ assert_eq({
                                   'candidates': [1, 2],
                               },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -425,7 +425,7 @@ assert_eq({
                                   'candidates': [1, 2],
                               },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -437,7 +437,7 @@ assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -493,7 +493,7 @@ assert_eq({
                                   'candidates': [2],
                               },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
@@ -594,7 +594,7 @@ assert_eq({
                                   'candidates': [2, 0],
                               },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
@@ -757,7 +757,7 @@ assert_eq({
                           8: { 'type': 'forbid' },
                           9: { 'type': 'forbid' },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -775,7 +775,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -896,7 +896,7 @@ assert_eq({
                           24: { 'type': 'forbid' },
                           25: { 'type': 'forbid' },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -943,7 +943,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -973,7 +973,7 @@ assert_eq({
                           26: { 'type': 'forbid' },
                           27: { 'type': 'forbid' },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))

@@ -59,7 +59,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -152,7 +152,7 @@ assert_eq({
                                  'count': 1,
                                  'candidates': [7],
                              },
-                             'give up': {
+                             'abort': {
                                  'require': ['count'],
                                  'count': 0,
                              },
@@ -218,7 +218,7 @@ assert_eq({
                                  'count': 1,
                                  'candidates': [],
                              },
-                             'give up': {
+                             'abort': {
                                  'require': ['count'],
                                  'count': 0,
                              },
@@ -249,7 +249,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'method': 'give up',
+                           'method': 'abort',
                            'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -269,7 +269,7 @@ assert_eq({
                                  'count': 1,
                                  'candidates': [8, 9, 10, 11],
                              },
-                             'give up': {
+                             'abort': {
                                  'require': ['count'],
                                  'count': 0,
                              },
@@ -279,7 +279,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[2].token,
-                           'method': 'give up',
+                           'method': 'abort',
                            'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -332,7 +332,7 @@ assert players[2].alive
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -374,7 +374,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -426,14 +426,14 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'method': 'give up',
+                           'method': 'abort',
                            'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[2].token,
-                           'method': 'give up',
+                           'method': 'abort',
                            'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -441,7 +441,7 @@ assert_eq(ret_code.OK, result['code'])
 last_event_id = len(gc.get_events(players[0].token, 0)) # until giving up
 result = gc.player_act({
                            'token': players[0].token,
-                           'method': 'give up',
+                           'method': 'abort',
                            'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -463,7 +463,7 @@ assert_eq(p0_events, p2_events)
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -508,7 +508,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -560,7 +560,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'method': 'give up',
+                           'method': 'abort',
                            'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -574,7 +574,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[2].token,
-                           'method': 'give up',
+                           'method': 'abort',
                            'play': [],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -628,6 +628,6 @@ assert players[2].alive
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])

@@ -12,7 +12,7 @@ class _RescueFrame(FrameBase):
         self._push_player_frame()
 
     def resume(self, result):
-        if result['method'] != 'give up':
+        if result['method'] != 'abort':
             self.game_control.vigor_regain(self.who, 1)
             self._check_rescued()
         else:

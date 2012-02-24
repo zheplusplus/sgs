@@ -97,7 +97,7 @@ assert_eq({
                                  'count': 1,
                                  'candidates': [6],
                              },
-                             'give up': {
+                             'abort': {
                                  'require': ['count'],
                                  'count': 0,
                              },
@@ -180,7 +180,7 @@ assert_eq({
                                  'count': 1,
                                  'candidates': [1],
                              },
-                             'give up': {
+                             'abort': {
                                  'require': ['count'],
                                  'count': 0,
                              },

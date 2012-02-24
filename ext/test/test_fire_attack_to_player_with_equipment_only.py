@@ -39,7 +39,7 @@ result = gc.player_act({
 assert_eq(ret_code.OK, result['code'])
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 result = gc.player_act({
@@ -124,6 +124,6 @@ assert_eq({
                                   'candidates': [0],
                               },
                       },
-              'give up': 'allow',
+              'abort': 'allow',
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
