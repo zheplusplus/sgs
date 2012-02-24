@@ -139,7 +139,7 @@ if True: # just indent for a nice appearance
 # dodge        | 11   | 10 | HEART
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'duel',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [7],
                        })
@@ -176,7 +176,7 @@ assert_eq(p0_events, p1_events)
 # dodge        | 11   | 10 | HEART
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'duel',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [6],
                        })

@@ -90,7 +90,7 @@ assert_eq({
 # dodge    | 8                    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [0],
                        })
@@ -215,7 +215,7 @@ assert_eq({
 # dodge    | 8    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [1],
                        })
@@ -322,7 +322,7 @@ assert_eq({
 # dodge    | 8    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [2],
                        })
@@ -393,7 +393,7 @@ last_event_id += 1
 # dodge    | 8    | DIAMOND
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [2],
                        })
@@ -404,7 +404,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'use': [3],
                        })
 assert_eq({
@@ -414,7 +414,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [3],
                        })
@@ -425,7 +425,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [3],
                        })
@@ -436,7 +436,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [],
                            'use': [3],
                        })
@@ -447,7 +447,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[0].player_id,
                                        players[1].player_id],
                            'use': [3],
@@ -459,7 +459,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [3, 8],
                        })
@@ -470,7 +470,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [],
                        })
@@ -489,7 +489,7 @@ assert_eq({
 # dodge    | 8    | DIAMOND <- discard this
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [3],
                        })
@@ -595,7 +595,7 @@ assert_eq({
 # sabotage | 10   | CLUB
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'sabotage',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [8],
                        })
@@ -737,7 +737,7 @@ assert_eq(ret_code.OK, result['code'])
 # sabotage              | 12                   | HEART
 result = gc.player_act({
                           'token': players[1].token,
-                          'action': 'sabotage',
+                          'action': 'card',
                           'targets': [players[0].player_id],
                           'use': [5],
                       })
@@ -751,7 +751,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                           'token': players[1].token,
-                          'action': 'sabotage',
+                          'action': 'card',
                           'targets': [players[0].player_id],
                           'use': [6],
                       })
@@ -793,7 +793,7 @@ assert_eq(p0_events, p1_events)
 # sabotage              | 12                   | HEART
 result = gc.player_act({
                           'token': players[1].token,
-                          'action': 'sabotage',
+                          'action': 'card',
                           'targets': [players[0].player_id],
                           'use': [11],
                       })

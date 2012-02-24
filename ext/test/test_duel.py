@@ -81,7 +81,7 @@ assert_eq({
 # slash       | 8                    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [players[1].player_id],
         'use': [0],
     })
@@ -317,7 +317,7 @@ assert_eq({
 # dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [players[1].player_id],
         'use': [0],
     })
@@ -328,18 +328,18 @@ assert_eq({
 
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [players[1].player_id],
         'use': [9],
     })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
+              'reason': ret_code.BR_INCORRECT_INTERFACE,
           }, result)
 
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [],
         'use': [3],
     })
@@ -350,7 +350,7 @@ assert_eq({
 
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [players[0].player_id],
         'use': [3],
     })
@@ -361,7 +361,7 @@ assert_eq({
 
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [players[0].player_id, players[1].player_id],
         'use': [3],
     })
@@ -383,7 +383,7 @@ assert_eq({
 # dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [players[1].player_id],
         'use': [3],
     })
@@ -580,7 +580,7 @@ assert_eq({
 # dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [],
         'use': [8],
     })
@@ -590,7 +590,7 @@ assert_eq({
           }, result)
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [players[0].player_id, players[1].player_id],
         'use': [8],
     })
@@ -600,7 +600,7 @@ assert_eq({
           }, result)
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [players[0].player_id],
         'use': [8],
     })
@@ -620,7 +620,7 @@ assert_eq({
 # dodge       | 7    | DIAMOND
 result = gc.player_act({
         'token': players[0].token,
-        'action': 'duel',
+        'action': 'card',
         'targets': [players[1].player_id],
         'use': [8],
     })

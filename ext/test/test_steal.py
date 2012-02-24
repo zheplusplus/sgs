@@ -83,7 +83,7 @@ assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
 # +dilu    | 5    | 7  | CLUB
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [12],
                        })
@@ -215,7 +215,7 @@ assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
 # +dilu    | 5    | 7  | CLUB
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                            'use': [4],
                        })
@@ -348,7 +348,7 @@ assert_eq(gc.hint(players[1].token), gc.hint(players[2].token))
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'use': [13],
                        })
 assert_eq({
@@ -358,17 +358,17 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[1].player_id],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % 'use',
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
           }, result)
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [],
                            'use': [13],
                        })
@@ -379,7 +379,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[1].player_id,
                                        players[2].player_id],
                            'use': [13],
@@ -391,7 +391,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [13],
                        })
@@ -500,7 +500,7 @@ assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [14],
                        })
@@ -518,7 +518,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [14],
                        })
@@ -529,7 +529,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[2].player_id],
                            'use': [14],
                        })
@@ -567,7 +567,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [14],
                        })
@@ -613,7 +613,7 @@ assert_eq(gc.hint(players[0].token), gc.hint(players[2].token))
 # slash    | 1    | 8  | CLUB
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [15],
                        })
@@ -787,7 +787,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [4],
                        })
@@ -802,7 +802,7 @@ assert_eq(ret_code.OK, result['code'])
 for i in (1, 2):
     result = gc.player_act({
                                'token': players[1].token,
-                               'action': 'steal',
+                               'action': 'card',
                                'targets': [players[0].player_id],
                                'use': [i],
                            })
@@ -816,7 +816,7 @@ for i in (1, 2):
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [3],
                        })
@@ -911,7 +911,7 @@ assert_eq(gc.hint(players[1].token), gc.hint(players[5].token))
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[3].player_id],
                            'use': [1],
                        })
@@ -929,7 +929,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[3].player_id],
                            'use': [1],
                        })
@@ -983,7 +983,7 @@ assert_eq(gc.hint(players[0].token), gc.hint(players[5].token))
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[4].player_id],
                            'use': [4],
                        })
