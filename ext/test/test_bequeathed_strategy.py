@@ -129,17 +129,13 @@ last_event_id += 3
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'transfer',
-              'transfer': {
-                  10: {
-                      'type': 'fix target',
-                      'count': 1,
+              'action': 'use',
+              'methods': {
+                  'bequeathed strategy': {
+                      'require': ['fix target', 'cards'],
+                      'target count': 1,
                       'candidates': [players[1].player_id],
-                  },
-                  11: {
-                      'type': 'fix target',
-                      'count': 1,
-                      'candidates': [players[1].player_id],
+                      'cards': [10, 11],
                   },
               },
               'abort': 'allow',
@@ -147,7 +143,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'transfer',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 
@@ -181,17 +177,13 @@ last_event_id += 1
 
 assert_eq({
               'code': ret_code.OK,
-              'action': 'transfer',
-              'transfer': {
-                  12: {
-                      'type': 'fix target',
-                      'count': 1,
+              'action': 'use',
+              'methods': {
+                  'bequeathed strategy': {
+                      'require': ['fix target', 'cards'],
+                      'target count': 1,
                       'candidates': [players[1].player_id],
-                  },
-                  13: {
-                      'type': 'fix target',
-                      'count': 1,
-                      'candidates': [players[1].player_id],
+                      'cards': [12, 13],
                   },
               },
               'abort': 'allow',
@@ -199,7 +191,7 @@ assert_eq({
           }, gc.hint(players[0].token))
 assert_eq({
               'code': ret_code.OK,
-              'action': 'transfer',
+              'action': 'use',
               'players': [players[0].player_id],
           }, gc.hint(players[1].token))
 

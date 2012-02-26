@@ -52,12 +52,19 @@ class _BequeathedStrategyTransferCards(CardsTargetFrame):
         candidates = self.game_control.players_from_current()
         candidates.remove(self.player)
         candidates = map(lambda p: p.player_id, candidates)
-        for c in self.cards:
-            self.add_hint_fix_target('transfer', c, 1, candidates)
+        self.set_hint_category('methods', {
+                                   'bequeathed strategy': {
+                                       'require': ['fix target', 'cards'],
+                                       'target count': 1,
+                                       'candidates': candidates,
+                                       'cards': map(lambda c: c.card_id,
+                                                    self.cards),
+                                   }
+                               })
         self.add_quit()
 
     def _hint_action(self, token):
-        return 'transfer'
+        return 'use'
 
 def add_to(player):
     player.actions_after_damaged['character']['ability'] = bequeathed_strategy
