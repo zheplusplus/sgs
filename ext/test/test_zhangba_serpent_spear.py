@@ -60,7 +60,7 @@ assert_eq({
 
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [1],
                       })
 assert_eq(ret_code.OK, result['code'])

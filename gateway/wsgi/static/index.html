@@ -5,6 +5,7 @@
 <script src='/static/hint_parse.js'></script>
 <script src='/static/strings.js'></script>
 <script src='/static/canvaslite.js'></script>
+<script src='/static/player.js'></script>
 <script src='/static/views.js'></script>
 <script>
 var BEAT_INTERVAL = 2000;
@@ -27,7 +28,14 @@ function post_data(data, url, onResult) {
     req.open('POST', url, true);
     req.onreadystatechange = function() {
         if (req.readyState == 4) {
-            onResult(eval('(' + req.responseText + ')'));
+            try {
+                onResult(eval('(' + req.responseText + ')'));
+            } catch (e) {
+                var result = new Array();
+                result['code'] = 500;
+                result['reason'] = req.responseText;
+                onResult(result);
+            }
         }
     };
     req.send(data);

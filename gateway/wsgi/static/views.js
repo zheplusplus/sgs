@@ -87,19 +87,31 @@ function Game(pane) {
         var center = new Center(canvas, new Coord(CENTER_X, CENTER_Y));
         for (i = 0; i < 8; ++i) {
             if (i != pos) {
-                players[i] = new Player(canvas, childAreas[(8 + i - pos) % 8],
-                                        center);
+                players[i] = new PlayerView(this, canvas,
+                                            childAreas[(8 + i - pos) % 8],
+                                            center);
             } else {
-                players[i] = new Me(canvas, childAreas[0], center);
+                var me = new MeView(this, canvas, childAreas[0], center);
+                players[i] = me
+                this.clickOnTarget = function(target) {
+                    me.clickOnTarget(target);
+                };
             }
         }
-        var hintparser = new SGS_HintParser(this, players, center);
+        var hintparser = new SGS_HintParser(this, center);
         this.hint = function(result) {
             hintparser.hint(result);
         };
     };
     this.player = function(id) {
-        return players[id];
+        return players[id].callbacks();
+    };
+    this.deactivateAll = function() {
+        for (i in players) {
+            players[i].callbacks().deactivate();
+        }
+    };
+    this.clearTargets = function() {
     };
 }
 
@@ -155,54 +167,72 @@ function Center(pc, coord) {
     };
 }
 
-function Player(pc, coord, center) {
+function PlayerView(game, pc, coord, center) {
     var canvas = new CanvasLite(coord.x, coord.y, CHILD_W, CHILD_H, pc);
     canvas.fillBg('#ccc');
-    var cards_count = 0;
-    function repaintCardCount() {
-        var ctxt = canvas.context();
-        ctxt.save();
+    var ctxt = canvas.context();
+
+    var cb = new SGS_Player();
+    this.callbacks = function() {
+        return cb;
+    };
+
+    canvas.click(function(x, y) {
+        game.clickOnTarget(cb);
+    });
+    cb.onCardsCountChange(function(before, after) {
         ctxt.save();
         ctxt.fillStyle = '#fff';
         ctxt.fillRect(0, TEXT_H, NUM_W, TEXT_H);
         ctxt.restore();
 
+        ctxt.save();
         ctxt.textBaseline = 'top';
-        ctxt.fillText(cards_count, 0, NUM_W, TEXT_H);
+        ctxt.fillText(after, 0, NUM_W, TEXT_H);
+        ctxt.restore();
+    });
+    cb.onCardDrop(function(c) {
+        center.addCard(c);
+    });
+
+    function refreshVigor(vigor, max) {
+        var text = Array(vigor + 1).join('[]');
+        text += Array(max - vigor + 1).join('//');
+
+        ctxt.save();
+        ctxt.fillStyle = '#fff';
+        ctxt.fillRect(TEXT_H, NUM_W, CHILD_W - NUM_W - BORDER * 2, TEXT_H);
+        ctxt.restore();
+
+        ctxt.save();
+        ctxt.textBaseline = 'top';
+        ctxt.fillText(text, TEXT_H, NUM_W, CHILD_W - NUM_W - BORDER * 2);
         ctxt.restore();
     }
-    this.eventDrawCount = function(count) {
-        cards_count += count;
-        repaintCardCount();
-    };
-    this.activate = function() {
-        canvas.paintBorder('#f33', BORDER);
-    };
-    this.deactivate = function() {
-        canvas.paintBorder('#aaa', BORDER);
-    };
-    this.eventCharSelected = function(name, max_vigor) {
-        var ctxt = canvas.context();
+
+    cb.onMaxVigorChange(function(before, max, vigor) {
+        refreshVigor(vigor, max);
+    });
+    cb.onVigorChange(function(before, vigor, max) {
+        if (vigor < 0) vigor = 0;
+        refreshVigor(vigor, max);
+    });
+    cb.onNameChange(function(before, name) {
         ctxt.save();
         ctxt.textBaseline = 'top';
         ctxt.fillText(name, 0, 0, CHILD_W - BORDER * 2);
-        ctxt.fillText(Array(max_vigor + 1).join('[]'), TEXT_H, NUM_W,
-                      CHILD_W - NUM_W - BORDER * 2);
         ctxt.restore();
-    };
-    this.hintUseCards = function() {};
-    this.hintDiscardCards = function(count, filter) {}
-    this.eventDiscard = function(c) {
-        center.clear();
-        for (i = 0; i < c.length; ++i) {
-            center.addCard(c[i]);
-        }
-        cards_count -= c.length;
-        repaintCardCount();
-    };
+    });
+
+    cb.onActivated(function() {
+        canvas.paintBorder('#f33', BORDER);
+    });
+    cb.onDeactivated(function() {
+        canvas.paintBorder('#aaa', BORDER);
+    });
 }
 
-function Me(pc, coord, center) {
+function MeView(game, pc, coord, center) {
     this.click = function(c) {};
     var canvas = new CanvasLite(coord.x, coord.y, ME_W, ME_H, pc);
     var cards = new Array();
@@ -215,169 +245,95 @@ function Me(pc, coord, center) {
                                 ME_H, canvas);
     var right = new CanvasLite(ME_W - RIGHT_AREA, 0, RIGHT_AREA, CHILD_H,
                                canvas);
+    right.fillBg('#888');
     var me = this;
 
-    function enableCardClick(filter) {
-        middle.click(function (x, y) {
-            if (x < CARD_W * cards.length) {
-                var index = Math.floor(x / CARD_W);
-                var card = cards[index];
-                if (card.selected || filter(card, selected())) {
-                    card.selected = !card.selected;
-                    paintCard(middle.context(), card, index);
-                }
-            }
-        });
-    }
+    var cb = new SGS_Me(game);
+    this.callbacks = function() { return cb; };
 
-    function disableCardClick() {
-        middle.click(function (x, y) {});
-    }
-
-    function repaintCards() {
+    cb.onCardDrop(function(c) {
+        center.addCard(c);
+    });
+    cb.onCardsChanged(function(cards) {
         middle.fillBg('#ccc');
         for (i = 0; i < cards.length; ++i) {
             paintCard(middle.context(), cards[i], i);
         }
-    }
-    function resetRight() {
-        right.fillBg('#fff');
-    }
+        middle.click(function(x, y) {
+            var index = Math.floor(x / CARD_W);
+            if (index < cards.length) {
+                cb.clickOnCard(cards[index]);
+            }
+        });
+    });
 
-    this.eventDrawCards = function(new_cards) {
-        for (c in new_cards) {
-            new_cards[c].selected = false;
-        }
-        cards = cards.concat(new_cards);
-        repaintCards();
-    };
-    this.activate = function() {
-        canvas.paintBorder('#bb1', BORDER);
-    };
-    this.deactivate = function() {
-        canvas.paintBorder('#aaa', BORDER);
-    };
-    this.eventCharSelected = function(name, max_vigor) {
+    function refreshVigor(vigor, max) {
+        var ctxt = left.context();
+        var text = Array(vigor + 1).join('[]');
+        text += Array(max - vigor + 1).join('//');
+
+        ctxt.save();
+        ctxt.fillStyle = '#fff';
+        ctxt.fillRect(0, TEXT_H, LEFT_AREA, TEXT_H);
+        ctxt.restore();
+
+        ctxt.save();
+        ctxt.textBaseline = 'top';
+        ctxt.fillText(text, 0, TEXT_H, LEFT_AREA);
+        ctxt.restore();
+    }
+    cb.onMaxVigorChange(function(before, max, vigor) {
+        refreshVigor(vigor, max);
+    });
+    cb.onVigorChange(function(before, vigor, max) {
+        refreshVigor(vigor, max);
+    });
+    cb.onNameChange(function(before, name) {
         var ctxt = left.context();
         ctxt.save();
         ctxt.textBaseline = 'top';
         ctxt.fillText(name, 0, 0, LEFT_AREA);
-        ctxt.fillText(Array(max_vigor + 1).join('[]'), 0, TEXT_H, LEFT_AREA);
         ctxt.restore();
-    };
-    this.hintUseCards = function() {
-        enableCardClick(function(c, s) { return true; });
+    });
+
+    cb.onActivated(function() {
+        canvas.paintBorder('#bb1', BORDER);
+    });
+    cb.onDeactivated(function() {
+        canvas.paintBorder('#aaa', BORDER);
+    });
+
+    function paintMethods(methods, selectedIndex) {
+        right.fillBg('#888');
         var ctxt = right.context();
+        var heightEach = ME_H / methods.length;
+        ctxt.save();
+        ctxt.fillStyle = '#fff';
+        ctxt.fillRect(0, heightEach * selectedIndex, RIGHT_AREA, heightEach);
+        ctxt.restore();
 
         ctxt.save();
         ctxt.textBaseline = 'top';
+        for (i = 0; i < methods.length; ++i) {
+            ctxt.fillText(methods[i], 0, heightEach * i, RIGHT_AREA);
+        }
+        ctxt.restore();
+        return heightEach;
+    }
 
-        ctxt.save();
-        ctxt.fillStyle = '#f88';
-        ctxt.fillRect(0, 0, RIGHT_AREA, ME_H / 2);
-        ctxt.restore();
-        ctxt.save();
-        ctxt.fillStyle = '#088';
-        ctxt.fillText('Use!', 0, 0, RIGHT_AREA);
-        ctxt.restore();
-
-        ctxt.save();
-        ctxt.fillStyle = '#afa';
-        ctxt.fillRect(0, ME_H / 2, RIGHT_AREA, ME_H / 4);
-        ctxt.restore();
-        ctxt.save();
-        ctxt.fillStyle = '#808';
-        ctxt.fillText('Cancel', 0, ME_H / 2, RIGHT_AREA);
-        ctxt.restore();
-
-        ctxt.save();
-        ctxt.fillStyle = '#888';
-        ctxt.fillRect(0, ME_H * 3 / 4, RIGHT_AREA, ME_H / 4);
-        ctxt.restore();
-        ctxt.save();
-        ctxt.fillStyle = '#000';
-        ctxt.fillText('Abort', 0, ME_H * 3 / 4, RIGHT_AREA);
-        ctxt.restore();
-
-        ctxt.restore();
-
+    cb.onMethodsChanged(function(methods) {
+        var heightEach = paintMethods(methods, 0);
         right.click(function(x, y) {
-            if (ME_H * 3 / 4 < y) {
-                disableCardClick();
-                post_act({
-                             'action': 'abort',
-                         });
-            }
+            var index = Math.floor(y / heightEach);
+            cb.clickOnMethod(methods[index]);
+            paintMethods(methods, index);
         });
-    };
-
-    function selectedCount() {
-        var c = 0;
-        for (i in cards) {
-            if (cards[i].selected) ++c;
-        }
-        return c;
-    }
-    function selected() {
-        var c = new Array();
-        for (i in cards) {
-            if (cards[i].selected) c.push(cards[i]);
-        }
-        return c;
-    }
-    function removeCards(c) {
-        for (i = 0; i < c.length; ++i) {
-            for (j = 0; j < cards.length; ++j) {
-                if (c[i].id == cards[j].id) {
-                    cards.splice(j, 1);
-                    break;
-                }
-            }
-        }
-    }
-
-    this.hintDiscardCards = startDiscarding;
-
-    function startDiscarding(filter, validator, allowAborting) {
-        this.hintDiscardCards = function(filter, allowAborting) {};
-        enableCardClick(filter);
-
-        var ctxt = right.context();
-        for (i = 0; i < cards.length; ++i) {
-            if (cards[i].selected) {
-                cards[i].selected = false;
-            }
-        }
-        repaintCards();
-
-        right.fillBg('#aaa');
-        ctxt.save();
-        ctxt.textBaseline = 'top';
-        ctxt.fillStyle = '#111';
-        ctxt.fillText('Discard', 0, 0, RIGHT_AREA);
-        ctxt.restore();
-
-        right.click(function(x, y) {
-            if (validator(selected())) {
-                var discarding = new Array();
-                var selectedCards = selected();
-                for (i in selectedCards) {
-                    discarding.push(selectedCards[i].id);
-                }
-                disableCardClick();
-                resetRight();
-                post_act({ 'discard': discarding });
-                me.hintDiscardCards = startDiscarding;
-            }
-        });
-    };
-
-    this.eventDiscard = function(c) {
-        center.clear();
-        removeCards(c);
-        repaintCards();
-        for (i = 0; i < c.length; ++i) {
-            center.addCard(c[i]);
-        }
+    });
+    cb.clearMethods(function() {
+        right.fillBg('#888');
+        right.click(function(x, y) {});
+    });
+    this.clickOnTarget = function(target) {
+        cb.clickOnTarget(target);
     };
 }

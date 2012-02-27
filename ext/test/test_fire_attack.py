@@ -142,6 +142,7 @@ assert_eq({
 # dodge       | 8    | DIAMOND
 result = gc.player_act({
         'token': players[1].token,
+        'method': 'discard',
         'discard': [6],
     })
 assert_eq(ret_code.OK, result['code'])
