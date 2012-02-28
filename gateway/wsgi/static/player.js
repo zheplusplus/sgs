@@ -241,7 +241,7 @@ function SGS_Me(game) {
                     }
                     var data = {};
                     data['action'] = methodName;
-                    data[methodName] = cardsIds;
+                    data['use'] = cardsIds;
                     data['targets'] = targetsIds;
                     post_act(data);
                     clearSelectedCards();
@@ -301,7 +301,7 @@ function SGS_Me(game) {
                     }
                     var data = {};
                     data['method'] = methodName;
-                    data[methodName] = cardsIds;
+                    data['discard'] = cardsIds;
                     post_act(data);
                     clearSelectedCards();
                     clear_methods();

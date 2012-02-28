@@ -81,10 +81,10 @@ function Game(pane) {
 
     var canvas = new CanvasLite(0, 0, CANVAS_W, CANVAS_H, null);
     canvas.hide();
-    var players = [];
     this.initPosition = function(playersCount, pos) {
+        var players = [];
         canvas.reset();
-        var center = new Center(canvas, new Coord(CENTER_X, CENTER_Y));
+        var center = new CenterView(canvas, new Coord(CENTER_X, CENTER_Y));
         for (i = 0; i < 8; ++i) {
             if (i != pos) {
                 players[i] = new PlayerView(i, this, canvas,
@@ -105,34 +105,33 @@ function Game(pane) {
         this.hintRegions = function(regions) {
             center.selectRegion(regions);
         };
-    };
-    this.player = function(id) {
-        return players[id].callbacks();
-    };
-    this.deactivateAll = function() {
-        for (i in players) {
-            players[i].deactivate();
-        }
-    };
-    this.clearTargets = function() {
+        this.player = function(id) {
+            return players[id].callbacks();
+        };
+        this.deactivateAll = function() {
+            for (i in players) {
+                players[i].deactivate();
+            }
+        };
+        this.clearTargets = function() {
+        };
     };
 }
 
-function Center(pc, coord) {
+function CenterView(pc, coord) {
     var canvas = new CanvasLite(coord.x, coord.y, CENTER_W, CENTER_H, pc);
     var ctxt = canvas.context();
 
     var count_cards = 0;
 
-    function clearCenter() {
+    function clear() {
         canvas.reset()
         count_cards = 0;
         canvas.fillBg('#ccc');
     };
 
-    this.clear = clearCenter;
     this.selectCharacters = function(candidates) {
-        clearCenter();
+        clear();
         ctxt.save();
         var width = (CENTER_W - (CHILD_HORI_INTERVAL * (candidates.length - 1)))
                             / candidates.length;
@@ -149,13 +148,13 @@ function Center(pc, coord) {
             if (x % Math.floor(width + CHILD_HORI_INTERVAL) <= width) {
                 var index = Math.floor(x / (width + CHILD_HORI_INTERVAL));
                 post_act({ 'select': candidates[index] });
-                clearCenter();
+                clear();
                 canvas.click(function(x, y) {});
             }
         });
     };
     this.selectRegion = function(regions) {
-        clearCenter();
+        clear();
         var width = (CENTER_W - (CHILD_HORI_INTERVAL * (regions.length - 1)))
                             / regions.length;
         ctxt.save();
@@ -172,25 +171,14 @@ function Center(pc, coord) {
             if (x % Math.floor(width + CHILD_HORI_INTERVAL) <= width) {
                 var index = Math.floor(x / (width + CHILD_HORI_INTERVAL));
                 post_act({ 'region': regions[index] });
-                clearCenter();
+                clear();
                 canvas.click(function(x, y) {});
             }
         });
     };
     this.addCard = function(card) {
-        var x = count_cards * CARD_W;
-        ++count_cards;
-        var c = new CanvasLite(x, 0, CARD_W, CENTER_H, canvas);
-        c.fillBg(card.selected ? '#fff' : '#aaa');
-
-        var ctxt = c.context();
-        ctxt.save();
-        ctxt.textBaseline = 'top';
-        ctxt.fillStyle = SGS_STR_CARD_SUITS_COLOR[card.suit];
-        ctxt.fillText(SGS_STR_CARD_RANKS[card.rank], 0, 0, NUM_W);
-        ctxt.fillText(SGS_STR_CARD_SUITS[card.suit], NUM_W, 0, NUM_W);
-        ctxt.fillText(card.name, 0, TEXT_H, CARD_W);
-        ctxt.restore();
+        paintCard(ctxt, card, count_cards);
+        count_cards = (count_cards + 1) % 7;
     };
 }
 
