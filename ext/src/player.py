@@ -7,8 +7,8 @@ import common_checking as checking
 import player_response as response
 import characters
 
-STARTDEAL = 4
-ROUNDDEAL = 2
+START_DRAW = 4
+ROUND_DRAW = 2
 
 class Player(CorePlayer):
     def __init__(self, token):
@@ -36,14 +36,14 @@ class Player(CorePlayer):
                }
 
     def start(self, game_control):
-        self.draw_cards(game_control, STARTDEAL)
+        self.draw_cards(game_control, START_DRAW)
 
     def round(self, game_control):
         self.drawing_cards_stage(game_control)
         self.using_cards_stage(game_control)
 
     def drawing_cards_stage(self, game_control):
-        self.draw_cards(game_control, ROUNDDEAL)
+        self.draw_cards(game_control, ROUND_DRAW)
 
     def target_filter(self, source, action, card):
         for f in self.as_target_filters:
@@ -72,6 +72,16 @@ class Player(CorePlayer):
                 self._update_hint()
 
             def react(self, args):
+                cards = []
+                if 'use' in args:
+                    cards = self.game_control.cards_by_ids(args['use'])
+                if args['action'] == 'card':
+                    if 0 == len(cards):
+                        raise ValueError('wrong cards')
+                    if equip.is_equipment(cards[0].name):
+                        args['action'] = 'equip'
+                    else:
+                        args['action'] = cards[0].name
                 r = frames.UseCards.react(self, args)
                 self._update_hint()
                 return r

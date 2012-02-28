@@ -3,6 +3,9 @@ import ext.src.common_checking as checking
 
 equipment_dict = dict()
 
+def is_equipment(card_name):
+    return card_name in equipment_dict
+
 def equip(player, game_control, card):
     if not card.name in equipment_dict:
         raise ValueError('invalid equipment')

@@ -80,10 +80,6 @@ class UseCards(CardsTargetFrame):
             cards = self.game_control.cards_by_ids(args['use'])
             check_owner(self.player, cards)
 
-        if args['action'] == 'card':
-            if 0 == len(cards):
-                raise ValueError('wrong cards')
-            args['action'] = cards[0].name
         if not args['action'] in self.interface_map:
             return {
                        'code': ret_code.BAD_REQUEST,

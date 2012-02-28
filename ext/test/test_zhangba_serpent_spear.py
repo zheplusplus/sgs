@@ -83,16 +83,6 @@ if True: # just indent for a nice appearance
     assert_eq(card.SPADE, event['equip']['suit'])
 last_event_id += 1
 
-result = gc.player_act({
-                          'token': players[0].token,
-                          'action': 'equip',
-                          'use': [8],
-                      })
-assert_eq({
-              'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG % 'invalid equipment',
-          }, result)
-
 # cards:
 # name                  | rank (id = rank - 1) | suit
 
@@ -321,7 +311,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [1],
                       })
 assert_eq({
@@ -331,7 +321,7 @@ assert_eq({
 
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [],
                       })
 assert_eq({
@@ -351,7 +341,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until now
 # dodge                 | 7                    | DIAMOND
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [9],
                       })
 assert_eq(ret_code.OK, result['code'])
@@ -409,7 +399,7 @@ gc.start()
 
 result = gc.player_act({
                           'token': players[0].token,
-                          'action': 'equip',
+                          'action': 'card',
                           'use': [1],
                       })
 assert_eq(ret_code.OK, result['code'])
