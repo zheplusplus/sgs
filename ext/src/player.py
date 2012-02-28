@@ -72,10 +72,10 @@ class Player(CorePlayer):
                 self._update_hint()
 
             def react(self, args):
-                cards = []
-                if 'use' in args:
-                    cards = self.game_control.cards_by_ids(args['use'])
+                if args['action'] in args:
+                    args['use'] = args[args['action']]
                 if args['action'] == 'card':
+                    cards = self.game_control.cards_by_ids(args['card'])
                     if 0 == len(cards):
                         raise ValueError('wrong cards')
                     if equip.is_equipment(cards[0].name):

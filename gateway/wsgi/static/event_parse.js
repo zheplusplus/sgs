@@ -83,7 +83,7 @@ function SGS_EventParser() {
                 var targets = detail['target'];
                 var use = detail['use'];
                 this.exhibit = function(game) {
-                    game.player(user).useCards(buildCards(use));
+                    game.player(user).eventCardsUsed(buildCards(use));
                 };
             },
             'PlayCards': function(detail) {
@@ -105,7 +105,7 @@ function SGS_EventParser() {
                 var damage = detail['damage'];
                 var category = detail['category'];
                 this.exhibit = function(game) {
-                    game.player(victim).damage(damage, category);
+                    game.player(victim).eventDamage(damage, category);
                 };
             },
             'VigorLost': function(detail) {
@@ -129,12 +129,11 @@ function SGS_EventParser() {
                 };
             },
             'Equip': function(detail) {
-                alert('EQUIP:'+JSON.stringify(detail));
                 var player = detail['player'];
                 var equip = detail['equip'];
                 var region = detail['region'];
                 this.exhibit = function(game) {
-                    game.player(player).equip(new Card(equip), region);
+                    game.player(player).eventEquip(new Card(equip), region);
                 };
             },
             'Unequip': function(detail) {

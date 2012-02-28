@@ -56,6 +56,19 @@ function SGS_HintParser(game, center) {
                     return false;
                 });
             },
+            'fix target': function(method, info) {
+                var targetsCand = info['candidates'];
+                var targetsCount = info['count'];
+                method.addTargetFilter(function(target, c, selTargets) {
+                    if (selTargets.length >= targetsCount) {
+                        return false;
+                    }
+                    for (i in targetsCand) {
+                        if (target.id() == targetsCand[i]) return true;
+                    }
+                    return false;
+                });
+            },
         };
 
         var targetFilters = new Array();
@@ -107,7 +120,6 @@ function SGS_HintParser(game, center) {
     };
     var NAMING_MAPPING = {
         'select character': function(result) {
-            setActivatedPlayers(result);
             if ('candidates' in result) {
                 center.selectCharacters(result['candidates']);
             }
@@ -160,6 +172,11 @@ function SGS_HintParser(game, center) {
                 methodInstances.push(new Method('abort', { 'require': [] }));
             }
             game.player(result['players'][0]).hintDiscardCards(methodInstances);
+        },
+        'region': function(result) {
+            if (result['candidates']) {
+                game.hintRegions(result['candidates']);
+            }
         },
     };
     this.hint = function(result) {

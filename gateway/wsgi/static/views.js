@@ -87,7 +87,7 @@ function Game(pane) {
         var center = new Center(canvas, new Coord(CENTER_X, CENTER_Y));
         for (i = 0; i < 8; ++i) {
             if (i != pos) {
-                players[i] = new PlayerView(this, canvas,
+                players[i] = new PlayerView(i, this, canvas,
                                             childAreas[(8 + i - pos) % 8],
                                             center);
             } else {
@@ -102,13 +102,16 @@ function Game(pane) {
         this.hint = function(result) {
             hintparser.hint(result);
         };
+        this.hintRegions = function(regions) {
+            center.selectRegion(regions);
+        };
     };
     this.player = function(id) {
         return players[id].callbacks();
     };
     this.deactivateAll = function() {
         for (i in players) {
-            players[i].callbacks().deactivate();
+            players[i].deactivate();
         }
     };
     this.clearTargets = function() {
@@ -117,6 +120,7 @@ function Game(pane) {
 
 function Center(pc, coord) {
     var canvas = new CanvasLite(coord.x, coord.y, CENTER_W, CENTER_H, pc);
+    var ctxt = canvas.context();
 
     var count_cards = 0;
 
@@ -128,7 +132,7 @@ function Center(pc, coord) {
 
     this.clear = clearCenter;
     this.selectCharacters = function(candidates) {
-        var ctxt = canvas.context();
+        clearCenter();
         ctxt.save();
         var width = (CENTER_W - (CHILD_HORI_INTERVAL * (candidates.length - 1)))
                             / candidates.length;
@@ -145,6 +149,29 @@ function Center(pc, coord) {
             if (x % Math.floor(width + CHILD_HORI_INTERVAL) <= width) {
                 var index = Math.floor(x / (width + CHILD_HORI_INTERVAL));
                 post_act({ 'select': candidates[index] });
+                clearCenter();
+                canvas.click(function(x, y) {});
+            }
+        });
+    };
+    this.selectRegion = function(regions) {
+        clearCenter();
+        var width = (CENTER_W - (CHILD_HORI_INTERVAL * (regions.length - 1)))
+                            / regions.length;
+        ctxt.save();
+        ctxt.textBaseline = 'top';
+        for (i = 0; i < regions.length; ++i) {
+            ctxt.fillStyle = '#ddd';
+            var x = (width + CHILD_HORI_INTERVAL) * i;
+            ctxt.fillRect(x, 0, width, CENTER_H);
+            ctxt.fillStyle = '#000';
+            ctxt.fillText(regions[i], x, 0, width);
+        }
+        ctxt.restore();
+        canvas.click(function(x, y) {
+            if (x % Math.floor(width + CHILD_HORI_INTERVAL) <= width) {
+                var index = Math.floor(x / (width + CHILD_HORI_INTERVAL));
+                post_act({ 'region': regions[index] });
                 clearCenter();
                 canvas.click(function(x, y) {});
             }
@@ -167,14 +194,21 @@ function Center(pc, coord) {
     };
 }
 
-function PlayerView(game, pc, coord, center) {
+function PlayerView(id, game, pc, coord, center) {
     var canvas = new CanvasLite(coord.x, coord.y, CHILD_W, CHILD_H, pc);
     canvas.fillBg('#ccc');
     var ctxt = canvas.context();
 
-    var cb = new SGS_Player();
+    var cb = new SGS_Player(id);
     this.callbacks = function() {
         return cb;
+    };
+
+    cb.onToggle(function(s) {
+        canvas.paintBorder(cb.selected() ? '#0ff': '#aaa', BORDER);
+    });
+    this.deactivate = function() {
+        canvas.paintBorder(cb.selected() ? '#0ff': '#aaa', BORDER);
     };
 
     canvas.click(function(x, y) {
@@ -251,6 +285,10 @@ function MeView(game, pc, coord, center) {
     var cb = new SGS_Me(game);
     this.callbacks = function() { return cb; };
 
+    this.deactivate = function() {
+        canvas.paintBorder('#aaa', BORDER);
+    };
+
     cb.onCardDrop(function(c) {
         center.addCard(c);
     });
@@ -308,7 +346,7 @@ function MeView(game, pc, coord, center) {
         var ctxt = right.context();
         var heightEach = ME_H / methods.length;
         ctxt.save();
-        ctxt.fillStyle = '#fff';
+        ctxt.fillStyle = '#0c8';
         ctxt.fillRect(0, heightEach * selectedIndex, RIGHT_AREA, heightEach);
         ctxt.restore();
 

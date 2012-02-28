@@ -28,14 +28,7 @@ function post_data(data, url, onResult) {
     req.open('POST', url, true);
     req.onreadystatechange = function() {
         if (req.readyState == 4) {
-            try {
-                onResult(eval('(' + req.responseText + ')'));
-            } catch (e) {
-                var result = new Array();
-                result['code'] = 500;
-                result['reason'] = req.responseText;
-                onResult(result);
-            }
+            onResult(eval('(' + req.responseText + ')'));
         }
     };
     req.send(data);

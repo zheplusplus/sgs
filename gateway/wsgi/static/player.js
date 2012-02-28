@@ -1,16 +1,26 @@
-function SGS_Player() {
+function SGS_Player(id) {
     var cards_count = 0;
     var max_vigor = 0;
     var vigor = 0;
     var char_name = "";
     var selected = false;
 
+    this.id = function() {
+        return id;
+    };
+
+    var on_toggle = function(sel) {};
     this.toggle = function() {
         selected = !selected;
+        on_toggle(selected);
         return selected;
     };
     this.selected = function() {
         return selected;
+    };
+
+    this.onToggle = function(cb) {
+        on_toggle = cb;
     };
 
     var on_cards_count_change = function(before, after) {};
@@ -74,6 +84,14 @@ function SGS_Player() {
         on_cards_count_change(cards_count, cards_count - c.length);
         cards_count -= c.length;
     };
+    this.eventCardsUsed = function(cards) {
+        this.eventDiscard(cards);
+    };
+    this.eventDamage = function(damage, category) {
+        var before = vigor;
+        vigor -= damage;
+        on_vigor_change(before, vigor, max_vigor);
+    };
 
     this.hintUseCards = function(m) {};
     this.hintDiscardCards = function(m) {}
@@ -99,6 +117,14 @@ function SGS_Me(game) {
         }
         return c;
     }
+    function selectedTargets() {
+        var t = new Array();
+        for (i in targets) {
+            if (targets[i].selected()) t.push(targets[i]);
+        }
+        return t;
+    }
+
     function clearSelectedCards() {
         for (i in cards) {
             cards[i].selected = false;
@@ -168,6 +194,14 @@ function SGS_Me(game) {
         }
         on_cards_changed(cards);
     };
+    this.eventCardsUsed = function(cards) {
+        this.eventDiscard(cards);
+    };
+    this.eventDamage = function(damage, category) {
+        var before = vigor;
+        vigor -= damage;
+        on_vigor_change(before, vigor, max_vigor);
+    };
 
     var on_methods_changed = function(methods) {};
     this.onMethodsChanged = function(cb) {
@@ -181,7 +215,8 @@ function SGS_Me(game) {
     this.clickOnTarget = function(target) {};
     this.clickOnCard = function(card) {};
     this.clickOnMethod = function(methodName) {};
-    this.hintUseCards = function(methods) {
+    function useCards(methods) {
+        this.hintUseCards = function(methods) {};
         var methodsMap = new Array();
         var methodsNames = new Array();
         for (i in methods) {
@@ -193,19 +228,26 @@ function SGS_Me(game) {
         var method = methods[0];
         this.clickOnMethod = function(methodName) {
             if (method.name() == methodName) {
-                var selected = selectedCards();
-                if (method.validate(selected)) {
+                var selectedC = selectedCards();
+                var selectedT = selectedTargets();
+                if (method.validate(selectedC, selectedT)) {
                     var cardsIds = new Array();
-                    for (i in selected) {
-                        cardsIds.push(selected[i].id);
+                    for (i in selectedC) {
+                        cardsIds.push(selectedC[i].id);
+                    }
+                    var targetsIds = new Array();
+                    for (i in selectedT) {
+                        targetsIds.push(selectedT[i].id());
                     }
                     var data = {};
                     data['action'] = methodName;
                     data[methodName] = cardsIds;
+                    data['targets'] = targetsIds;
                     post_act(data);
                     clearSelectedCards();
                     clear_methods();
                     this.clickOnCard = function(card) {};
+                    this.hintUseCards = useCards;
                 }
                 return false;
             }
@@ -237,6 +279,8 @@ function SGS_Me(game) {
             }
         };
     };
+    this.hintUseCards = useCards;
+
     this.hintDiscardCards = function(methods) {
         var methodsMap = new Array();
         var methodsNames = new Array();
