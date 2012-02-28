@@ -187,22 +187,22 @@ function PlayerView(id, game, pc, coord, center) {
     canvas.fillBg('#ccc');
     var ctxt = canvas.context();
 
-    var cb = new SGS_Player(id);
+    SGS_Player(this, id);
     this.callbacks = function() {
-        return cb;
+        return this;
     };
 
-    cb.onToggle(function(s) {
-        canvas.paintBorder(cb.selected() ? '#0ff': '#aaa', BORDER);
-    });
+    this.updateSelected = function() {
+        this.deactivate();
+    };
+    this.activate = function() {
+        canvas.paintBorder('#f33', BORDER);
+    };
     this.deactivate = function() {
-        canvas.paintBorder(cb.selected() ? '#0ff': '#aaa', BORDER);
+        canvas.paintBorder(this.selected() ? '#0ff': '#aaa', BORDER);
     };
 
-    canvas.click(function(x, y) {
-        game.clickOnTarget(cb);
-    });
-    cb.onCardsCountChange(function(before, after) {
+    this.onCardsCountChanged = function(before, after) {
         ctxt.save();
         ctxt.fillStyle = '#fff';
         ctxt.fillRect(0, TEXT_H, NUM_W, TEXT_H);
@@ -212,10 +212,10 @@ function PlayerView(id, game, pc, coord, center) {
         ctxt.textBaseline = 'top';
         ctxt.fillText(after, 0, NUM_W, TEXT_H);
         ctxt.restore();
-    });
-    cb.onCardDrop(function(c) {
+    };
+    this.onCardDropped = function(c) {
         center.addCard(c);
-    });
+    };
 
     function refreshVigor(vigor, max) {
         var text = Array(vigor + 1).join('[]');
@@ -232,25 +232,23 @@ function PlayerView(id, game, pc, coord, center) {
         ctxt.restore();
     }
 
-    cb.onMaxVigorChange(function(before, max, vigor) {
+    this.onMaxVigorChanged = function(before, max, vigor) {
         refreshVigor(vigor, max);
-    });
-    cb.onVigorChange(function(before, vigor, max) {
+    };
+    this.onVigorChanged = function(before, vigor, max) {
         if (vigor < 0) vigor = 0;
         refreshVigor(vigor, max);
-    });
-    cb.onNameChange(function(before, name) {
+    };
+    this.onCharNameChanged = function(before, name) {
         ctxt.save();
         ctxt.textBaseline = 'top';
         ctxt.fillText(name, 0, 0, CHILD_W - BORDER * 2);
         ctxt.restore();
-    });
+    };
 
-    cb.onActivated(function() {
-        canvas.paintBorder('#f33', BORDER);
-    });
-    cb.onDeactivated(function() {
-        canvas.paintBorder('#aaa', BORDER);
+    var me = this;
+    canvas.click(function(x, y) {
+        game.clickOnTarget(me);
     });
 }
 
