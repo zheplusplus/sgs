@@ -98,13 +98,6 @@ function Game(pane) {
                 };
             }
         }
-        var hintparser = new SGS_HintParser(this, center);
-        this.hint = function(result) {
-            hintparser.hint(result);
-        };
-        this.hintRegions = function(regions) {
-            center.selectRegion(regions);
-        };
         this.player = function(id) {
             return players[id].callbacks();
         };
@@ -114,6 +107,22 @@ function Game(pane) {
             }
         };
         this.clearTargets = function() {
+        };
+
+        var hintparser = new SGS_HintParser(this, center);
+        this.hint = function(result) {
+            hintparser.hint(result);
+        };
+        this.hintRegions = function(regions) {
+            center.selectRegion(regions);
+        };
+        this.eventTransferCount = function(source, target, count) {
+            this.player(source).eventDiscardCount(count);
+            this.player(target).eventDrawCount(count);
+        };
+        this.eventTransferCards = function(source, target, cards) {
+            this.player(source).eventDiscard(cards);
+            this.player(target).eventDrawCards(cards);
         };
     };
 }
@@ -187,7 +196,7 @@ function PlayerView(id, game, pc, coord, center) {
     canvas.fillBg('#ccc');
     var ctxt = canvas.context();
 
-    SGS_Player(this, id);
+    SGS_InitPlayer(this, id);
     this.callbacks = function() {
         return this;
     };
@@ -202,6 +211,9 @@ function PlayerView(id, game, pc, coord, center) {
         canvas.paintBorder(this.selected() ? '#0ff': '#aaa', BORDER);
     };
 
+    this.eventDrawCards = function(cards) {
+        this.eventDrawCount(cards.length);
+    };
     this.onCardsCountChanged = function(before, after) {
         ctxt.save();
         ctxt.fillStyle = '#fff';
@@ -266,30 +278,20 @@ function MeView(game, pc, coord, center) {
     var right = new CanvasLite(ME_W - RIGHT_AREA, 0, RIGHT_AREA, CHILD_H,
                                canvas);
     right.fillBg('#888');
-    var me = this;
 
-    var cb = new SGS_Me(game);
-    this.callbacks = function() { return cb; };
+    SGS_InitMe(this, game);
+    this.callbacks = function() { return this; };
 
+    this.activate = function() {
+        canvas.paintBorder('#bb1', BORDER);
+    };
     this.deactivate = function() {
         canvas.paintBorder('#aaa', BORDER);
     };
 
-    cb.onCardDrop(function(c) {
+    this.onCardDropped = function(c) {
         center.addCard(c);
-    });
-    cb.onCardsChanged(function(cards) {
-        middle.fillBg('#ccc');
-        for (i = 0; i < cards.length; ++i) {
-            paintCard(middle.context(), cards[i], i);
-        }
-        middle.click(function(x, y) {
-            var index = Math.floor(x / CARD_W);
-            if (index < cards.length) {
-                cb.clickOnCard(cards[index]);
-            }
-        });
-    });
+    };
 
     function refreshVigor(vigor, max) {
         var ctxt = left.context();
@@ -306,26 +308,19 @@ function MeView(game, pc, coord, center) {
         ctxt.fillText(text, 0, TEXT_H, LEFT_AREA);
         ctxt.restore();
     }
-    cb.onMaxVigorChange(function(before, max, vigor) {
+    this.onMaxVigorChanged = function(before, max, vigor) {
         refreshVigor(vigor, max);
-    });
-    cb.onVigorChange(function(before, vigor, max) {
+    };
+    this.onVigorChanged = function(before, vigor, max) {
         refreshVigor(vigor, max);
-    });
-    cb.onNameChange(function(before, name) {
+    };
+    this.onCharNameChanged = function(before, name) {
         var ctxt = left.context();
         ctxt.save();
         ctxt.textBaseline = 'top';
         ctxt.fillText(name, 0, 0, LEFT_AREA);
         ctxt.restore();
-    });
-
-    cb.onActivated(function() {
-        canvas.paintBorder('#bb1', BORDER);
-    });
-    cb.onDeactivated(function() {
-        canvas.paintBorder('#aaa', BORDER);
-    });
+    };
 
     function paintMethods(methods, selectedIndex) {
         right.fillBg('#888');
@@ -345,19 +340,33 @@ function MeView(game, pc, coord, center) {
         return heightEach;
     }
 
-    cb.onMethodsChanged(function(methods) {
+    this.clearMethods = function() {
+        right.fillBg('#888');
+        right.click(function(x, y) {});
+    };
+
+    var me = this;
+    this.onMethodsChanged = function(methods) {
         var heightEach = paintMethods(methods, 0);
         right.click(function(x, y) {
             var index = Math.floor(y / heightEach);
-            cb.clickOnMethod(methods[index]);
+            me.clickOnMethod(methods[index]);
             paintMethods(methods, index);
         });
-    });
-    cb.clearMethods(function() {
-        right.fillBg('#888');
-        right.click(function(x, y) {});
-    });
+    };
     this.clickOnTarget = function(target) {
-        cb.clickOnTarget(target);
+        me.clickOnTarget(target);
+    };
+    this.onCardsChanged = function(cards) {
+        middle.fillBg('#ccc');
+        for (i = 0; i < cards.length; ++i) {
+            paintCard(middle.context(), cards[i], i);
+        }
+        middle.click(function(x, y) {
+            var index = Math.floor(x / CARD_W);
+            if (index < cards.length) {
+                me.clickOnCard(cards[index]);
+            }
+        });
     };
 }

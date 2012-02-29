@@ -70,11 +70,12 @@ function SGS_EventParser() {
                 var trans = detail['transfer'];
                 if (typeof trans === 'number') {
                     this.exhibit = function(game) {
-                        game.transferCount(source, target, trans);
+                        game.eventTransferCount(source, target, trans);
                     };
                 } else {
                     this.exhibit = function(game) {
-                        game.transferCount(source, target, buildCards(trans));
+                        game.eventTransferCards(source, target,
+                                                buildCards(trans));
                     };
                 }
             },

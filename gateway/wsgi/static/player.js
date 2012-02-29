@@ -1,4 +1,4 @@
-function SGS_Player(me, id) {
+function SGS_InitPlayer(me, id) {
     var cards_count = 0;
     var max_vigor = 0;
     var vigor = 0;
@@ -24,6 +24,10 @@ function SGS_Player(me, id) {
     me.eventDrawCount = function(count) {
         me.onCardsCountChanged(cards_count, cards_count + count);
         cards_count += count;
+    };
+    me.eventDiscardCount = function(count) {
+        me.onCardsCountChanged(cards_count, cards_count - count);
+        cards_count -= count;
     };
     me.eventCharSelected = function(new_name, new_max_vigor) {
         me.onCharNameChanged(char_name, new_name);
@@ -53,21 +57,12 @@ function SGS_Player(me, id) {
     me.hintDiscardCards = function(m) {};
 }
 
-function SGS_Me(game) {
+function SGS_InitMe(me, game) {
     var cards = new Array();
     var targets = new Array();
 
-    this.setPlayers = function(p) {
+    me.setPlayers = function(p) {
         targets = p;
-    };
-
-    var on_cards_changed = function(cards_after_change) {};
-    this.onCardsChanged = function(cb) {
-        on_cards_changed = cb;
-    };
-    var on_card_drop = function(c) {};
-    this.onCardDrop = function(cb) {
-        on_card_drop = cb;
     };
 
     function selectedCards() {
@@ -91,60 +86,29 @@ function SGS_Me(game) {
         }
     }
 
-    this.eventDrawCards = function(new_cards) {
+    me.eventDrawCards = function(new_cards) {
         for (c in new_cards) {
             new_cards[c].selected = false;
         }
         cards = cards.concat(new_cards);
-        on_cards_changed(cards);
+        me.onCardsChanged(cards);
     };
 
     var max_vigor = 0;
     var vigor = 0;
     var char_name = "";
 
-    var on_max_vigor_change = function(before, after, current_vigor) {};
-    this.onMaxVigorChange = function(cb) {
-        on_max_vigor_change = cb;
-    };
-
-    var on_vigor_change = function(before, after, current_max) {};
-    this.onVigorChange = function(cb) {
-        on_vigor_change = cb;
-    };
-
-    var on_name_change = function(before, after) {};
-    this.onNameChange = function(cb) {
-        on_name_change = cb;
-    };
-
-    var on_activated = function() {};
-    this.onActivated = function(cb) {
-        on_activated = cb;
-    };
-
-    var on_deactivated = function() {};
-    this.onDeactivated = function(cb) {
-        on_deactivated = cb;
-    };
-
-    this.activate = function() {
-        on_activated();
-    };
-    this.deactivate = function() {
-        on_deactivated();
-    };
-    this.eventCharSelected = function(new_name, new_max_vigor) {
-        on_name_change(char_name, new_name);
+    me.eventCharSelected = function(new_name, new_max_vigor) {
+        me.onCharNameChanged(char_name, new_name);
         char_name = new_name;
-        on_max_vigor_change(max_vigor, new_max_vigor, vigor);
+        me.onMaxVigorChanged(max_vigor, new_max_vigor, vigor);
         max_vigor = new_max_vigor;
-        on_vigor_change(vigor, new_max_vigor, max_vigor);
+        me.onVigorChanged(vigor, new_max_vigor, max_vigor);
         vigor = new_max_vigor;
     };
-    this.eventDiscard = function(c) {
+    me.eventDiscard = function(c) {
         for (i = 0; i < c.length; ++i) {
-            on_card_drop(c[i]);
+            me.onCardDropped(c[i]);
             for (j = 0; j < cards.length; ++j) {
                 if (c[i].id == cards[j].id) {
                     cards.splice(j, 1);
@@ -152,41 +116,32 @@ function SGS_Me(game) {
                 }
             }
         }
-        on_cards_changed(cards);
+        me.onCardsChanged(cards);
     };
-    this.eventCardsUsed = function(cards) {
+    me.eventCardsUsed = function(cards) {
         this.eventDiscard(cards);
     };
-    this.eventDamage = function(damage, category) {
+    me.eventDamage = function(damage, category) {
         var before = vigor;
         vigor -= damage;
-        on_vigor_change(before, vigor, max_vigor);
+        me.onVigorChanged(before, vigor, max_vigor);
     };
 
-    var on_methods_changed = function(methods) {};
-    this.onMethodsChanged = function(cb) {
-        on_methods_changed = cb;
-    };
-    var clear_methods = function() {};
-    this.clearMethods = function(cb) {
-        clear_methods = cb;
-    };
-
-    this.clickOnTarget = function(target) {};
-    this.clickOnCard = function(card) {};
-    this.clickOnMethod = function(methodName) {};
+    me.clickOnTarget = function(target) {};
+    me.clickOnCard = function(card) {};
+    me.clickOnMethod = function(methodName) {};
     function useCards(methods) {
-        this.hintUseCards = function(methods) {};
+        me.hintUseCards = function(methods) {};
         var methodsMap = new Array();
         var methodsNames = new Array();
         for (i in methods) {
             methodsMap[methods[i].name()] = methods[i];
             methodsNames.push(methods[i].name());
         }
-        on_methods_changed(methodsNames);
+        me.onMethodsChanged(methodsNames);
 
         var method = methods[0];
-        this.clickOnMethod = function(methodName) {
+        me.clickOnMethod = function(methodName) {
             if (method.name() == methodName) {
                 var selectedC = selectedCards();
                 var selectedT = selectedTargets();
@@ -205,9 +160,9 @@ function SGS_Me(game) {
                     data['targets'] = targetsIds;
                     post_act(data);
                     clearSelectedCards();
-                    clear_methods();
-                    this.clickOnCard = function(card) {};
-                    this.hintUseCards = useCards;
+                    me.clearMethods();
+                    me.clickOnCard = function(card) {};
+                    me.hintUseCards = useCards;
                 }
                 return false;
             }
@@ -230,25 +185,26 @@ function SGS_Me(game) {
         this.clickOnCard = function(card) {
             if (card.selected) {
                 card.selected = false;
-                on_cards_changed(cards);
+                me.onCardsChanged(cards);
                 return;
             }
             if (method.filterCard(card, selectedCards(), targets)) {
                 card.selected = true;
-                on_cards_changed(cards);
+                me.onCardsChanged(cards);
             }
         };
     };
+    me.hintUseCards = useCards;
 
-    this.hintUseCards = useCards;
-    this.hintDiscardCards = function(methods) {
+    function discardCards(methods) {
+        me.hintDiscardCards = function(m) {};
         var methodsMap = new Array();
         var methodsNames = new Array();
         for (i in methods) {
             methodsMap[methods[i].name()] = methods[i];
             methodsNames.push(methods[i].name());
         }
-        on_methods_changed(methodsNames);
+        me.onMethodsChanged(methodsNames);
 
         var method = methods[0];
         this.clickOnMethod = function(methodName) {
@@ -264,8 +220,8 @@ function SGS_Me(game) {
                     data['discard'] = cardsIds;
                     post_act(data);
                     clearSelectedCards();
-                    clear_methods();
-                    this.clickOnCard = function(card) {};
+                    me.clearMethods();
+                    me.clickOnCard = function(card) {};
                 }
                 return false;
             }
@@ -273,16 +229,17 @@ function SGS_Me(game) {
             clearSelectedCards();
             return true;
         };
-        this.clickOnCard = function(card) {
+        me.clickOnCard = function(card) {
             if (card.selected) {
                 card.selected = false;
-                on_cards_changed(cards);
+                me.onCardsChanged(cards);
                 return;
             }
             if (method.filter(card, selectedCards())) {
                 card.selected = true;
-                on_cards_changed(cards);
+                me.onCardsChanged(cards);
             }
         };
     };
+    me.hintDiscardCards = discardCards;
 }
