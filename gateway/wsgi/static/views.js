@@ -91,7 +91,8 @@ function Game(pane) {
                                             childAreas[(8 + i - pos) % 8],
                                             center);
             } else {
-                var me = new MeView(this, canvas, childAreas[0], center);
+                var me = new MeView(i, this, canvas, childAreas[0], center,
+                                    players);
                 players[i] = me
                 this.clickOnTarget = function(target) {
                     me.clickOnTarget(target);
@@ -99,7 +100,7 @@ function Game(pane) {
             }
         }
         this.player = function(id) {
-            return players[id].callbacks();
+            return players[id];
         };
         this.deactivateAll = function() {
             for (i in players) {
@@ -192,14 +193,11 @@ function CenterView(pc, coord) {
 }
 
 function PlayerView(id, game, pc, coord, center) {
+    SGS_InitPlayer(this, id);
+
     var canvas = new CanvasLite(coord.x, coord.y, CHILD_W, CHILD_H, pc);
     canvas.fillBg('#ccc');
     var ctxt = canvas.context();
-
-    SGS_InitPlayer(this, id);
-    this.callbacks = function() {
-        return this;
-    };
 
     this.updateSelected = function() {
         this.deactivate();
@@ -264,10 +262,10 @@ function PlayerView(id, game, pc, coord, center) {
     });
 }
 
-function MeView(game, pc, coord, center) {
+function MeView(id, game, pc, coord, center, players) {
+    SGS_InitMe(id, this, game, players);
     this.click = function(c) {};
     var canvas = new CanvasLite(coord.x, coord.y, ME_W, ME_H, pc);
-    var cards = new Array();
 
     var LEFT_AREA = 80;
     var RIGHT_AREA = 80;
@@ -279,14 +277,17 @@ function MeView(game, pc, coord, center) {
                                canvas);
     right.fillBg('#888');
 
-    SGS_InitMe(this, game);
-    this.callbacks = function() { return this; };
-
+    var activated = false;
+    this.updateSelected = function() {
+        this.deactivate();
+    };
     this.activate = function() {
+        activated = true;
         canvas.paintBorder('#bb1', BORDER);
     };
     this.deactivate = function() {
-        canvas.paintBorder('#aaa', BORDER);
+        activated = false;
+        canvas.paintBorder(this.selected() ? '#0ff': '#aaa', BORDER);
     };
 
     this.onCardDropped = function(c) {
@@ -369,4 +370,7 @@ function MeView(game, pc, coord, center) {
             }
         });
     };
+    left.click(function(x, y) {
+        game.clickOnTarget(me);
+    });
 }

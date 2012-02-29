@@ -57,12 +57,25 @@ function SGS_InitPlayer(me, id) {
     me.hintDiscardCards = function(m) {};
 }
 
-function SGS_InitMe(me, game) {
+function SGS_InitMe(id, me, game, players) {
     var cards = new Array();
-    var targets = new Array();
+    var targets = players;
+    var selected = false;
 
-    me.setPlayers = function(p) {
-        targets = p;
+    me.id = function() {
+        return id;
+    };
+
+    me.select = function() {
+        selected = true;
+        me.updateSelected();
+    };
+    me.deselect = function() {
+        selected = false;
+        me.updateSelected();
+    };
+    me.selected = function() {
+        return selected;
     };
 
     function selectedCards() {
@@ -177,9 +190,9 @@ function SGS_InitMe(me, game) {
                 target.deselect();
                 return;
             }
-            if (method.filterTarget(target, selectedCards(), targets)) {
+            if (method.filterTarget(target, selectedCards(), selectedTargets()))
+            {
                 target.select();
-                targets.push(target);
             }
         };
         this.clickOnCard = function(card) {
