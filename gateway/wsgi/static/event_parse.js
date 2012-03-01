@@ -61,7 +61,8 @@ function SGS_EventParser() {
                 var target = detail['target'];
                 var transfer = detail['transfer'];
                 this.exhibit = function(game) {
-                    game.transferCards(source, target, buildCards(transfer));
+                    game.eventTransferCards(source, target,
+                                            buildCards(transfer));
                 };
             },
             'PrivateCardsTransfer': function(detail) {
@@ -139,10 +140,10 @@ function SGS_EventParser() {
             },
             'Unequip': function(detail) {
                 var player = detail['player'];
-                var equip = detail['equip'];
+                var unequip = detail['unequip'];
                 var region = detail['region'];
                 this.exhibit = function(game) {
-                    game.player(player).unequip(new Card(equip), region);
+                    game.player(player).eventUnequip(new Card(unequip), region);
                 };
             },
         };

@@ -50,6 +50,33 @@ function paintCard(ctxt, card, position) {
     ctxt.restore();
 }
 
+function paintEquip(ctxt, card, position) {
+    var y = position * TEXT_H;
+    ctxt.save();
+    ctxt.textBaseline = 'top';
+
+    ctxt.save();
+    ctxt.fillStyle = SGS_STR_CARD_SUITS_COLOR[card.suit];
+    ctxt.fillText(SGS_STR_CARD_RANKS[card.rank], 0, y, NUM_W);
+    ctxt.fillText(SGS_STR_CARD_SUITS[card.suit], NUM_W, y, NUM_W);
+    ctxt.restore();
+
+    ctxt.save();
+    ctxt.fillStyle = '#000';
+    ctxt.fillText(card.name, NUM_W * 2, y, CARD_W);
+    ctxt.restore();
+
+    ctxt.restore();
+}
+
+function clearEquip(ctxt, position) {
+    var y = position * TEXT_H;
+    ctxt.save();
+    ctxt.fillStyle = '#fff';
+    ctxt.fillRect(0, y, CARD_W + NUM_W * 2, TEXT_H);
+    ctxt.restore();
+}
+
 function Game(pane) {
     /*
      *   5 4 3
@@ -138,7 +165,7 @@ function CenterView(pc, coord) {
         canvas.reset()
         count_cards = 0;
         canvas.fillBg('#ccc');
-    };
+    }
 
     this.selectCharacters = function(candidates) {
         clear();
@@ -256,6 +283,19 @@ function PlayerView(id, game, pc, coord, center) {
         ctxt.restore();
     };
 
+    var EQUIP_OFFSET = {
+        'weapon': 2,
+        'armor': 3,
+        '+1 horse': 4,
+        '-1 horse': 5,
+    };
+    this.paintEquip = function(card, region) {
+        paintEquip(ctxt, card, EQUIP_OFFSET[region]);
+    };
+    this.clearEquip = function(region) {
+        clearEquip(ctxt, EQUIP_OFFSET[region]);
+    };
+
     var me = this;
     canvas.click(function(x, y) {
         game.clickOnTarget(me);
@@ -322,6 +362,18 @@ function MeView(id, game, pc, coord, center, players) {
         ctxt.fillText(name, 0, 0, LEFT_AREA);
         ctxt.restore();
     };
+    var EQUIP_OFFSET = {
+        'weapon': 2,
+        'armor': 3,
+        '+1 horse': 4,
+        '-1 horse': 5,
+    };
+    this.paintEquip = function(card, region) {
+        paintEquip(left.context(), card, EQUIP_OFFSET[region]);
+    };
+    this.clearEquip = function(region) {
+        clearEquip(left.context(), EQUIP_OFFSET[region]);
+    };
 
     function paintMethods(methods, selectedIndex) {
         right.fillBg('#888');
@@ -351,8 +403,9 @@ function MeView(id, game, pc, coord, center, players) {
         var heightEach = paintMethods(methods, 0);
         right.click(function(x, y) {
             var index = Math.floor(y / heightEach);
-            me.clickOnMethod(methods[index]);
-            paintMethods(methods, index);
+            if (me.clickOnMethod(methods[index])) {
+                paintMethods(methods, index);
+            }
         });
     };
     this.clickOnTarget = function(target) {
