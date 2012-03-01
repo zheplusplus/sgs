@@ -31,7 +31,9 @@ class Player:
         return self.unequip(game_control, region)
 
     def unequip(self, game_control, region):
-        return game_control.unequip(self, self.equipment[region](), region)
+        card = game_control.unequip(self, self.equipment[region](), region)
+        del self.equipment[region]
+        return card
 
     def all_regions(self):
         regions = ['cards']
