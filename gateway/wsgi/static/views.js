@@ -46,7 +46,7 @@ function paintCard(ctxt, card, position) {
     ctxt.fillText(SGS_STR_CARD_RANKS[card.rank], x, 0, NUM_W);
     ctxt.fillText(SGS_STR_CARD_SUITS[card.suit], x + NUM_W, 0, NUM_W);
     ctxt.restore();
-    ctxt.fillText(card.name, x, TEXT_H, CARD_W);
+    ctxt.fillText(SGS_STR_Card(card.name), x, TEXT_H, CARD_W);
     ctxt.restore();
 }
 
@@ -63,7 +63,7 @@ function paintEquip(ctxt, card, position) {
 
     ctxt.save();
     ctxt.fillStyle = '#000';
-    ctxt.fillText(card.name, NUM_W * 2, y, CARD_W);
+    ctxt.fillText(SGS_STR_Card(card.name), NUM_W * 2, y, CARD_W);
     ctxt.restore();
 
     ctxt.restore();
@@ -178,7 +178,7 @@ function CenterView(pc, coord) {
             var x = (width + CHILD_HORI_INTERVAL) * i;
             ctxt.fillRect(x, 0, width, CENTER_H);
             ctxt.fillStyle = '#000';
-            ctxt.fillText(candidates[i], x, 0, width);
+            ctxt.fillText(SGS_STR_CharName(candidates[i]), x, 0, width);
         }
         ctxt.restore();
         canvas.click(function(x, y) {
@@ -201,7 +201,7 @@ function CenterView(pc, coord) {
             var x = (width + CHILD_HORI_INTERVAL) * i;
             ctxt.fillRect(x, 0, width, CENTER_H);
             ctxt.fillStyle = '#000';
-            ctxt.fillText(regions[i], x, 0, width);
+            ctxt.fillText(SGS_STR_Region(regions[i]), x, 0, width);
         }
         ctxt.restore();
         canvas.click(function(x, y) {
@@ -253,6 +253,19 @@ function PlayerView(id, game, pc, coord, center) {
     this.onCardDropped = function(c) {
         center.addCard(c);
     };
+    this.onUseCards = function(cards, target) {
+        this.onDiscardCards(cards);
+    };
+    this.onDiscardCards = function(cards) {
+        for (i in cards) {
+            center.addCard(cards[i]);
+        }
+    };
+    this.onShowCards = function(cards) {
+        for (i in cards) {
+            center.addCard(cards[i]);
+        }
+    };
 
     function refreshVigor(vigor, max) {
         var text = Array(vigor + 1).join('[]');
@@ -279,7 +292,7 @@ function PlayerView(id, game, pc, coord, center) {
     this.onCharNameChanged = function(before, name) {
         ctxt.save();
         ctxt.textBaseline = 'top';
-        ctxt.fillText(name, 0, 0, CHILD_W - BORDER * 2);
+        ctxt.fillText(SGS_STR_CharName(name), 0, 0, CHILD_W - BORDER * 2);
         ctxt.restore();
     };
 
@@ -333,6 +346,11 @@ function MeView(id, game, pc, coord, center, players) {
     this.onCardDropped = function(c) {
         center.addCard(c);
     };
+    this.onShowCards = function(cards) {
+        for (i in cards) {
+            center.addCard(cards[i]);
+        }
+    };
 
     function refreshVigor(vigor, max) {
         var ctxt = left.context();
@@ -359,7 +377,7 @@ function MeView(id, game, pc, coord, center, players) {
         var ctxt = left.context();
         ctxt.save();
         ctxt.textBaseline = 'top';
-        ctxt.fillText(name, 0, 0, LEFT_AREA);
+        ctxt.fillText(SGS_STR_CharName(name), 0, 0, LEFT_AREA);
         ctxt.restore();
     };
     var EQUIP_OFFSET = {
@@ -387,7 +405,8 @@ function MeView(id, game, pc, coord, center, players) {
         ctxt.save();
         ctxt.textBaseline = 'top';
         for (i = 0; i < methods.length; ++i) {
-            ctxt.fillText(methods[i], 0, heightEach * i, RIGHT_AREA);
+            ctxt.fillText(SGS_STR_Action(methods[i]), 0, heightEach * i,
+                          RIGHT_AREA);
         }
         ctxt.restore();
         return heightEach;

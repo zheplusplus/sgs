@@ -22,32 +22,32 @@ function SGS_EventParser() {
         }
         var NAMING_MAPPING = {
             'GameInit': function(detail) {
-                this.players = detail['players'];
-                this.position = detail['position'];
+                var players = detail['players'];
+                var position = detail['position'];
                 this.exhibit = function(game) {
-                    game.initPosition(this.players, this.position);
+                    game.initPosition(players, position);
                 };
             },
             'SelectCharacter': function(detail) {
-                this.player = detail['player'];
-                this.character = detail['character'];
-                this.max_vigor = detail['max vigor'];
+                var player = detail['player'];
+                var character = detail['character'];
+                var max_vigor = detail['max vigor'];
                 this.exhibit = function(game) {
-                    game.player(this.player).eventCharSelected(this.character,
-                                                               this.max_vigor);
+                    game.player(player).eventCharSelected(character, max_vigor);
                 };
             },
             'DrawCards': function(detail) {
-                this.player = detail['player'];
-                this.cards = detail['draw'];
-                this.exhibit = function(game) {
-                    var player = game.player(this.player);
-                    if (typeof this.cards === 'number') {
-                        player.eventDrawCount(this.cards);
-                    } else {
-                        player.eventDrawCards(buildCards(this.cards));
-                    }
-                };
+                var player = detail['player'];
+                var cards = detail['draw'];
+                if (typeof cards === 'number') {
+                    this.exhibit = function(game) {
+                        game.player(player).eventDrawCount(cards);
+                    };
+                } else {
+                    this.exhibit = function(game) {
+                        game.player(player).eventDrawCards(buildCards(cards));
+                    };
+                }
             },
             'DiscardCards': function(detail) {
                 var player = detail['player'];
@@ -85,21 +85,21 @@ function SGS_EventParser() {
                 var targets = detail['target'];
                 var use = detail['use'];
                 this.exhibit = function(game) {
-                    game.player(user).eventCardsUsed(buildCards(use));
+                    game.player(user).eventUseCards(buildCards(use), targets);
                 };
             },
             'PlayCards': function(detail) {
                 var player = detail['player'];
                 var play = detail['play'];
                 this.exhibit = function(game) {
-                    game.player(player).playCards(buildCards(play));
+                    game.player(player).eventPlayCards(buildCards(play));
                 };
             },
             'ShowCards': function(detail) {
                 var player = detail['player'];
                 var show = detail['show'];
                 this.exhibit = function(game) {
-                    game.player(player).showCards(buildCards(show));
+                    game.player(player).eventShowCards(buildCards(show));
                 };
             },
             'Damage': function(detail) {
@@ -114,20 +114,20 @@ function SGS_EventParser() {
                 var player = detail['player'];
                 var point = detail['point'];
                 this.exhibit = function(game) {
-                    game.player(player).vigorLost(point);
+                    game.player(player).eventVigorLost(point);
                 };
             },
             'VigorRegain': function(detail) {
                 var player = detail['player'];
                 var point = detail['point'];
                 this.exhibit = function(game) {
-                    game.player(player).vigorRegain(point);
+                    game.player(player).eventVigorRegain(point);
                 };
             },
             'PlayerKilled': function(detail) {
                 var player = detail['player'];
                 this.exhibit = function(game) {
-                    game.player(player).killed();
+                    game.player(player).eventKilled();
                 };
             },
             'Equip': function(detail) {
@@ -149,13 +149,11 @@ function SGS_EventParser() {
         };
         return new NAMING_MAPPING[detail['type']](detail);
     }
-
     this.events = new Array();
 
     this.prevId = function() {
         return this.events.length;
     };
-
     this.append = function(result, game) {
         if (result['code'] != 200) {
             return;

@@ -21,13 +21,16 @@ function SGS_InitPlayer(me, id) {
         return selected;
     };
 
+    function changeCardsCount(delta) {
+        var before = cards_count;
+        cards_count += delta;
+        me.onCardsCountChanged(before, cards_count);
+    }
     me.eventDrawCount = function(count) {
-        me.onCardsCountChanged(cards_count, cards_count + count);
-        cards_count += count;
+        changeCardsCount(count);
     };
     me.eventDiscardCount = function(count) {
-        me.onCardsCountChanged(cards_count, cards_count - count);
-        cards_count -= count;
+        changeCardsCount(-count);
     };
     me.eventCharSelected = function(new_name, new_max_vigor) {
         me.onCharNameChanged(char_name, new_name);
@@ -38,19 +41,38 @@ function SGS_InitPlayer(me, id) {
         vigor = new_max_vigor;
     };
     me.eventDiscard = function(c) {
+        var cardsCount = 0;
         for (i = 0; i < c.length; ++i) {
             me.onCardDropped(c[i]);
+            if (c[i].region == 'cards') cardsCount += 1;
         }
-        me.onCardsCountChanged(cards_count, cards_count - c.length);
-        cards_count -= c.length;
+        changeCardsCount(-cardsCount);
     };
-    me.eventCardsUsed = function(cards) {
-        me.eventDiscard(cards);
+    me.eventUseCards = function(cards, targets) {
+        me.onUseCards(cards, targets);
+        changeCardsCount(-cards.length);
     };
-    me.eventDamage = function(damage, category) {
+    me.eventPlayCards = function(cards) {
+        me.onDiscardCards(cards);
+        changeCardsCount(-cards.length);
+    };
+    me.eventShowCards = function(cards) {
+        me.onShowCards(cards);
+    };
+
+    function changeVigor(delta) {
         var before = vigor;
-        vigor -= damage;
+        vigor += delta;
         me.onVigorChanged(before, vigor, max_vigor);
+    }
+    me.eventDamage = function(damage, category) {
+        changeVigor(-damage);
+    };
+    me.eventVigorRegain = function(point) {
+        changeVigor(point);
+    };
+    me.eventVigorLost = function(point) {
+        changeVigor(-point);
     };
     me.eventEquip = function(card, region) {
         me.eventDiscardCount(1);
@@ -142,13 +164,29 @@ function SGS_InitMe(id, me, game, players) {
         }
         me.onCardsChanged(cards);
     };
-    me.eventCardsUsed = function(cards) {
+    me.eventUseCards = function(cards, targets) {
         me.eventDiscard(cards);
     };
-    me.eventDamage = function(damage, category) {
+    me.eventPlayCards = function(cards) {
+        me.eventDiscard(cards);
+    };
+    me.eventShowCards = function(cards) {
+        me.onShowCards(cards);
+    };
+
+    function changeVigor(delta) {
         var before = vigor;
-        vigor -= damage;
+        vigor += delta;
         me.onVigorChanged(before, vigor, max_vigor);
+    }
+    me.eventDamage = function(damage, category) {
+        changeVigor(-damage);
+    };
+    me.eventVigorRegain = function(point) {
+        changeVigor(point);
+    };
+    me.eventVigorLost = function(point) {
+        changeVigor(-point);
     };
     me.eventEquip = function(card, region) {
         equipped[region] = card;
