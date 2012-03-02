@@ -145,8 +145,8 @@ function Game(pane) {
             center.selectRegion(regions);
         };
         this.eventTransferCount = function(source, target, count) {
-            this.player(source).eventDiscardCount(count);
-            this.player(target).eventDrawCount(count);
+            this.player(source).eventChangeCount(-count);
+            this.player(target).eventChangeCount(count);
         };
         this.eventTransferCards = function(source, target, cards) {
             this.player(source).eventDiscard(cards);
@@ -236,8 +236,13 @@ function PlayerView(id, game, pc, coord, center) {
         canvas.paintBorder(this.selected() ? '#0ff': '#aaa', BORDER);
     };
 
+    this.paintDamage = function(damage, category) {};
+    this.paintVigorRegain = function(point) {};
+    this.paintVigorLost = function(point) {};
+
+    this.paintDrawCount = function(count) {};
     this.eventDrawCards = function(cards) {
-        this.eventDrawCount(cards.length);
+        this.eventChangeCount(cards.length);
     };
     this.onCardsCountChanged = function(before, after) {
         ctxt.save();
@@ -250,7 +255,7 @@ function PlayerView(id, game, pc, coord, center) {
         ctxt.fillText(after, 0, NUM_W, TEXT_H);
         ctxt.restore();
     };
-    this.onCardDropped = function(c) {
+    this.paintCardDropped = function(c) {
         center.addCard(c);
     };
     this.onUseCards = function(cards, target) {
@@ -260,6 +265,9 @@ function PlayerView(id, game, pc, coord, center) {
         for (i in cards) {
             center.addCard(cards[i]);
         }
+    };
+    this.onPlayCards = function(cards) {
+        this.onDiscardCards(cards);
     };
     this.onShowCards = function(cards) {
         for (i in cards) {
@@ -343,10 +351,18 @@ function MeView(id, game, pc, coord, center, players) {
         canvas.paintBorder(this.selected() ? '#0ff': '#aaa', BORDER);
     };
 
-    this.onCardDropped = function(c) {
-        center.addCard(c);
-    };
-    this.onShowCards = function(cards) {
+    this.paintDamage = function(damage, category) {};
+    this.paintVigorRegain = function(point) {};
+    this.paintVigorLost = function(point) {};
+
+    this.paintDrawCount = function(count) {};
+    this.paintDrawCards = function(cards) {};
+    this.paintDiscardCards = function(c) {};
+    this.paintUseCards = function(c, targets) {};
+    this.paintPlayCards = function(c) {};
+    this.paintShowCards = function(c) {};
+
+    this.paintShowCards = function(cards) {
         for (i in cards) {
             center.addCard(cards[i]);
         }

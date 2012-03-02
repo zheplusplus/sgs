@@ -21,17 +21,6 @@ function SGS_InitPlayer(me, id) {
         return selected;
     };
 
-    function changeCardsCount(delta) {
-        var before = cards_count;
-        cards_count += delta;
-        me.onCardsCountChanged(before, cards_count);
-    }
-    me.eventDrawCount = function(count) {
-        changeCardsCount(count);
-    };
-    me.eventDiscardCount = function(count) {
-        changeCardsCount(-count);
-    };
     me.eventCharSelected = function(new_name, new_max_vigor) {
         me.onCharNameChanged(char_name, new_name);
         char_name = new_name;
@@ -40,10 +29,26 @@ function SGS_InitPlayer(me, id) {
         me.onVigorChanged(vigor, new_max_vigor, max_vigor);
         vigor = new_max_vigor;
     };
+    me.eventKilled = function() {
+        me.onKilled();
+    };
+
+    function changeCardsCount(delta) {
+        var before = cards_count;
+        cards_count += delta;
+        me.onCardsCountChanged(before, cards_count);
+    }
+    me.eventDrawCount = function(count) {
+        me.paintDrawCount(count);
+        changeCardsCount(count);
+    };
+    me.eventChangeCount = function(count) {
+        changeCardsCount(count);
+    };
     me.eventDiscard = function(c) {
         var cardsCount = 0;
         for (i = 0; i < c.length; ++i) {
-            me.onCardDropped(c[i]);
+            me.paintCardDropped(c[i]);
             if (c[i].region == 'cards') cardsCount += 1;
         }
         changeCardsCount(-cardsCount);
@@ -53,7 +58,7 @@ function SGS_InitPlayer(me, id) {
         changeCardsCount(-cards.length);
     };
     me.eventPlayCards = function(cards) {
-        me.onDiscardCards(cards);
+        me.onPlayCards(cards);
         changeCardsCount(-cards.length);
     };
     me.eventShowCards = function(cards) {
@@ -66,16 +71,19 @@ function SGS_InitPlayer(me, id) {
         me.onVigorChanged(before, vigor, max_vigor);
     }
     me.eventDamage = function(damage, category) {
+        me.paintDamage(damage, category);
         changeVigor(-damage);
     };
     me.eventVigorRegain = function(point) {
+        me.paintVigorRegain(point);
         changeVigor(point);
     };
     me.eventVigorLost = function(point) {
+        me.paintVigorLost(point);
         changeVigor(-point);
     };
     me.eventEquip = function(card, region) {
-        me.eventDiscardCount(1);
+        changeCardsCount(-1);
         me.paintEquip(card, region);
     };
     me.eventUnequip = function(card, region) {
@@ -132,22 +140,19 @@ function SGS_InitMe(id, me, game, players) {
         me.onCardsChanged(cards);
     }
 
-    function removeFromCards(card) {
+    function removeCard(card) {
         for (j = 0; j < cards.length; ++j) {
             if (card.id == cards[j].id) {
                 cards.splice(j, 1);
-                break;
+                return;
             }
         }
     }
-
-    me.eventDrawCards = function(new_cards) {
-        for (c in new_cards) {
-            new_cards[c].selected = false;
+    function removeCards(cards) {
+        for (i in cards) {
+            removeCard(cards[i]);
         }
-        cards = cards.concat(new_cards);
-        me.onCardsChanged(cards);
-    };
+    }
 
     me.eventCharSelected = function(new_name, new_max_vigor) {
         me.onCharNameChanged(char_name, new_name);
@@ -157,21 +162,35 @@ function SGS_InitMe(id, me, game, players) {
         me.onVigorChanged(vigor, new_max_vigor, max_vigor);
         vigor = new_max_vigor;
     };
-    me.eventDiscard = function(c) {
-        for (i = 0; i < c.length; ++i) {
-            me.onCardDropped(c[i]);
-            removeFromCards(c[i]);
+    me.eventKilled = function() {
+        me.onKilled();
+    };
+
+    me.eventDrawCards = function(new_cards) {
+        for (c in new_cards) {
+            new_cards[c].selected = false;
         }
+        cards = cards.concat(new_cards);
+        me.paintDrawCards(new_cards);
         me.onCardsChanged(cards);
     };
-    me.eventUseCards = function(cards, targets) {
-        me.eventDiscard(cards);
+    me.eventDiscard = function(c) {
+        removeCards(c);
+        me.paintDiscardCards(c);
+        me.onCardsChanged(cards);
     };
-    me.eventPlayCards = function(cards) {
-        me.eventDiscard(cards);
+    me.eventUseCards = function(c, targets) {
+        removeCards(c);
+        me.paintUseCards(c, targets);
+        me.onCardsChanged(cards);
     };
-    me.eventShowCards = function(cards) {
-        me.onShowCards(cards);
+    me.eventPlayCards = function(c) {
+        removeCards(c);
+        me.paintPlayCards(c);
+        me.onCardsChanged(cards);
+    };
+    me.eventShowCards = function(c) {
+        me.paintShowCards(c);
     };
 
     function changeVigor(delta) {
@@ -180,17 +199,20 @@ function SGS_InitMe(id, me, game, players) {
         me.onVigorChanged(before, vigor, max_vigor);
     }
     me.eventDamage = function(damage, category) {
+        me.paintDamage(damage, category);
         changeVigor(-damage);
     };
     me.eventVigorRegain = function(point) {
+        me.paintVigorRegain(point);
         changeVigor(point);
     };
     me.eventVigorLost = function(point) {
+        me.paintVigorLost(point);
         changeVigor(-point);
     };
     me.eventEquip = function(card, region) {
         equipped[region] = card;
-        removeFromCards(card);
+        removeCard(card);
         me.paintEquip(card, region);
         me.onCardsChanged(cards);
     };
@@ -205,8 +227,7 @@ function SGS_InitMe(id, me, game, players) {
     me.clickOnTarget = function(target) {};
     me.clickOnCard = function(card) {};
     me.clickOnMethod = function(methodName) {};
-    function useCards(methods) {
-        me.hintUseCards = function(methods) {};
+    me.hintUseCards = function(methods) {
         var methodsMap = new Array();
         var methodsNames = new Array();
         for (i in methods) {
@@ -237,7 +258,6 @@ function SGS_InitMe(id, me, game, players) {
                     me.clearMethods();
                     me.clickOnCard = function(card) {};
                     post_act(data);
-                    me.hintUseCards = useCards;
                 }
                 return false;
             }
@@ -268,10 +288,8 @@ function SGS_InitMe(id, me, game, players) {
             }
         };
     };
-    me.hintUseCards = useCards;
 
-    function discardCards(methods) {
-        me.hintDiscardCards = function(m) {};
+    me.hintDiscardCards = function(methods) {
         var methodsMap = new Array();
         var methodsNames = new Array();
         for (i in methods) {
@@ -296,7 +314,6 @@ function SGS_InitMe(id, me, game, players) {
                     me.clearMethods();
                     me.clickOnCard = function(card) {};
                     post_act(data);
-                    me.hintDiscardCards = discardCards;
                 }
                 return false;
             }
@@ -316,5 +333,4 @@ function SGS_InitMe(id, me, game, players) {
             }
         };
     };
-    me.hintDiscardCards = discardCards;
 }

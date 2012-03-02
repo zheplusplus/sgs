@@ -179,7 +179,12 @@ function SGS_HintParser(game, center) {
             }
         },
     };
+    var lastHint;
     this.hint = function(result) {
+        if (JSON.stringify(result) == JSON.stringify(lastHint)) {
+            return;
+        }
+        lastHint = result;
         setActivatedPlayers(result['players']);
         var action = result['action'];
         if (action in NAMING_MAPPING) {
