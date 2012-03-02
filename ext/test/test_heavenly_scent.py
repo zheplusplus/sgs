@@ -187,7 +187,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until discard a card
 assert_eq({
               'code': ret_code.OK,
               'action': 'use',
-              'use': {
+              'card': {
                   2: {
                       'type': 'fix target',
                       'count': 1,

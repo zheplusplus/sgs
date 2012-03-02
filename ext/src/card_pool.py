@@ -136,7 +136,7 @@ def all_cards():
                                           'slash',
                                           'slash',
                                           '11',
-                                          'zhangba_serpent_spear',
+                                          'zhangba serpent spear',
                                           '13',
             ]).reset_rank().add_cards([
                                           '1',

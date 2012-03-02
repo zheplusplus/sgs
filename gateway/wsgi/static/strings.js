@@ -61,6 +61,7 @@ function SGS_STR_Action(id) {
         'dodge': '闪',
         'peach': '桃',
 
+        'bequeathed strategy': '遗计',
         'dragon heart': '龙胆',
         'martial saint': '武圣',
 

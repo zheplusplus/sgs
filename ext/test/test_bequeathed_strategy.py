@@ -197,11 +197,31 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'target': players[1].player_id,
+                           'targets': [players[1].player_id],
                            'action': 'transfer',
-                           'transfer': [13],
+                           'use': [13],
                        })
 assert_eq(ret_code.OK, result['code'])
+
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'use',
+              'methods': {
+                  'bequeathed strategy': {
+                      'require': ['fix target', 'cards'],
+                      'target count': 1,
+                      'candidates': [players[1].player_id],
+                      'cards': [12],
+                  },
+              },
+              'abort': 'allow',
+              'players': [players[0].player_id],
+          }, gc.hint(players[0].token))
+assert_eq({
+              'code': ret_code.OK,
+              'action': 'use',
+              'players': [players[0].player_id],
+          }, gc.hint(players[1].token))
 
 result = gc.player_act({
                            'token': players[0].token,
@@ -344,8 +364,8 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'transfer': [10],
-                           'target': players[1].player_id,
+                           'use': [10],
+                           'targets': [players[1].player_id],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -355,8 +375,8 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'transfer',
-                           'transfer': [10],
-                           'target': players[0].player_id,
+                           'use': [10],
+                           'targets': [players[0].player_id],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -366,8 +386,8 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'transfer',
-                           'transfer': [1],
-                           'target': players[1].player_id,
+                           'use': [1],
+                           'targets': [players[1].player_id],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -377,39 +397,28 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'transfer',
-                           'transfer': [10],
+                           'use': [10],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % 'target',
+              'reason': ret_code.BR_MISSING_ARG % 'targets',
           }, result)
 
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'transfer',
-                           'target': players[1].player_id,
+                           'targets': [players[1].player_id],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_MISSING_ARG % 'transfer',
+              'reason': ret_code.BR_MISSING_ARG % 'use',
           }, result)
 
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'transfer',
-                           'transfer': [9, 10],
-                           'target': players[1].player_id,
-                       })
-assert_eq({
-              'code': ret_code.BAD_REQUEST,
-              'reason': ret_code.BR_WRONG_ARG % 'wrong region',
-          }, result)
-
-result = gc.player_act({
-                           'token': players[0].token,
-                           'action': 'transfer',
-                           'transfer': [14],
-                           'target': players[1].player_id,
+                           'use': [9, 10],
+                           'targets': [players[1].player_id],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -419,8 +428,19 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'transfer',
-                           'transfer': [],
-                           'target': players[1].player_id,
+                           'use': [14],
+                           'targets': [players[1].player_id],
+                       })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong region',
+          }, result)
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'transfer',
+                           'use': [],
+                           'targets': [players[1].player_id],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -430,8 +450,8 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'transfer',
-                           'transfer': [11],
-                           'target': players[1].player_id,
+                           'use': [11],
+                           'targets': [players[1].player_id],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -444,8 +464,8 @@ assert_eq(ret_code.OK, result['code'])
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'transfer',
-                           'transfer': [10],
-                           'target': players[1].player_id,
+                           'use': [10],
+                           'targets': [players[1].player_id],
                        })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
@@ -455,8 +475,8 @@ assert_eq({
 result = gc.player_act({
                            'token': players[0].token,
                            'action': 'transfer',
-                           'transfer': [12, 13],
-                           'target': players[1].player_id,
+                           'use': [12, 13],
+                           'targets': [players[1].player_id],
                        })
 assert_eq(ret_code.OK, result['code'])
 

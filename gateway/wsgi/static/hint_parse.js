@@ -5,6 +5,7 @@ function SGS_HintParser(game, center) {
             game.player(players[i]).activate();
         }
     }
+
     function Method(n, method) {
         this.name = function() {
             return n;
@@ -37,11 +38,75 @@ function SGS_HintParser(game, center) {
             HINT_ITEM_MAPPING[require[i]](this, method);
         }
     }
-    function CardMethod(id, cardDesc) {
-        this.id = function() {
-            return id;
+    function TargetMethod(name, method) {
+        var TARGET_FILTER_MAPPING = {
+            'fix target': function(method, require) {
+                var targetsCand = require['candidates'];
+                var targetsCount = require['target count'];
+                method.addTargetFilter(function(target, c, selTargets) {
+                    if (selTargets.length >= targetsCount) {
+                        return false;
+                    }
+                    for (i in targetsCand) {
+                        if (target.id() == targetsCand[i]) return true;
+                    }
+                    return false;
+                });
+            },
+            'cards': function(method, require) {
+                var cardsIds = require['cards'];
+                method.addCardFilter(function(card, sc, t) {
+                    for (i in cardsIds) {
+                        if (cardsIds[i] == card.id) return true;
+                    }
+                    return false;
+                });
+            },
+        };
+        this.name = function() {
+            return name;
         };
 
+        var targetFilters = new Array();
+        this.addTargetFilter = function(f) {
+            targetFilters.push(f);
+        };
+        var cardFilters = new Array();
+        this.addCardFilter = function(f) {
+            cardFilters.push(f);
+        };
+        var validators = new Array();
+        this.addValidator = function(f) {
+            validators.push(f);
+        };
+
+        this.filterCard = function(card, selCards, selTargets) {
+            for (i in cardFilters) {
+                if (!cardFilters[i](card, selCards, selTargets)) return false;
+            }
+            return true;
+        };
+        this.filterTarget = function(target, selCards, selTargets) {
+            for (i in targetFilters) {
+                if (!targetFilters[i](target, selCards, selTargets)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        this.validate = function(selected) {
+            for (i in validators) {
+                if (!validators[i](selected)) return false;
+            }
+            return true;
+        };
+
+        var require = method['require'];
+        for (i in require) {
+            TARGET_FILTER_MAPPING[require[i]](this, method);
+        }
+    }
+    function CardMethod(id, cardDesc) {
         var TARGET_FILTER_MAPPING = {
             'forbid': function(method, info) {
                 method.addCardFilter(function(c, selC, t) {
@@ -69,6 +134,9 @@ function SGS_HintParser(game, center) {
                     return false;
                 });
             },
+        };
+        this.id = function() {
+            return id;
         };
 
         var targetFilters = new Array();
@@ -149,13 +217,21 @@ function SGS_HintParser(game, center) {
                 this.validate = function(c, t) { return true; };
             }
             var methodInstances = new Array();
-            var cardMethodInstances = {};
-            var cardMethods = result['card'];
-            for (i in cardMethods) {
-                cardMethodInstances[parseInt(i)] =
-                            new CardMethod(parseInt(i), cardMethods[i]);
+            if (result['card']) {
+                var cardMethodInstances = {};
+                var cardMethods = result['card'];
+                for (i in cardMethods) {
+                    cardMethodInstances[parseInt(i)] =
+                                new CardMethod(parseInt(i), cardMethods[i]);
+                }
+                methodInstances.push(new CardMethodsWrapper(
+                                                cardMethodInstances));
             }
-            methodInstances.push(new CardMethodsWrapper(cardMethodInstances));
+
+            var methods = result['methods'];
+            for (i in methods) {
+                methodInstances.push(new TargetMethod(i, methods[i]));
+            }
 
             if (result['abort'] == 'allow') {
                 methodInstances.push(new Method('abort', { 'require': [] }));

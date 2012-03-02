@@ -28,7 +28,7 @@ class _AskHeavenlyScent(DiscardCards):
         candidates = self.game_control.players_from_current()
         candidates.remove(self.player)
         return {
-                   'use': {
+                   'card': {
                        c.card_id: {
                          'type': 'fix target',
                          'count': 1,

@@ -25,22 +25,23 @@ class _BequeathedStrategyTransferCards(CardsTargetFrame):
         CardsTargetFrame.__init__(self, game_control, source, self.finished)
         self.cards = cards
         for c in self.cards: c.set_region('bequeathed strategy')
-        self.rest = len(cards)
         self._update_hint()
 
     def react(self, args):
         if args['action'] == 'abort':
             return self.done(None)
-        cards = self.game_control.cards_by_ids(args['transfer'])
+        cards = self.game_control.cards_by_ids(args['use'])
         if len(cards) == 0:
             raise ValueError('bad cards')
-        target = self.game_control.player_by_id(args['target'])
+        targets_ids = args['targets']
+        checking.only_one_target(targets_ids)
+        target = self.game_control.player_by_id(targets_ids[0])
         checking.forbid_target_self(self.player, target)
         checking.cards_region(cards, 'bequeathed strategy')
         self.game_control.private_cards_transfer(self.player, target, cards)
+        self.cards = [c for c in self.cards if c not in cards]
         self._update_hint()
-        self.rest -= len(cards)
-        if self.rest == 0:
+        if len(self.cards) == 0:
             return self.done(None)
         return { 'code': ret_code.OK }
 
