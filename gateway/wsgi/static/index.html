@@ -14,6 +14,8 @@ var hint_heartbeat = null;
 var events_heartbeat = null;
 
 function post_data(data, url, onResult) {
+    data['token'] = token;
+    data['controller'] = url;
     var req = null;
     try {
         if (window.XMLHttpRequest) {
@@ -25,18 +27,17 @@ function post_data(data, url, onResult) {
         alert('Browser not support AJAX!');
         return;
     }
-    req.open('POST', url, true);
+    req.open('POST', '/action', true);
     req.onreadystatechange = function() {
         if (req.readyState == 4) {
             onResult(eval('(' + req.responseText + ')'));
         }
     };
-    req.send(data);
+    req.send(JSON.stringify(data));
 }
 
 function post_act(data) {
-    data['token'] = token;
-    return post_data(JSON.stringify(data), '/act', function(result) {
+    return post_data(data, 'act', function(result) {
         if (result['code'] != 200) {
             crit('SEND:' + JSON.stringify(data));
             crit('REASON:' + result['reason']);
@@ -54,7 +55,7 @@ var game = null;
 var token = localStorage.getItem('token');
 
 function joinGame() {
-    post_data('', '/ctrl/add', function(result) {
+    post_data({}, 'ctrl/add', function(result) {
         if (result['code'] == 200) {
             token = result['token'];
             localStorage.setItem('token', token);
@@ -79,7 +80,7 @@ function enter() {
 function exitGame() {
     joinPane.style.visibility = 'visible';
     startPane.style.visibility = 'hidden';
-    post_data(token, '/ctrl/exit', function(r) {});
+    post_data({}, 'ctrl/exit', function(r) {});
     token = null;
     clearTimeout(status_heartbeat);
     clearTimeout(hint_heartbeat);
@@ -87,7 +88,7 @@ function exitGame() {
 }
 
 function startGame() {
-    post_data(token, '/ctrl/start', function(result) {
+    post_data({}, 'ctrl/start', function(result) {
         if (result['code'] == 200) {
             started();
         } else {
@@ -97,7 +98,7 @@ function startGame() {
 }
 
 function getStatus() {
-    post_data(token, '/info/status', function(result) {
+    post_data({}, 'info/status', function(result) {
         if (result['started'] == 0) {
             updateRoomPlayers(result['players'], result['host']);
             status_heartbeat = setTimeout(enter, BEAT_INTERVAL);
@@ -108,18 +109,15 @@ function getStatus() {
 }
 
 function getEvents() {
-    var request_body = {
-        'token': token,
-        'previous event id': eventlist.prevId(),
-    };
-    post_data(JSON.stringify(request_body), '/info/events', function(result) {
+    post_data({ 'previous event id': eventlist.prevId() }, 'info/events',
+              function(result) {
         eventlist.append(result, game);
         events_heartbeat = setTimeout(getEvents, BEAT_INTERVAL);
     });
 }
 
 function getHint() {
-    post_data(token, '/info/hint', function(result) {
+    post_data({}, 'info/hint', function(result) {
         game.hint(result);
         hint_heartbeat = setTimeout(getHint, BEAT_INTERVAL);
     });
@@ -149,7 +147,7 @@ function init() {
 
     game = new Game(gamePane);
 
-    post_data(token, '/info/checktoken', function(result) {
+    post_data({}, 'info/checktoken', function(result) {
         if (result['in'] == 1) {
             enter();
         }
