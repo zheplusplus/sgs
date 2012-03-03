@@ -61,7 +61,7 @@ def game_response(request_body):
                    'code': ret_code.BAD_REQUEST,
                    'reason': ret_code.BR_MISSING_ARG % e.message,
                }
-    except (NameError, SyntaxError), e:
+    except simplejson.decoder.JSONDecodeError, e:
         return {
                    'code': ret_code.BAD_REQUEST,
                    'reason': 'Syntax error: %s' % e.message,
