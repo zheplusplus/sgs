@@ -30,7 +30,7 @@ def fire_attack_target(game_control, user, card):
                                            card))
 
 def discard_same_suit(game_control, args, player, target, cards):
-    show_suit = game_control.cards_by_ids(args['discard'])[0].suit
+    show_suit = game_control.cards_by_ids(args['discard'])[0].suit()
     game_control.push_frame(_SourceDiscardCards(
                               game_control, player, show_suit,
                               lambda gc, a: done(gc, a, player, target, cards)))
@@ -71,7 +71,7 @@ class _SourceDiscardCards(frames.DiscardCards):
 
     def _hint_detail(self):
         cards = self.game_control.player_cards_at(self.player, 'cards')
-        cards = filter(lambda c: c.suit == self.suit, cards)
+        cards = filter(lambda c: c.suit() == self.suit, cards)
         return {
             'methods': {
                 'discard': {

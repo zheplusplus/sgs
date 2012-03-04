@@ -41,7 +41,7 @@ class ToCertainCard(Response):
 
     def _one_card_hint(self, game_control, player):
         return hint_common.one_card_filter(game_control, player, self.card_name,
-                                           lambda c: c.name == self.card_name)
+                                           lambda c: c.name() == self.card_name)
 
 class _PlayFrame(frames.PlayCards):
     def __init__(self, gc, player, methods, hints, abort, on_result):

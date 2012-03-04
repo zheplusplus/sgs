@@ -12,12 +12,25 @@ IN_USE = 1
 class Card:
     def __init__(self, card_id, name, rank, suit):
         self.card_id = card_id
-        self.name = name
-        self.rank = rank
-        self.suit = suit
+        self.base_name = name
+        self.base_rank = rank
+        self.base_suit = suit
         self.owner_or_nil = None
         self.status = NORMAL
         self.region = 'cardpool'
+
+    def name(self):
+        if self.owner_or_nil == None:
+            return self.base_name
+        return self.owner_or_nil.triggers['card:name'](self.base_name)
+
+    def rank(self):
+        return self.base_rank
+
+    def suit(self):
+        if self.owner_or_nil == None:
+            return self.base_suit
+        return self.owner_or_nil.triggers['card:suit'](self.base_suit)
 
     def set_owner(self, owner):
         self.owner_or_nil = owner
@@ -26,7 +39,7 @@ class Card:
         self.region = region
 
     def color(self):
-        return BLACK if self.suit == SPADE or self.suit == CLUB else RED
+        return BLACK if self.suit() == SPADE or self.suit() == CLUB else RED
 
     def using(self):
         self.status = IN_USE

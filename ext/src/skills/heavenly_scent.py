@@ -24,19 +24,19 @@ class _AskHeavenlyScent(DiscardCards):
 
     def _hint_detail(self):
         cards = self.game_control.player_cards_at(self.player, 'cards')
-        cards = filter(lambda c: c.suit == card.HEART, cards)
-        candidates = self.game_control.players_from_current()
-        candidates.remove(self.player)
+        cards = filter(lambda c: c.suit() == card.HEART, cards)
+        targets = self.game_control.players_from_current()
+        targets.remove(self.player)
         return {
-                   'card': {
-                       c.card_id: {
-                         'type': 'fix target',
-                         'count': 1,
-                         'candidates': map(lambda p: p.player_id, candidates),
-                       } for c in cards
-                   },
-                   'abort': 'allow',
-               }
+            'card': {
+                c.card_id: {
+                  'type': 'fix target',
+                  'count': 1,
+                  'targets': map(lambda p: p.player_id, targets),
+                } for c in cards
+            },
+            'abort': 'allow',
+        }
 
     def _hint_action(self, token):
         return 'use'

@@ -191,12 +191,12 @@ assert_eq({
                   2: {
                       'type': 'fix target',
                       'count': 1,
-                      'candidates': [1],
+                      'targets': [1],
                   },
                   3: {
                       'type': 'fix target',
                       'count': 1,
-                      'candidates': [1],
+                      'targets': [1],
                   },
               },
               'abort': 'allow',

@@ -7,9 +7,9 @@ def is_equipment(card_name):
     return card_name in equipment_dict
 
 def equip(player, game_control, card):
-    if not card.name in equipment_dict:
+    if not card.name() in equipment_dict:
         raise ValueError('invalid equipment')
-    equipment_dict[card.name](player, game_control, card)
+    equipment_dict[card.name()](player, game_control, card)
 
 def interface(game_control, args):
     cards = game_control.cards_by_ids(args['use'])
@@ -22,7 +22,7 @@ def interface(game_control, args):
 
 def hint(cards):
     return map(lambda c: c.card_id,
-               filter(lambda c: c.name in equipment_dict, cards))
+               filter(lambda c: c.name() in equipment_dict, cards))
 
 import zhangba_serpent_spear as serpent_spear
 serpent_spear.imported(equipment_dict)

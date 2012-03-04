@@ -1,6 +1,6 @@
 from ext.src.skills import bequeathed_strategy, merciless, dragon_heart,       \
                            martial_saint, prodigy, horsemanship, fury_pith,    \
-                           heavenly_scent
+                           heavenly_scent, youth_beauty
 
 class Character:
     def __init__(self, name, vigor, character_skills):
@@ -23,7 +23,7 @@ HUANG_YUEYING = Character('Huang Yueying', 3, [prodigy])
 MA_CHAO = Character('Ma Chao', 4, [horsemanship])
 WEI_YAN = Character('Wei Yan', 4, [fury_pith])
 
-JUNIOR_QIAO = Character('Junior Qiao', 3, [heavenly_scent])
+JUNIOR_QIAO = Character('Junior Qiao', 3, [heavenly_scent, youth_beauty])
 
 MA_CHAO_SP = Character('Ma Chao SP', 4, [horsemanship])
 PANG_DE = Character('Pang De', 4, [horsemanship])

@@ -9,4 +9,4 @@ def dodge_as_slash(cards):
 
 def hint_s(game_control, player):
     return hint_common.one_card_filter(game_control, player, 'dragon heart',
-                                       lambda c: c.name == 'dodge')
+                                       lambda c: c.name() == 'dodge')

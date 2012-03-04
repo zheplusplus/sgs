@@ -18,6 +18,7 @@ class Player(CorePlayer):
                                 'peach': response.ToCertainCard('peach'),
                             })
         self.ranges = { 'steal': 1 }
+        self.triggers = Player._init_triggers()
         self.as_target_filters = []
         self.actions_before_damaging = Player._damage_actions_dict()
         self.actions_before_damaged = Player._damage_actions_dict()
@@ -25,6 +26,13 @@ class Player(CorePlayer):
         self.computing_before_damaged = []
         self.actions_after_damaging = Player._damage_actions_dict()
         self.actions_after_damaged = Player._damage_actions_dict()
+
+    @staticmethod
+    def _init_triggers():
+        return {
+            'card:name': lambda v: v,
+            'card:suit': lambda v: v,
+        }
 
     @staticmethod
     def _damage_actions_dict():
@@ -59,7 +67,7 @@ class Player(CorePlayer):
                 frame.add_hint('card', c, { 'type': 'implicit target' })
                 continue
             frame.add_hint('card', c,
-                           player_as_target(c.name)(game_control, self, c))
+                           player_as_target(c.name())(game_control, self, c))
 
     def using_cards_stage(self, game_control):
         on_result = lambda gc, _: self.discarding_cards_stage(gc)
@@ -76,10 +84,10 @@ class Player(CorePlayer):
                     cards = self.game_control.cards_by_ids(args['use'])
                     if 0 == len(cards):
                         raise ValueError('wrong cards')
-                    if equip.is_equipment(cards[0].name):
+                    if equip.is_equipment(cards[0].name()):
                         args['action'] = 'equip'
                     else:
-                        args['action'] = cards[0].name
+                        args['action'] = cards[0].name()
                 r = frames.UseCards.react(self, args)
                 self._update_hint()
                 return r
