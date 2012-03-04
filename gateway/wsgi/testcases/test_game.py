@@ -1,169 +1,174 @@
+import simplejson
+
 from core.src import ret_code
 from test_common import *
+from .. import server
 
-from .. import game
+def send_to_server(controller, data):
+    data['controller'] = controller
+    return server.game_response(simplejson.dumps(data))
 
-g = game.GameRoom()
-
-result = g.response('/info/status', '')
+result = send_to_server('info/status', dict())
 assert_eq(ret_code.OK, result['code'])
 assert_eq(0, result['started'])
 assert_eq(0, result['players'])
 
-result = g.response('/ctrl/add', 'alice')
+result = send_to_server('ctrl/add', { 'name': 'alice' })
 assert_eq(ret_code.OK, result['code'])
 tokena = result['token']
 
-result = g.response('/info/status', '')
+result = send_to_server('info/status', dict())
 assert_eq(ret_code.OK, result['code'])
 assert_eq(0, result['started'])
 assert_eq(1, result['players'])
 
-result = g.response('/ctrl/add', 'bob')
+result = send_to_server('ctrl/add', { 'name': 'bob' })
 assert_eq(ret_code.OK, result['code'])
 tokenb = result['token']
 
-result = g.response('/info/status', '')
+result = send_to_server('info/status', dict())
 assert_eq(ret_code.OK, result['code'])
 assert_eq(0, result['started'])
 assert_eq(2, result['players'])
 
-result = g.response('/ctrl/start', tokena)
+result = send_to_server('ctrl/start', { 'token': tokena })
 assert_eq(ret_code.OK, result['code'])
 
-result = g.response('/info/status', '')
+result = send_to_server('info/status', dict())
 assert_eq(ret_code.OK, result['code'])
 assert_eq(1, result['started'])
 assert_eq(2, result['players'])
 
-result = g.response('/info/hint', '')
+result = send_to_server('info/hint', { 'token': '' })
 assert_eq(ret_code.OK, result['code'])
 
-result = g.response('/info/hint', tokena)
+result = send_to_server('info/hint', { 'token': tokena })
 assert_eq(ret_code.OK, result['code'])
 
-result = g.response('/info/hint', tokenb)
+result = send_to_server('info/hint', { 'token': tokenb })
 assert_eq(ret_code.OK, result['code'])
 
-result = g.response('/info/events', '''{
-                                           'token': '%s',
-                                           'previous event id': %d,
-                                       }''' % (tokena, 0))
+result = send_to_server('info/events', {
+                                           'token': tokena,
+                                           'previous event id': 0,
+                                       })
 assert_eq(ret_code.OK, result['code'])
 
-g = game.GameRoom()
+from .. import game
 
-result = g.response('/info/hint', tokenb)
+game.game_room = game.GameRoom()
+
+result = send_to_server('info/hint', { 'token': tokenb })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': 'Game not started',
           }, result)
 
-result = g.response('/ctrl/add', 'alice')
+result = send_to_server('ctrl/add', { 'name': 'alice' })
 assert_eq(ret_code.OK, result['code'])
 tokena = result['token']
 
-result = g.response('/info/events', tokenb)
+result = send_to_server('info/events', { 'token': tokenb })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': 'Game not started',
           }, result)
 
-result = g.response('/ctrl/start', tokena)
+result = send_to_server('ctrl/start', { 'token': tokena })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': 'Need at least 2 players',
           }, result)
 
-result = g.response('/info/status', '')
+result = send_to_server('info/status', dict())
 assert_eq(ret_code.OK, result['code'])
 assert_eq(0, result['started'])
 assert_eq(1, result['players'])
 
-result = g.response('/ctrl/add', 'bob')
+result = send_to_server('ctrl/add', { 'name': 'bob' })
 assert_eq(ret_code.OK, result['code'])
 tokenb = result['token']
 
-result = g.response('/info/status', '')
+result = send_to_server('info/status', dict())
 assert_eq(ret_code.OK, result['code'])
 assert_eq(0, result['started'])
 assert_eq(2, result['players'])
 
-result = g.response('/ctrl/start', tokenb)
+result = send_to_server('ctrl/start', { 'token': tokenb })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': 'Not the host',
           }, result)
 
-result = g.response('/info/status', '')
+result = send_to_server('info/status', dict())
 assert_eq(ret_code.OK, result['code'])
 assert_eq(0, result['started'])
 assert_eq(2, result['players'])
 
-result = g.response('/info/hint', tokenb)
+result = send_to_server('info/hint', { 'token': tokenb })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': 'Game not started',
           }, result)
 
-g = game.GameRoom()
+game.game_room = game.GameRoom()
 
-result = g.response('/ctrl/add', 'alice')
+result = send_to_server('ctrl/add', { 'name': 'alice' })
 assert_eq(ret_code.OK, result['code'])
 tokena = result['token']
 
-result = g.response('/ctrl/add', 'bob')
+result = send_to_server('ctrl/add', { 'name': 'bob' })
 assert_eq(ret_code.OK, result['code'])
 tokenb = result['token']
 
-result = g.response('/ctrl/exit', tokena)
+result = send_to_server('ctrl/exit', { 'token': tokena })
 assert_eq(ret_code.OK, result['code'])
 
-result = g.response('/ctrl/exit', tokena)
+result = send_to_server('ctrl/exit', { 'token': tokena })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': 'Not joined in',
           }, result)
 
-result = g.response('/ctrl/add', 'chiharaminori')
+result = send_to_server('ctrl/add', { 'name': 'chiharaminori' })
 assert_eq(ret_code.OK, result['code'])
 tokenc = result['token']
 
-result = g.response('/ctrl/start', tokenb)
+result = send_to_server('ctrl/start', { 'token': tokenb })
 assert_eq(ret_code.OK, result['code'])
 
-g = game.GameRoom()
+game.game_room = game.GameRoom()
 
-result = g.response('/ctrl/add', 'alice')
+result = send_to_server('ctrl/add', { 'name': 'alice' })
 assert_eq(ret_code.OK, result['code'])
 tokena = result['token']
 
-result = g.response('/ctrl/add', 'bob')
+result = send_to_server('ctrl/add', { 'name': 'bob' })
 assert_eq(ret_code.OK, result['code'])
 tokenb = result['token']
 
-result = g.response('/ctrl/exit', tokena)
+result = send_to_server('ctrl/exit', { 'token': tokena })
 assert_eq(ret_code.OK, result['code'])
 
-result = g.response('/ctrl/exit', tokenb)
+result = send_to_server('ctrl/exit', { 'token': tokenb })
 assert_eq(ret_code.OK, result['code'])
 
-result = g.response('/ctrl/add', 'david')
+result = send_to_server('ctrl/add', { 'name': 'david' })
 assert_eq(ret_code.OK, result['code'])
 tokend = result['token']
 
-result = g.response('/ctrl/add', 'emiri')
+result = send_to_server('ctrl/add', { 'name': 'emiri' })
 assert_eq(ret_code.OK, result['code'])
 tokene = result['token']
 
-result = g.response('/ctrl/start', tokend)
+result = send_to_server('ctrl/start', { 'token': tokend })
 assert_eq(ret_code.OK, result['code'])
 
-g = game.GameRoom()
+game.game_room = game.GameRoom()
 for i in range(8):
-    result = g.response('/ctrl/add', str(i))
+    result = send_to_server('ctrl/add', { 'name': str(i) })
     assert_eq(ret_code.OK, result['code'])
-result = g.response('/ctrl/add', 'x')
+result = send_to_server('ctrl/add', { 'name': 'x' })
 assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': 'room full',
