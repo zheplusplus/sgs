@@ -238,33 +238,9 @@ function SGS_InitMe(id, me, game, players) {
 
         var method = methods[0];
         me.clickOnMethod = function(methodName) {
-            if (method.name() == methodName) {
-                var selectedC = selectedCards();
-                var selectedT = selectedTargets();
-                if (method.validate(selectedC, selectedT)) {
-                    var cardsIds = new Array();
-                    for (i in selectedC) {
-                        cardsIds.push(selectedC[i].id);
-                    }
-                    var targetsIds = new Array();
-                    for (i in selectedT) {
-                        targetsIds.push(selectedT[i].id());
-                    }
-                    var data = {};
-                    data['action'] = methodName;
-                    data['use'] = cardsIds;
-                    data['targets'] = targetsIds;
-                    clearSelectedCards();
-                    me.clearMethods();
-                    me.clickOnCard = function(card) {};
-                    post_act(data);
-                }
-                return false;
-            }
-            method = methodsMap[methodName];
-            game.clearTargets();
-            clearSelectedCards();
-            return true;
+            currentMethod = method;
+            method = methodsMap[methodName]
+            return clickOnMethod(currentMethod, methodName, 'use');
         };
         me.clickOnTarget = function(target) {
             if (target.selected()) {
@@ -277,15 +253,7 @@ function SGS_InitMe(id, me, game, players) {
             }
         };
         me.clickOnCard = function(card) {
-            if (card.selected) {
-                card.selected = false;
-                me.onCardsChanged(cards);
-                return;
-            }
-            if (method.filterCard(card, selectedCards(), selectedTargets())) {
-                card.selected = true;
-                me.onCardsChanged(cards);
-            }
+            clickOnCard(method, card);
         };
     };
 
@@ -300,37 +268,55 @@ function SGS_InitMe(id, me, game, players) {
 
         var method = methods[0];
         me.clickOnMethod = function(methodName) {
-            if (method.name() == methodName) {
-                var selected = selectedCards();
-                if (method.validate(selected)) {
-                    var cardsIds = new Array();
-                    for (i in selected) {
-                        cardsIds.push(selected[i].id);
-                    }
-                    var data = {};
-                    data['method'] = methodName;
-                    data['discard'] = cardsIds;
-                    clearSelectedCards();
-                    me.clearMethods();
-                    me.clickOnCard = function(card) {};
-                    post_act(data);
-                }
-                return false;
-            }
-            method = methodsMap[methodName];
-            clearSelectedCards();
-            return true;
+            currentMethod = method;
+            method = methodsMap[methodName]
+            return clickOnMethod(currentMethod, methodName, 'discard');
         };
+        me.clickOnTarget = function(target) {};
         me.clickOnCard = function(card) {
-            if (card.selected) {
-                card.selected = false;
-                me.onCardsChanged(cards);
-                return;
-            }
-            if (method.filter(card, selectedCards())) {
-                card.selected = true;
-                me.onCardsChanged(cards);
-            }
+            clickOnCard(method, card);
         };
     };
+
+    function clickOnMethod(method, methodName, type) {
+        if (method.name() == methodName) {
+            var selectedC = selectedCards();
+            var selectedT = selectedTargets();
+            if (method.validate(selectedC, selectedT)) {
+                var cardsIds = new Array();
+                for (i in selectedC) {
+                    cardsIds.push(selectedC[i].id);
+                }
+                var targetsIds = new Array();
+                for (i in selectedT) {
+                    targetsIds.push(selectedT[i].id());
+                }
+                var data = {};
+                data['action'] = methodName;
+                data[type] = cardsIds;
+                data['targets'] = targetsIds;
+                clearSelectedCards();
+                game.clearTargets();
+                me.clearMethods();
+                me.clickOnCard = function(card) {};
+                post_act(data);
+            }
+            return false;
+        }
+        game.clearTargets();
+        clearSelectedCards();
+        return true;
+    }
+    function clickOnCard(method, card) {
+        if (card.selected) {
+            card.selected = false;
+            me.onCardsChanged(cards);
+            game.clearTargets();
+            return;
+        }
+        if (method.filterCard(card, selectedCards(), selectedTargets())) {
+            card.selected = true;
+            me.onCardsChanged(cards);
+        }
+    }
 }

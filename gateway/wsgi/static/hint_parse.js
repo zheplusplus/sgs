@@ -1,44 +1,93 @@
 function SGS_HintParser(game, center) {
-    function setActivatedPlayers(players) {
-        game.deactivateAll();
-        for (i in players) {
-            game.player(players[i]).activate();
-        }
-    }
-
-    function Method(n, method) {
-        this.name = function() {
+    function initMethod(me, n) {
+        me.name = function() {
             return n;
         };
+    }
+    function AbortMethod() {
+        initMethod(this, 'abort');
 
-        var filters = new Array();
-        this.addFilter = function(f) {
-            filters.push(f);
+        this.filterCard = function(c, sc, st) {
+            return false;
+        };
+        this.filterTarget = function(t, sc, st) {
+            return false;
+        };
+        this.validate = function(selected) {
+            return true;
+        };
+    }
+
+    function initMethodFiltersValidators(me, n) {
+        initMethod(me, n);
+
+        var targetFilters = new Array();
+        me.addTargetFilter = function(f) {
+            targetFilters.push(f);
+        };
+        var cardFilters = new Array();
+        me.addCardFilter = function(f) {
+            cardFilters.push(f);
         };
         var validators = new Array();
-        this.addValidator = function(f) {
+        me.addValidator = function(f) {
             validators.push(f);
         };
 
-        this.filter = function(card, selected) {
-            for (i in filters) {
-                if (!filters[i](card, selected)) return false;
+        me.filterCard = function(card, selCards, selTargets) {
+            for (i in cardFilters) {
+                if (!cardFilters[i](card, selCards, selTargets)) return false;
             }
             return true;
         };
-        this.validate = function(selected) {
+        me.filterTarget = function(target, selCards, selTargets) {
+            for (i in targetFilters) {
+                if (!targetFilters[i](target, selCards, selTargets))
+                    return false;
+            }
+            return true;
+        };
+        me.validate = function(selected) {
             for (i in validators) {
                 if (!validators[i](selected)) return false;
             }
             return true;
         };
+    }
 
-        var require = method['require'];
+    function DiscardMethod(n, detail) {
+        initMethodFiltersValidators(this, n);
+
+        var HINT_ITEM_MAPPING = {
+            'count': function(method, detail) {
+                var count = detail['count'];
+                method.addCardFilter(function(c, selCards, st) {
+                    return selCards.length < count;
+                });
+                method.addValidator(function(selCards, st) {
+                    return selCards.length == count;
+                });
+            },
+            'candidates': function(method, detail) {
+                var cards = detail['candidates'];
+                function cardIn(card, selCards, selTargets) {
+                    for (i in cards) {
+                        if (card.id == cards[i]) return true;
+                    }
+                    return false;
+                }
+                method.addCardFilter(cardIn);
+            },
+        };
+
+        var require = detail['require'];
         for (i in require) {
-            HINT_ITEM_MAPPING[require[i]](this, method);
+            HINT_ITEM_MAPPING[require[i]](this, detail);
         }
     }
-    function TargetMethod(name, method) {
+    function UseMethod(name, method) {
+        initMethodFiltersValidators(this, name);
+
         var TARGET_FILTER_MAPPING = {
             'fix target': function(method, require) {
                 var targetsCand = require['candidates'];
@@ -67,125 +116,12 @@ function SGS_HintParser(game, center) {
             return name;
         };
 
-        var targetFilters = new Array();
-        this.addTargetFilter = function(f) {
-            targetFilters.push(f);
-        };
-        var cardFilters = new Array();
-        this.addCardFilter = function(f) {
-            cardFilters.push(f);
-        };
-        var validators = new Array();
-        this.addValidator = function(f) {
-            validators.push(f);
-        };
-
-        this.filterCard = function(card, selCards, selTargets) {
-            for (i in cardFilters) {
-                if (!cardFilters[i](card, selCards, selTargets)) return false;
-            }
-            return true;
-        };
-        this.filterTarget = function(target, selCards, selTargets) {
-            for (i in targetFilters) {
-                if (!targetFilters[i](target, selCards, selTargets)) {
-                    return false;
-                }
-            }
-            return true;
-        };
-        this.validate = function(selected) {
-            for (i in validators) {
-                if (!validators[i](selected)) return false;
-            }
-            return true;
-        };
-
         var require = method['require'];
         for (i in require) {
             TARGET_FILTER_MAPPING[require[i]](this, method);
         }
     }
-    function CardMethod(id, cardDesc) {
-        var TARGET_FILTER_MAPPING = {
-            'forbid': function(method, info) {
-                method.addCardFilter(function(c, selC, t) {
-                    return false;
-                });
-                method.addTargetFilter(function(t, c, selT) {
-                    return false;
-                });
-            },
-            'implicit target': function(method, info) {
-                method.addTargetFilter(function(t, c, selT) {
-                    return false;
-                });
-            },
-            'fix target': function(method, info) {
-                var targetsCand = info['candidates'];
-                var targetsCount = info['count'];
-                method.addTargetFilter(function(target, c, selTargets) {
-                    if (selTargets.length >= targetsCount) {
-                        return false;
-                    }
-                    for (i in targetsCand) {
-                        if (target.id() == targetsCand[i]) return true;
-                    }
-                    return false;
-                });
-            },
-        };
-        this.id = function() {
-            return id;
-        };
 
-        var targetFilters = new Array();
-        this.addTargetFilter = function(f) {
-            targetFilters.push(f);
-        };
-        var cardFilters = new Array();
-        this.addCardFilter = function(f) {
-            cardFilters.push(f);
-        };
-
-        this.filterCard = function(card, selCards, selTargets) {
-            for (i in cardFilters) {
-                if (!cardFilters[i](card, selCards, selTargets)) return false;
-            }
-            return true;
-        };
-        this.filterTarget = function(target, selCards, selTargets) {
-            for (i in targetFilters) {
-                if (!targetFilters[i](target, selCards, selTargets)) {
-                    return false;
-                }
-            }
-            return true;
-        };
-
-        TARGET_FILTER_MAPPING[cardDesc['type']](this, cardDesc);
-    }
-    var HINT_ITEM_MAPPING = {
-        'count': function(hint, method) {
-            var count = method['count'];
-            hint.addFilter(function(c, selected) {
-                return selected.length < count;
-            });
-            hint.addValidator(function(selected) {
-                return selected.length == count;
-            });
-        },
-        'candidates': function(hint, method) {
-            var cards = method['candidates'];
-            function cardIn(card) {
-                for (i in cards) {
-                    if (card.id == cards[i]) return true;
-                }
-                return false;
-            }
-            hint.addFilter(cardIn);
-        },
-    };
     var NAMING_MAPPING = {
         'select character': function(result) {
             if ('candidates' in result) {
@@ -193,48 +129,123 @@ function SGS_HintParser(game, center) {
             }
         },
         'use': function(result) {
-            function CardMethodsWrapper(cardMethods) {
-                this.name = function() {
-                    return 'card';
+            function CardMethod(id, cardDesc) {
+                var TARGET_FILTER_MAPPING = {
+                    'forbid': function(method, info) {
+                        method.addCardFilter(function(c, selC, t) {
+                            return false;
+                        });
+                    },
+                    'implicit target': function(method, info) {
+                        method.addTargetFilter(function(t, c, selT) {
+                            return false;
+                        });
+                    },
+                    'fix target': function(method, info) {
+                        var targetsCand = info['candidates'];
+                        var targetsCount = info['count'];
+                        method.addTargetFilter(function(target, c, selTargets) {
+                            if (selTargets.length >= targetsCount) {
+                                return false;
+                            }
+                            for (i in targetsCand) {
+                                if (target.id() == targetsCand[i]) return true;
+                            }
+                            return false;
+                        });
+                        method.addValidator(function(selCards, selTargets) {
+                            return selTargets.length == targetsCount;
+                        });
+                    },
+                };
+                this.id = function() {
+                    return id;
                 };
 
-                var method = null;
-                this.cleared = function() {
-                    method = null;
+                var targetFilters = new Array();
+                this.addTargetFilter = function(f) {
+                    targetFilters.push(f);
+                };
+                var cardFilters = new Array();
+                this.addCardFilter = function(f) {
+                    cardFilters.push(f);
+                };
+                var validators = new Array();
+                this.addValidator = function(f) {
+                    validators.push(f);
                 };
 
                 this.filterCard = function(card, selCards, selTargets) {
-                    if (selCards.length == 1) return false;
-                    method = cardMethods[card.id];
-                    return method.filterCard(card, selCards, selTargets);
+                    for (i in cardFilters) {
+                        if (!cardFilters[i](card, selCards, selTargets))
+                            return false;
+                    }
+                    return true;
                 };
                 this.filterTarget = function(target, selCards, selTargets) {
-                    if (method == null) {
+                    for (i in targetFilters) {
+                        if (!targetFilters[i](target, selCards, selTargets))
+                            return false;
+                    }
+                    return true;
+                };
+                this.validate = function(selCards, selTargets) {
+                    for (i in validators) {
+                        if (!validators[i](selCards, selTargets)) return false;
+                    }
+                    return true;
+                };
+
+                TARGET_FILTER_MAPPING[cardDesc['type']](this, cardDesc);
+            }
+            function CardMethodsWrapper(cardMethodsInfo) {
+                initMethod(this, 'card');
+
+                var method = null;
+                this.filterCard = function(card, selCards, selTargets) {
+                    if (selCards.length == 1) return false;
+                    var cardMethod = cardMethods[card.id];
+                    if (cardMethod.filterCard(card, selCards, selTargets)) {
+                        method = cardMethod;
+                        return true;
+                    }
+                    return false;
+                };
+                this.filterTarget = function(target, selCards, selTargets) {
+                    if (selCards.length == 0) {
                         return false;
                     }
                     return method.filterTarget(target, selCards, selTargets);
                 };
-                this.validate = function(c, t) { return true; };
+                this.validate = function(selCards, selTargets) {
+                    if (selCards.length != 1) {
+                        return false;
+                    }
+                    for (i in cardMethods) {
+                        if (!cardMethods[i].validate(selCards, selTargets))
+                            return false;
+                    }
+                    return true;
+                };
+
+                var cardMethods = {};
+                for (i in cardMethodsInfo) {
+                    cardMethods[parseInt(i)] =
+                                new CardMethod(parseInt(i), cardMethodsInfo[i]);
+                }
             }
             var methodInstances = new Array();
             if (result['card']) {
-                var cardMethodInstances = {};
-                var cardMethods = result['card'];
-                for (i in cardMethods) {
-                    cardMethodInstances[parseInt(i)] =
-                                new CardMethod(parseInt(i), cardMethods[i]);
-                }
-                methodInstances.push(new CardMethodsWrapper(
-                                                cardMethodInstances));
+                methodInstances.push(new CardMethodsWrapper(result['card']));
             }
 
             var methods = result['methods'];
             for (i in methods) {
-                methodInstances.push(new TargetMethod(i, methods[i]));
+                methodInstances.push(new UseMethod(i, methods[i]));
             }
 
             if (result['abort'] == 'allow') {
-                methodInstances.push(new Method('abort', { 'require': [] }));
+                methodInstances.push(new AbortMethod());
             }
             game.player(result['players'][0]).hintUseCards(methodInstances);
         },
@@ -242,10 +253,10 @@ function SGS_HintParser(game, center) {
             var methods = result['methods'];
             var methodInstances = new Array();
             for (i in methods) {
-                methodInstances.push(new Method(i, methods[i]));
+                methodInstances.push(new DiscardMethod(i, methods[i]));
             }
             if (result['abort'] == 'allow') {
-                methodInstances.push(new Method('abort', { 'require': [] }));
+                methodInstances.push(new AbortMethod());
             }
             game.player(result['players'][0]).hintDiscardCards(methodInstances);
         },
@@ -255,6 +266,14 @@ function SGS_HintParser(game, center) {
             }
         },
     };
+
+    function setActivatedPlayers(players) {
+        game.deactivateAll();
+        for (i in players) {
+            game.player(players[i]).activate();
+        }
+    }
+
     var lastHint;
     this.hint = function(result) {
         if (JSON.stringify(result) == JSON.stringify(lastHint)) {

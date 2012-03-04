@@ -135,6 +135,9 @@ function Game(pane) {
             }
         };
         this.clearTargets = function() {
+            for (i in players) {
+                players[i].deselect();
+            }
         };
 
         var hintparser = new SGS_HintParser(this, center);
