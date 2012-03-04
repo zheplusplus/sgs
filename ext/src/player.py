@@ -90,7 +90,7 @@ class Player(CorePlayer):
 
             def _update_hint(self):
                 self.clear_hint()
-                self.add_quit()
+                self.add_abort()
                 me._build_using_card_hint(game_control, self)
 
         game_control.push_frame(UseCards())

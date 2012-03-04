@@ -134,7 +134,7 @@ assert_eq({
                   'bequeathed strategy': {
                       'require': ['fix target', 'cards'],
                       'target count': 1,
-                      'candidates': [players[1].player_id],
+                      'targets': [players[1].player_id],
                       'cards': [10, 11],
                   },
               },
@@ -182,7 +182,7 @@ assert_eq({
                   'bequeathed strategy': {
                       'require': ['fix target', 'cards'],
                       'target count': 1,
-                      'candidates': [players[1].player_id],
+                      'targets': [players[1].player_id],
                       'cards': [12, 13],
                   },
               },
@@ -210,7 +210,7 @@ assert_eq({
                   'bequeathed strategy': {
                       'require': ['fix target', 'cards'],
                       'target count': 1,
-                      'candidates': [players[1].player_id],
+                      'targets': [players[1].player_id],
                       'cards': [12],
                   },
               },

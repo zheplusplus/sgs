@@ -90,7 +90,7 @@ function SGS_HintParser(game, center) {
 
         var TARGET_FILTER_MAPPING = {
             'fix target': function(method, require) {
-                var targetsCand = require['candidates'];
+                var targetsCand = require['targets'];
                 var targetsCount = require['target count'];
                 method.addTargetFilter(function(target, c, selTargets) {
                     if (selTargets.length >= targetsCount) {
@@ -144,7 +144,7 @@ function SGS_HintParser(game, center) {
                         });
                     },
                     'fix target': function(method, info) {
-                        var targetsCand = info['candidates'];
+                        var targetsCand = info['targets'];
                         var targetsCount = info['count'];
                         method.addTargetFilter(function(target, c, selTargets) {
                             if (selTargets.length >= targetsCount) {
@@ -241,6 +241,7 @@ function SGS_HintParser(game, center) {
             return;
         }
         lastHint = result;
+        log(JSON.stringify(lastHint));
         setActivatedPlayers(result['players']);
         var action = result['action'];
         if (action in NAMING_MAPPING) {

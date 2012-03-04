@@ -41,13 +41,13 @@ assert_eq({
                           1: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [0, 1],
+                                 'targets': [0, 1],
                              },
                           2: { 'type': 'forbid' },
                           3: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [0, 1],
+                                 'targets': [0, 1],
                              },
                           8: { 'type': 'forbid' },
                           9: { 'type': 'forbid' },
@@ -244,7 +244,7 @@ assert_eq({
                           3: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [0, 1],
+                                 'targets': [0, 1],
                              },
                           8: { 'type': 'forbid' },
                           9: { 'type': 'forbid' },
@@ -655,7 +655,7 @@ assert_eq({
                           5: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1],
+                                 'targets': [1],
                              },
                           6: { 'type': 'forbid' },
                           7: { 'type': 'forbid' },

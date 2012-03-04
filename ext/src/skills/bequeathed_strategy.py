@@ -1,5 +1,5 @@
 import core.src.ret_code as ret_code
-from core.src.action_frames import CardsTargetFrame, FrameBase
+from core.src.action_frames import FrameBase, CardsTargetFrame
 import ext.src.common_checking as checking
 
 class _BequeathedStrategyAfterDamage(FrameBase):
@@ -50,19 +50,18 @@ class _BequeathedStrategyTransferCards(CardsTargetFrame):
 
     def _update_hint(self):
         self.clear_hint()
-        candidates = self.game_control.players_from_current()
-        candidates.remove(self.player)
-        candidates = map(lambda p: p.player_id, candidates)
-        self.set_hint_category('methods', {
-                                   'bequeathed strategy': {
-                                       'require': ['fix target', 'cards'],
-                                       'target count': 1,
-                                       'candidates': candidates,
-                                       'cards': map(lambda c: c.card_id,
-                                                    self.cards),
-                                   }
-                               })
-        self.add_quit()
+        targets = self.game_control.players_from_current()
+        targets.remove(self.player)
+        hint = {
+            'bequeathed strategy': {
+                'require': ['fix target', 'cards'],
+                'target count': 1,
+                'targets': map(lambda p: p.player_id, targets),
+                'cards': map(lambda c: c.card_id, self.cards),
+            }
+        }
+        self.set_hint_category('methods', hint)
+        self.add_abort()
 
     def _hint_action(self, token):
         return 'use'

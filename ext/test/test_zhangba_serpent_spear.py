@@ -37,7 +37,7 @@ assert_eq({
                           0: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1],
+                                 'targets': [1],
                              },
                           1: { 'type': 'implicit target' },
                           2: { 'type': 'forbid' },
@@ -45,7 +45,7 @@ assert_eq({
                           8: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1],
+                                 'targets': [1],
                              },
                           9: { 'type': 'implicit target' },
                       },

@@ -62,7 +62,7 @@ class CardsTargetFrame(OnePlayerFrame):
     def set_hint_category(self, category, hint_info):
         self._hint_cache[category] = hint_info
 
-    def add_quit(self):
+    def add_abort(self):
         self._hint_cache['abort'] = 'allow'
 
     def _hint(self, token):

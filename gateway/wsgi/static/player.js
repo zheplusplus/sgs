@@ -224,6 +224,7 @@ function SGS_InitMe(id, me, game, players) {
         return equipped;
     };
 
+    var method = null;
     me.clickOnTarget = function(target) {};
     me.clickOnCard = function(card) {};
     me.clickOnMethod = function(methodName) {};
@@ -236,11 +237,9 @@ function SGS_InitMe(id, me, game, players) {
         }
         me.onMethodsChanged(methodsNames);
 
-        var method = methods[0];
+        method = methods[0];
         me.clickOnMethod = function(methodName) {
-            currentMethod = method;
-            method = methodsMap[methodName]
-            return clickOnMethod(currentMethod, methodName, 'use');
+            return clickOnMethod('action', methodName, 'use', methodsMap);
         };
         me.clickOnTarget = function(target) {
             if (target.selected()) {
@@ -266,11 +265,9 @@ function SGS_InitMe(id, me, game, players) {
         }
         me.onMethodsChanged(methodsNames);
 
-        var method = methods[0];
+        method = methods[0];
         me.clickOnMethod = function(methodName) {
-            currentMethod = method;
-            method = methodsMap[methodName]
-            return clickOnMethod(currentMethod, methodName, 'discard');
+            return clickOnMethod('method', methodName, 'discard', methodsMap);
         };
         me.clickOnTarget = function(target) {};
         me.clickOnCard = function(card) {
@@ -278,7 +275,7 @@ function SGS_InitMe(id, me, game, players) {
         };
     };
 
-    function clickOnMethod(method, methodName, type) {
+    function clickOnMethod(methodKey, methodName, type, methodsMap) {
         if (method.name() == methodName) {
             var selectedC = selectedCards();
             var selectedT = selectedTargets();
@@ -292,7 +289,7 @@ function SGS_InitMe(id, me, game, players) {
                     targetsIds.push(selectedT[i].id());
                 }
                 var data = {};
-                data['action'] = methodName;
+                data[methodKey] = methodName;
                 data[type] = cardsIds;
                 data['targets'] = targetsIds;
                 clearSelectedCards();
@@ -303,6 +300,7 @@ function SGS_InitMe(id, me, game, players) {
             }
             return false;
         }
+        method = methodsMap[methodName];
         game.clearTargets();
         clearSelectedCards();
         return true;

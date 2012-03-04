@@ -49,12 +49,12 @@ assert_eq({
                           12: {
                                   'type': 'fix target',
                                   'count': 1,
-                                  'candidates': [1, 2],
+                                  'targets': [1, 2],
                               },
                           13: {
                                   'type': 'fix target',
                                   'count': 1,
-                                  'candidates': [1, 2],
+                                  'targets': [1, 2],
                               },
                       },
               'abort': 'allow',
@@ -183,12 +183,12 @@ assert_eq({
                           4: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1, 2],
+                                 'targets': [1, 2],
                              },
                           13: {
                                   'type': 'fix target',
                                   'count': 1,
-                                  'candidates': [1, 2],
+                                  'targets': [1, 2],
                               },
                       },
               'abort': 'allow',
@@ -329,12 +329,12 @@ assert_eq({
                           5: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1, 2],
+                                 'targets': [1, 2],
                              },
                           13: {
                                   'type': 'fix target',
                                   'count': 1,
-                                  'candidates': [1, 2],
+                                  'targets': [1, 2],
                               },
                       },
               'abort': 'allow',
@@ -418,12 +418,12 @@ assert_eq({
                           5: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1, 2],
+                                 'targets': [1, 2],
                              },
                           13: {
                                   'type': 'fix target',
                                   'count': 1,
-                                  'candidates': [1, 2],
+                                  'targets': [1, 2],
                               },
                       },
               'abort': 'allow',
@@ -486,12 +486,12 @@ assert_eq({
                           14: {
                                   'type': 'fix target',
                                   'count': 1,
-                                  'candidates': [2],
+                                  'targets': [2],
                               },
                           15: {
                                   'type': 'fix target',
                                   'count': 1,
-                                  'candidates': [2],
+                                  'targets': [2],
                               },
                       },
               'abort': 'allow',
@@ -592,7 +592,7 @@ assert_eq({
                           15: {
                                   'type': 'fix target',
                                   'count': 1,
-                                  'candidates': [2, 0],
+                                  'targets': [2, 0],
                               },
                       },
               'abort': 'allow',
@@ -755,17 +755,17 @@ assert_eq({
                           1: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1],
+                                 'targets': [1],
                              },
                           2: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1],
+                                 'targets': [1],
                              },
                           3: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1],
+                                 'targets': [1],
                              },
                           8: { 'type': 'forbid' },
                           9: { 'type': 'forbid' },
@@ -902,7 +902,7 @@ assert_eq({
                           1: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [1, 2, 4, 5],
+                                 'targets': [1, 2, 4, 5],
                              },
                           2: { 'type': 'forbid' },
                           3: { 'type': 'forbid' },
@@ -978,7 +978,7 @@ assert_eq({
                           4: {
                                  'type': 'fix target',
                                  'count': 1,
-                                 'candidates': [2, 3, 4, 5, 0],
+                                 'targets': [2, 3, 4, 5, 0],
                              },
                           5: { 'type': 'forbid' },
                           6: { 'type': 'forbid' },
@@ -1055,7 +1055,7 @@ assert_eq({
                   5: {
                       'type': 'fix target',
                       'count': 1,
-                      'candidates': [players[0].player_id],
+                      'targets': [players[0].player_id],
                   },
                   6: { 'type': 'forbid' },
                   7: { 'type': 'forbid' },
@@ -1095,7 +1095,7 @@ assert_eq({
                   4: {
                       'type': 'fix target',
                       'count': 1,
-                      'candidates': [players[0].player_id],
+                      'targets': [players[0].player_id],
                   },
                   6: { 'type': 'forbid' },
                   7: { 'type': 'forbid' },
