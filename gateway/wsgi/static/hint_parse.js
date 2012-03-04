@@ -222,8 +222,8 @@ function SGS_HintParser(game, center) {
             game.player(result['players'][0]).hintDiscardCards(methodInstances);
         },
         'region': function(result) {
-            if (result['candidates']) {
-                game.hintRegions(result['candidates']);
+            if (result['regions']) {
+                game.hintRegions(result['regions']);
             }
         },
     };
@@ -241,7 +241,6 @@ function SGS_HintParser(game, center) {
             return;
         }
         lastHint = result;
-        log(JSON.stringify(lastHint));
         setActivatedPlayers(result['players']);
         var action = result['action'];
         if (action in NAMING_MAPPING) {

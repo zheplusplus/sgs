@@ -120,7 +120,7 @@ last_event_id += 1
 assert_eq({
               'code': ret_code.OK,
               'action': 'region',
-              'candidates': ['cards'],
+              'regions': ['cards'],
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -628,7 +628,7 @@ assert_eq({
 assert_eq({
               'code': ret_code.OK,
               'action': 'region',
-              'candidates': ['cards', '+1 horse'],
+              'regions': ['cards', '+1 horse'],
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 
@@ -1077,7 +1077,7 @@ assert_eq({
               'code': ret_code.OK,
               'players': [players[1].player_id],
               'action': 'region',
-              'candidates': [ 'cards', '-1 horse', '+1 horse' ],
+              'regions': [ 'cards', '-1 horse', '+1 horse' ],
           }, gc.hint(players[1].token))
 
 result = gc.player_act({
@@ -1117,5 +1117,5 @@ assert_eq({
               'code': ret_code.OK,
               'players': [players[1].player_id],
               'action': 'region',
-              'candidates': [ 'cards', '-1 horse' ],
+              'regions': [ 'cards', '-1 horse' ],
           }, gc.hint(players[1].token))

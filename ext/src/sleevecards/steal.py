@@ -16,7 +16,7 @@ def steal(game_control, args):
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: None
-    hint = { 'candidates': target.all_regions() }
+    hint = { 'regions': target.all_regions() }
     game_control.push_frame(
       frames.AcceptMessage(game_control, [user], 'region', hint,
                            lambda a: on_message(game_control, user, target, a),

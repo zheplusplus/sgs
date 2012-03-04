@@ -125,7 +125,7 @@ last_event_id += 1
 assert_eq({
               'code': ret_code.OK,
               'action': 'region',
-              'candidates': ['cards'],
+              'regions': ['cards'],
               'players': [players[0].player_id],
           }, gc.hint(players[0].token))
 assert_eq({
@@ -752,7 +752,7 @@ assert_eq({
 assert_eq({
               'code': ret_code.OK,
               'action': 'region',
-              'candidates': ['cards', 'weapon'],
+              'regions': ['cards', 'weapon'],
               'players': [players[1].player_id],
           }, gc.hint(players[1].token))
 

@@ -96,14 +96,10 @@ class UseCards(CardsTargetFrame):
     def _hint_action(self, token):
         return 'use'
 
-class ShowCards(FrameBase):
+class ShowCards(OnePlayerFrame):
     def __init__(self, game_control, player, cards_check, on_result):
-        FrameBase.__init__(self, game_control, on_result)
-        self.player = player
+        OnePlayerFrame.__init__(self, game_control, player, on_result)
         self.cards_check = cards_check
-
-    def allowed_players(self):
-        return [self.player]
 
     def react(self, args):
         cards = args['discard']
@@ -118,14 +114,10 @@ class ShowCards(FrameBase):
     def _hint_action(self, token):
         return 'discard'
 
-class DiscardCards(FrameBase):
+class DiscardCards(OnePlayerFrame):
     def __init__(self, game_control, player, cards_check, on_result):
-        FrameBase.__init__(self, game_control, on_result)
-        self.player = player
+        OnePlayerFrame.__init__(self, game_control, player, on_result)
         self.cards_check = cards_check
-
-    def allowed_players(self):
-        return [self.player]
 
     def react(self, args):
         cards_ids = args['discard']
@@ -140,10 +132,9 @@ class DiscardCards(FrameBase):
     def _hint_action(self, token):
         return 'discard'
 
-class PlayCards(FrameBase):
+class PlayCards(OnePlayerFrame):
     def __init__(self, game_control, player, methods, on_result):
-        FrameBase.__init__(self, game_control, on_result)
-        self.player = player
+        OnePlayerFrame.__init__(self, game_control, player, on_result)
         self.methods = methods
 
     def allowed_players(self):
