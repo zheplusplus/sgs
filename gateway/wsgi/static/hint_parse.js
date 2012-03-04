@@ -13,7 +13,7 @@ function SGS_HintParser(game, center) {
         this.filterTarget = function(t, sc, st) {
             return false;
         };
-        this.validate = function(selected) {
+        this.validate = function(sc, st) {
             return true;
         };
     }
@@ -47,9 +47,9 @@ function SGS_HintParser(game, center) {
             }
             return true;
         };
-        me.validate = function(selected) {
+        me.validate = function(selCards, selTargets) {
             for (i in validators) {
-                if (!validators[i](selected)) return false;
+                if (!validators[i](selCards, selTargets)) return false;
             }
             return true;
         };
@@ -129,7 +129,9 @@ function SGS_HintParser(game, center) {
             }
         },
         'use': function(result) {
-            function CardMethod(id, cardDesc) {
+            function CardMethod(cardDesc) {
+                initMethodFiltersValidators(this, null);
+
                 var TARGET_FILTER_MAPPING = {
                     'forbid': function(method, info) {
                         method.addCardFilter(function(c, selC, t) {
@@ -158,47 +160,10 @@ function SGS_HintParser(game, center) {
                         });
                     },
                 };
-                this.id = function() {
-                    return id;
-                };
-
-                var targetFilters = new Array();
-                this.addTargetFilter = function(f) {
-                    targetFilters.push(f);
-                };
-                var cardFilters = new Array();
-                this.addCardFilter = function(f) {
-                    cardFilters.push(f);
-                };
-                var validators = new Array();
-                this.addValidator = function(f) {
-                    validators.push(f);
-                };
-
-                this.filterCard = function(card, selCards, selTargets) {
-                    for (i in cardFilters) {
-                        if (!cardFilters[i](card, selCards, selTargets))
-                            return false;
-                    }
-                    return true;
-                };
-                this.filterTarget = function(target, selCards, selTargets) {
-                    for (i in targetFilters) {
-                        if (!targetFilters[i](target, selCards, selTargets))
-                            return false;
-                    }
-                    return true;
-                };
-                this.validate = function(selCards, selTargets) {
-                    for (i in validators) {
-                        if (!validators[i](selCards, selTargets)) return false;
-                    }
-                    return true;
-                };
 
                 TARGET_FILTER_MAPPING[cardDesc['type']](this, cardDesc);
             }
-            function CardMethodsWrapper(cardMethodsInfo) {
+            function CardMethodsWrapper(methodsDetail) {
                 initMethod(this, 'card');
 
                 var method = null;
@@ -221,17 +186,13 @@ function SGS_HintParser(game, center) {
                     if (selCards.length != 1) {
                         return false;
                     }
-                    for (i in cardMethods) {
-                        if (!cardMethods[i].validate(selCards, selTargets))
-                            return false;
-                    }
-                    return true;
+                    return cardMethods[selCards[0].id].validate(selCards,
+                                                                selTargets);
                 };
 
                 var cardMethods = {};
-                for (i in cardMethodsInfo) {
-                    cardMethods[parseInt(i)] =
-                                new CardMethod(parseInt(i), cardMethodsInfo[i]);
+                for (i in methodsDetail) {
+                    cardMethods[parseInt(i)] = new CardMethod(methodsDetail[i]);
                 }
             }
             var methodInstances = new Array();
