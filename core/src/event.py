@@ -26,11 +26,36 @@ class EventList:
     def add(self, event):
         self.events.append(event)
 
+class GameInit(Event):
+    def __init__(self, players):
+        self.players = { p.token: p.player_id for p in players }
+
+    def _as_log(self):
+        return self.players
+
+    def _serialize(self, token):
+        s = { 'players': len(self.players) }
+        if token in self.players:
+            s['position'] = self.players[token]
+        return s
+
+class SelectCharacter(Event):
+    def __init__(self, player, character):
+        self.player = player
+        self.character = character
+
+    def _as_log(self):
+        return {
+                   'player': self.player.player_id,
+                   'character': self.character.name,
+                   'max vigor': self.player.max_vigor,
+               }
+
 def card_to_msg(c):
     return {
-               'name': c.name,
-               'rank': c.rank,
-               'suit': c.suit,
+               'name': c.base_name,
+               'rank': c.base_rank,
+               'suit': c.base_suit,
            }
 
 def card_to_msg_include_id(c):
@@ -76,16 +101,16 @@ class DrawCards(Event):
 class CardStub:
     def __init__(self, card_id, name, rank, suit, region):
         self.card_id = card_id
-        self.name = name
-        self.rank = rank
-        self.suit = suit
+        self.base_name = name
+        self.base_rank = rank
+        self.base_suit = suit
         self.region = region
 
 class DiscardCards(Event):
     def __init__(self, player, cards):
         self.player = player
-        self.cards = [CardStub(c.card_id, c.name, c.rank, c.suit, c.region)
-                                for c in cards]
+        self.cards = [CardStub(c.card_id, c.base_name, c.base_rank, c.base_suit,
+                               c.region) for c in cards]
 
     def _serialize(self, player_token):
         if player_token == self.player.token:
@@ -118,8 +143,8 @@ class PrivateCardsTransfer(CardsTransferBase):
     def __init__(self, source, target, cards):
         self.source = source
         self.target = target
-        self.cards = [CardStub(c.card_id, c.name, c.rank, c.suit, c.region)
-                                for c in cards]
+        self.cards = [CardStub(c.card_id, c.base_name, c.base_rank, c.base_suit,
+                               c.region) for c in cards]
 
     def _serialize(self, player_token):
         if player_token in (self.source.token, self.target.token):
@@ -134,8 +159,8 @@ class PublicCardsTransfer(CardsTransferBase):
     def __init__(self, source, target, cards):
         self.source = source
         self.target = target
-        self.cards = [CardStub(c.card_id, c.name, c.rank, c.suit, c.region)
-                                for c in cards]
+        self.cards = [CardStub(c.card_id, c.base_name, c.base_rank, c.base_suit,
+                               c.region) for c in cards]
 
     def _serialize(self, player_token):
         if player_token in (self.source.token, self.target.token):

@@ -1,9 +1,7 @@
 class Player:
-    def __init__(self, token, max_vigor, responses_dict):
+    def __init__(self, token, responses_dict):
         self.token = token
         self.alive = True
-        self.max_vigor = max_vigor
-        self.vigor = max_vigor
         self.responses = responses_dict
         self.equipment = dict()
         self.cw_positive_dist_mod = 0
@@ -33,4 +31,11 @@ class Player:
         return self.unequip(game_control, region)
 
     def unequip(self, game_control, region):
-        return game_control.unequip(self, self.equipment[region](), region)
+        card = game_control.unequip(self, self.equipment[region](), region)
+        del self.equipment[region]
+        return card
+
+    def all_regions(self):
+        regions = ['cards']
+        regions.extend(list(self.equipment))
+        return regions

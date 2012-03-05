@@ -4,7 +4,7 @@ from core.src.action_stack import ActionStack
 import core.src.card as card
 import core.src.ret_code as ret_code
 from ext.src.players_control import PlayersControl
-from ext.src.player import Player
+from ext.test.fake_player import Player
 
 from test_common import *
 import test_data
@@ -73,7 +73,7 @@ assert_eq({
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'action': 'give up',
+                           'action': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -127,7 +127,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'show': [2],
+                           'discard': [2],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -135,6 +135,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until show a card
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [6],
                        })
 assert_eq(ret_code.OK, result['code'])
@@ -187,7 +188,7 @@ assert_eq(ret_code.OK, result['code'])
 last_event_id = len(gc.get_events(players[0].token, 0)) # until duel
 result = gc.player_act({
                            'token': players[0].token,
-                           'method': 'give up',
+                           'method': 'abort',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -216,7 +217,7 @@ assert_eq(p0_events, p1_events)
 # dodge        | 12   | 11 | HEART
 result = gc.player_act({
                            'token': players[1].token,
-                           'action': 'steal',
+                           'action': 'card',
                            'targets': [players[0].player_id],
                            'use': [4],
                        })
@@ -224,7 +225,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[1].token,
-                           'steal': 'armor',
+                           'region': 'armor',
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -287,7 +288,7 @@ assert_eq(ret_code.OK, result['code'])
 
 result = gc.player_act({
                            'token': players[0].token,
-                           'show': [2],
+                           'discard': [2],
                        })
 assert_eq(ret_code.OK, result['code'])
 
@@ -295,6 +296,7 @@ last_event_id = len(gc.get_events(players[0].token, 0)) # until show a card
 
 result = gc.player_act({
                            'token': players[1].token,
+                           'method': 'discard',
                            'discard': [11],
                        })
 assert_eq(ret_code.OK, result['code'])

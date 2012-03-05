@@ -11,21 +11,43 @@ class _AskHeavenlyScent(DiscardCards):
               lambda gc, a: _damage_transfer(gc, a, damage))
 
     def react(self, args):
-        cards = args['discard']
-        if len(cards) > 0:
-            targets_ids = args['targets']
-            checking.only_one_target(targets_ids)
-            checking.forbid_target_self(self.player.player_id, targets_ids[0])
+        if args['action'] == 'abort':
+            return self.done(args)
+
+        args['discard'] = args['use']
+        if len(args['discard']) == 0:
+            raise ValueError('wrong cards')
+        targets_ids = args['targets']
+        checking.only_one_target(targets_ids)
+        checking.forbid_target_self(self.player.player_id, targets_ids[0])
         return DiscardCards.react(self, args)
 
+    def _hint_detail(self):
+        cards = self.game_control.player_cards_at(self.player, 'cards')
+        cards = filter(lambda c: c.suit() == card.HEART, cards)
+        targets = self.game_control.players_from_current()
+        targets.remove(self.player)
+        return {
+            'card': {
+                c.card_id: {
+                  'type': 'fix target',
+                  'count': 1,
+                  'targets': map(lambda p: p.player_id, targets),
+                } for c in cards
+            },
+            'abort': 'allow',
+        }
+
+    def _hint_action(self, token):
+        return 'use'
+
 def _check_one_heart_card(game_control, cards_ids):
-    if len(cards_ids) > 0:
-        cards = game_control.cards_by_ids(cards_ids)
-        checking.only_one_card_of_suit(cards, card.HEART)
-        checking.cards_region(cards, 'cards')
+    cards = game_control.cards_by_ids(cards_ids)
+    checking.only_one_card_of_suit(cards, card.HEART)
+    checking.cards_region(cards, 'cards')
 
 def _damage_transfer(game_control, args, damage):
-    if len(args['discard']) > 0:
+    if args['action'] != 'abort':
         target = game_control.player_by_id(args['targets'][0])
         def draw_cards(d, game_control):
             game_control.deal_cards(target, target.max_vigor - target.vigor)

@@ -8,6 +8,7 @@ import core.src.ret_code as ret_code
 import core.src.action_frames as frames
 
 player = fake_player.Player(10)
+player.player_id = 0
 cards = [
             card.Card(0, 'slash', 1, card.SPADE),
             card.Card(1, 'slash', 2, card.SPADE),
@@ -26,7 +27,7 @@ def make_gc():
         def discard(self, cards):
             pass
     class FakeActionStack:
-        def pop(self):
+        def pop(self, result):
             pass
     return GameControl(EventList(), FakeCardPool(), None, FakeActionStack())
 
@@ -42,6 +43,11 @@ def fake_action(gc, a):
 
 use_cards_frm = frames.UseCards(make_gc(), player, { 'test': fake_action },
                                 on_result_f)
+assert_eq({
+              'code': ret_code.OK,
+              'players': [0],
+              'action': 'use',
+          }, use_cards_frm.hint(''))
 assert_eq([player], use_cards_frm.allowed_players())
 response = use_cards_frm.react({
                                    'token': 10,
@@ -93,25 +99,20 @@ show_card_frm = frames.ShowCards(make_gc(), player, show_card_check,
 assert_eq([player], show_card_frm.allowed_players())
 response = show_card_frm.react({
                                    'token': 10,
-                                   'show': [0],
+                                   'discard': [0],
                                })
 assert_eq(ret_code.OK, response['code'])
-assert_eq({
-              'token': 10,
-              'show': [0],
-          }, result)
-result = None
 try:
     response = show_card_frm.react({ 'token': 10 })
     assert False
 except KeyError, e:
-    assert_eq('show', e.message)
+    assert_eq('discard', e.message)
 assert_eq(None, result)
 
 try:
     response = show_card_frm.react({
                                        'token': 10,
-                                       'show': [0, 2],
+                                       'discard': [0, 2],
                                    })
     assert False
 except ValueError, e:
@@ -121,7 +122,7 @@ assert_eq(None, result)
 try:
     response = show_card_frm.react({
                                        'token': 10,
-                                       'show': [],
+                                       'discard': [],
                                    })
     assert False
 except ValueError, e:
@@ -131,7 +132,7 @@ assert_eq(None, result)
 try:
     response = show_card_frm.react({
                                        'token': 10,
-                                       'show': [1],
+                                       'discard': [1],
                                    })
     assert False
 except ValueError:
@@ -149,21 +150,11 @@ response = discard_card_frm.react({
                                       'discard': [0],
                                   })
 assert_eq(ret_code.OK, response['code'])
-assert_eq({
-              'token': 10,
-              'discard': [0],
-          }, result)
-result = None
 response = discard_card_frm.react({
                                       'token': 10,
                                       'discard': [],
                                   })
 assert_eq(ret_code.OK, response['code'])
-assert_eq({
-              'token': 10,
-              'discard': [],
-          }, result)
-result = None
 try:
     response = discard_card_frm.react({ 'token': 10 })
     assert False
@@ -194,11 +185,21 @@ assert_eq(None, result)
 def on_message(args):
     if 'bing' in args:
         raise ValueError('bang')
-acc_msg_frm = frames.AcceptMessage(make_gc(), [player], on_message, on_result_f)
+acc_msg_frm = frames.AcceptMessage(make_gc(), [player], 'DenyMsg', { 'a': 'b' },
+                                   on_message, on_result_f)
+assert_eq({
+              'code': ret_code.OK,
+              'players': [0],
+              'action': 'DenyMsg',
+          }, acc_msg_frm.hint(''))
+assert_eq({
+              'code': ret_code.OK,
+              'players': [0],
+              'a': 'b',
+              'action': 'DenyMsg',
+          }, acc_msg_frm.hint(player.token))
 response = acc_msg_frm.react({ 'bang': 'bing' })
-assert_eq({ 'bang': 'bing' }, result)
 assert_eq(ret_code.OK, response['code'])
-result = None
 try:
     response = acc_msg_frm.react({ 'bing': 'bang' })
     assert False

@@ -8,38 +8,36 @@ class _RescueFrame(FrameBase):
         self.players = players
         self.player_index = 0
 
-    def allowed_players(self):
-        return [self._current()]
+    def activated(self):
+        self._push_player_frame()
+
+    def resume(self, result):
+        if result['method'] != 'abort':
+            self.game_control.vigor_regain(self.who, 1)
+            self._check_rescued()
+        else:
+            self._next()
 
     def _next(self):
         self.player_index += 1
         if self.player_index == len(self.players):
             self.game_control.kill(self.who)
             self.done(None)
+        else:
+            self._push_player_frame()
 
     def _current(self):
         return self.players[self.player_index]
 
     def _push_player_frame(self):
         self.game_control.push_frame(self._current().response_frame(
-                                  'peach', self.game_control, self._on_result))
+                                'peach', self.game_control, lambda gc, r: None))
 
     def _check_rescued(self):
         if 0 < self.who.vigor:
             self.done(None)
         else:
             self._push_player_frame()
-
-    def _on_result(self, game_control, args):
-        if args['method'] != 'give up':
-            game_control.vigor_regain(self.who, 1)
-            self._check_rescued()
-        else:
-            self._next()
-
-    def react(self, args):
-        self._push_player_frame()
-        return self.game_control.player_act(args)
 
 class PlayersControl(CorePlayersControl):
     def __init__(self):

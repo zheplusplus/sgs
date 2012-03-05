@@ -2,6 +2,7 @@ import core.src.ret_code as ret_code
 import core.src.action_frames as frames
 import ext.src.damage as damage
 import ext.src.common_checking as checking
+from ext.src.hint_common import fix_target_action, target_filter
 
 def fire_attack(game_control, args):
     targets_ids = args['targets']
@@ -14,30 +15,81 @@ def fire_attack(game_control, args):
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     on_result = lambda gc, a: discard_same_suit(gc, a, user, target, cards)
-    def show_check(cards_ids):
-        if len(cards_ids) != 1:
-            raise ValueError('need exactly one card')
-        if game_control.cards_by_ids(cards_ids)[0].region != 'cards':
-            raise ValueError('bad region')
-    game_control.push_frame(frames.ShowCards(game_control, target, show_check,
-                                             on_result))
+    game_control.push_frame(_TargetShowCards(game_control, target, on_result))
     return { 'code': ret_code.OK }
 
-def discard_same_suit(game_control, args, player, target, fire_attack_cards):
-    show_suit = game_control.cards_by_ids(args['show'])[0].suit
-    def discard_check(cards_ids):
-        cards = game_control.cards_by_ids(cards_ids)
-        if len(cards) == 0:
-            return
-        if len(cards) == 1 and cards[0].suit == show_suit:
-            return
-        raise ValueError('need exactly one card of same suit')
-    game_control.push_frame(frames.DiscardCards(
-                game_control, player, discard_check,
-                lambda gc, a: done(gc, a, player, target, fire_attack_cards)))
+def fire_attack_target(game_control, user, card):
+    def check_has_card(target):
+        count_cards = game_control.player_cards_count_at(target, 'cards')
+        if user == target:
+            return 1 < count_cards
+        return 0 < count_cards
+    all_players = game_control.players_from_current()
+    all_players = filter(check_has_card, all_players)
+    return fix_target_action(target_filter('fire attack', user, all_players,
+                                           card))
+
+def discard_same_suit(game_control, args, player, target, cards):
+    show_suit = game_control.cards_by_ids(args['discard'])[0].suit()
+    game_control.push_frame(_SourceDiscardCards(
+                              game_control, player, show_suit,
+                              lambda gc, a: done(gc, a, player, target, cards)))
 
 def done(game_control, args, source, target, fire_attack_cards):
-    cards_ids = args['discard']
-    if len(cards_ids) > 0:
+    if args['method'] != 'abort':
         damage.Damage(source, target, 'fire attack', fire_attack_cards, 'fire',
                       1).operate(game_control)
+
+class _TargetShowCards(frames.ShowCards):
+    def __init__(self, game_control, target, on_result):
+        frames.ShowCards.__init__(self, game_control, target, self._show_check,
+                                  on_result)
+
+    def _show_check(self, cids):
+        if len(cids) != 1:
+            raise ValueError('need exactly one card')
+        checking.cards_region(self.game_control.cards_by_ids(cids), 'cards')
+
+    def _hint_detail(self):
+        cards = self.game_control.player_cards_at(self.player, 'cards')
+        return {
+            'methods': {
+                'show': {
+                    'require': ['count', 'candidates'],
+                    'count': 1,
+                    'candidates': map(lambda c: c.card_id, cards),
+                }
+            },
+            'abort': 'disallow',
+        }
+
+class _SourceDiscardCards(frames.DiscardCards):
+    def __init__(self, game_control, player, suit, on_result):
+        frames.DiscardCards.__init__(self, game_control, player, self._check,
+                                     on_result)
+        self.suit = suit
+
+    def _hint_detail(self):
+        cards = self.game_control.player_cards_at(self.player, 'cards')
+        cards = filter(lambda c: c.suit() == self.suit, cards)
+        return {
+            'methods': {
+                'discard': {
+                    'require': ['count', 'candidates'],
+                    'count': 1,
+                    'candidates': map(lambda c: c.card_id, cards),
+                }
+            },
+            'abort': 'allow',
+        }
+
+    def react(self, args):
+        if args['method'] == 'abort':
+            return self.done(args)
+        return frames.DiscardCards.react(self, args)
+
+    def _check(self, cards_ids):
+        if len(cards_ids) == 0:
+            return
+        cards = self.game_control.cards_by_ids(cards_ids)
+        checking.only_one_card_of_suit(cards, self.suit)

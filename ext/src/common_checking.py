@@ -15,7 +15,7 @@ def only_one_target(targets):
         raise ValueError('wrong targets count')
 
 def only_one_card_named_as(cards, expected_name):
-    if len(cards) != 1 or expected_name != cards[0].name:
+    if len(cards) != 1 or expected_name != cards[0].name():
         raise ValueError('wrong cards')
 
 def only_one_card_of_color(cards, expected_color):
@@ -23,7 +23,7 @@ def only_one_card_of_color(cards, expected_color):
         raise ValueError('wrong cards')
 
 def only_one_card_of_suit(cards, expected_suit):
-    if len(cards) != 1 or expected_suit != cards[0].suit:
+    if len(cards) != 1 or expected_suit != cards[0].suit():
         raise ValueError('wrong cards')
 
 def cards_region(cards, expected_region):

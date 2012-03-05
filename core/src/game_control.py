@@ -9,9 +9,14 @@ class GameControl:
         self.card_pool = card_pool
         self.action_stack = action_stack
 
+    def game_init(self, players):
+        self._add_event(event.GameInit(players))
+
+    def select_character(self, player, character):
+        self._add_event(event.SelectCharacter(player, character))
+
     def start(self):
-        for player in self.players_control.players:
-            player.start(self)
+        self.players_control.start(self)
         self.players_control.current_player().round(self)
 
     def next_round(self):
@@ -26,8 +31,8 @@ class GameControl:
 
     def player_act(self, args):
         try:
-            if not args['token'] in map(
-                    lambda p: p.token, self.action_stack.allowed_players()):
+            if not args['token'] in map(lambda p: p.token,
+                                        self.action_stack.allowed_players()):
                 return {
                            'code': ret_code.BAD_REQUEST,
                            'reason': ret_code.BR_PLAYER_FORBID,
@@ -44,11 +49,14 @@ class GameControl:
                        'reason': ret_code.BR_WRONG_ARG % e.message,
                    }
 
+    def hint(self, token):
+        return self.action_stack.hint(token)
+
     def push_frame(self, frame):
         self.action_stack.push(frame)
 
-    def pop_frame(self):
-        self.action_stack.pop()
+    def pop_frame(self, result):
+        self.action_stack.pop(result)
 
     def deal_cards(self, player, cnt):
         cards = self.card_pool.deal(player, cnt)
@@ -71,8 +79,8 @@ class GameControl:
         self.card_pool.discard(cards)
 
     def show_cards(self, player, cards_ids):
-        self._add_event(
-                event.ShowCards(player, self.card_pool.cards_by_ids(cards_ids)))
+        self._add_event(event.ShowCards(player,
+                                        self.card_pool.cards_by_ids(cards_ids)))
 
     def play_cards(self, player, cards):
         self._add_event(event.PlayCards(player, cards))
@@ -135,11 +143,20 @@ class GameControl:
     def distance_between(self, source, target):
         return self.players_control.distance_between(source, target)
 
+    def players_from_current(self):
+        return self.players_control.players_from_current()
+
+    def succeeding_players(self):
+        return self.players_control.succeeding_players()
+
     def player_has_cards(self, player):
         return self.card_pool.player_has_cards(player)
 
     def player_has_cards_at(self, player, region):
         return self.card_pool.player_has_cards_at(player, region)
+
+    def player_cards_at(self, player, region):
+        return self.card_pool.player_cards_at(player, region)
 
     def player_cards_count_at(self, player, region):
         return self.card_pool.player_cards_count_at(player, region)

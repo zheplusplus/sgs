@@ -1,0 +1,175 @@
+<html>
+<head><title>SGS</title></head>
+<meta http-equiv='Content-type' content='text/html; charset=UTF-8'>
+<script src='/static/event_parse.js'></script>
+<script src='/static/hint_parse.js'></script>
+<script src='/static/strings.js'></script>
+<script src='/static/canvaslite.js'></script>
+<script src='/static/player.js'></script>
+<script src='/static/views.js'></script>
+<script>
+var BEAT_INTERVAL = 2000;
+var status_heartbeat = null;
+var hint_heartbeat = null;
+var events_heartbeat = null;
+
+function post_data(data, url, onResult) {
+    data['token'] = token;
+    data['controller'] = url;
+    var req = null;
+    try {
+        if (window.XMLHttpRequest) {
+            req = new XMLHttpRequest();
+        } else {
+            req = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+    } catch (e) {
+        alert('Browser not support AJAX!');
+        return;
+    }
+    req.open('POST', '/action', true);
+    req.onreadystatechange = function() {
+        if (req.readyState == 4) {
+            onResult(eval('(' + req.responseText + ')'));
+        }
+    };
+    req.send(JSON.stringify(data));
+}
+
+function post_act(data) {
+    return post_data(data, 'act', function(result) {
+        if (result['code'] != 200) {
+            crit('SEND:' + JSON.stringify(data));
+            crit('REASON:' + result['reason']);
+        } else {
+            clearTimeout(events_heartbeat);
+            clearTimeout(hint_heartbeat);
+            getEvents();
+            getHint();
+        }
+    });
+}
+
+var eventlist = new SGS_EventParser();
+var game = null;
+var token = localStorage.getItem('token');
+
+function joinGame() {
+    post_data({}, 'ctrl/add', function(result) {
+        if (result['code'] == 200) {
+            token = result['token'];
+            localStorage.setItem('token', token);
+            enter();
+        } else {
+            msgPane.innerHTML = result['reason'];
+        }
+    });
+}
+
+function updateRoomPlayers(count, is_host) {
+    document.getElementById('players_count').innerHTML = count;
+    document.getElementById('start_button').disabled = (0 == is_host);
+}
+
+function enter() {
+    joinPane.style.visibility = 'hidden';
+    startPane.style.visibility = 'visible';
+    getStatus();
+}
+
+function exitGame() {
+    joinPane.style.visibility = 'visible';
+    startPane.style.visibility = 'hidden';
+    post_data({}, 'ctrl/exit', function(r) {});
+    token = null;
+    clearTimeout(status_heartbeat);
+    clearTimeout(hint_heartbeat);
+    clearTimeout(events_heartbeat);
+}
+
+function startGame() {
+    post_data({}, 'ctrl/start', function(result) {
+        if (result['code'] == 200) {
+            started();
+        } else {
+            msgPane.innerHTML = result['reason'];
+        }
+    });
+}
+
+function getStatus() {
+    post_data({}, 'info/status', function(result) {
+        if (result['started'] == 0) {
+            updateRoomPlayers(result['players'], result['host']);
+            status_heartbeat = setTimeout(enter, BEAT_INTERVAL);
+        } else {
+            started();
+        }
+    });
+}
+
+function getEvents() {
+    post_data({ 'previous event id': eventlist.prevId() }, 'info/events',
+              function(result) {
+        eventlist.append(result, game);
+        events_heartbeat = setTimeout(getEvents, BEAT_INTERVAL);
+    });
+}
+
+function getHint() {
+    post_data({}, 'info/hint', function(result) {
+        game.hint(result);
+        hint_heartbeat = setTimeout(getHint, BEAT_INTERVAL);
+    });
+}
+
+function started() {
+    startPane.style.visibility = 'hidden';
+    gamePane.style.visibility = 'visible';
+    clearTimeout(status_heartbeat);
+    getEvents();
+    getHint();
+}
+
+var joinPane = null;
+var startPane = null;
+var gamePane = null;
+var msgPane = null;
+
+function init() {
+    paras = document.getElementsByTagName('p');
+    joinPane = paras[0];
+    startPane = paras[1];
+    gamePane = paras[2];
+    msgPane = paras[3];
+    startPane.style.visibility = 'hidden';
+    gamePane.style.visibility = 'hidden';
+
+    game = new Game(gamePane);
+
+    post_data({}, 'info/checktoken', function(result) {
+        if (result['in'] == 1) {
+            enter();
+        }
+    });
+}
+
+function log(msg) {
+    document.getElementById('log').innerHTML += (msg + '<br/>');
+}
+
+function crit(msg) {
+    document.getElementById('log').innerHTML +=
+        ('<span style="color: red;">' + msg + '</span><br/>');
+}
+</script>
+<body onload='init()'>
+<p><button onclick='joinGame()'>Join</button></p>
+<p>
+<button id='start_button' onclick='startGame()'>Start</button>
+<button onclick='exitGame()'>Exit</button>
+<span id='players_count'></span> player(s) in the room now.
+</p>
+<p></p>
+<p></p>
+<p id='log' style='position: absolute; top: 540px;'></p>
