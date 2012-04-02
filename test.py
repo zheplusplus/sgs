@@ -25,3 +25,6 @@ import ext.test.test_brink_of_death_and_rescue
 import ext.test.test_suicide
 import ext.test.test_bequeathed_strategy
 import ext.test.test_youth_beauty
+print 'Kernal test finished.'
+import gateway.wsgi.test
+print 'Test finished.'
