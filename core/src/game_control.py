@@ -76,6 +76,8 @@ class GameControl:
     def use_cards_for_players(self, user, targets_ids, action, cards):
         self._add_event(event.UseCardsForPlayers(user, targets_ids, action,
                                                  cards))
+        self.action_stack.event(action, user=user, targets_ids=targets_ids,
+                                cards=cards)
         self.card_pool.discard(self, cards)
 
     def show_cards(self, player, cards_ids):
@@ -125,6 +127,9 @@ class GameControl:
         if 0 < point:
             self._add_event(event.VigorRegain(player, point))
             player.vigor += point
+
+    def invoke(self, player, action_name):
+        self._add_event(event.Invocation(player, action_name))
 
     def kill(self, player):
         self._add_event(event.PlayerKilled(player))

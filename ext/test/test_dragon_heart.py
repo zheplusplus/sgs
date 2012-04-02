@@ -36,19 +36,19 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
-        1: { 'type': 'forbid' },
+        1: { 'require': ['forbid'] },
         2: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
-        3: { 'type': 'forbid' },
-        8: { 'type': 'forbid' },
-        9: { 'type': 'forbid' },
+        3: { 'require': ['forbid'] },
+        8: { 'require': ['forbid'] },
+        9: { 'require': ['forbid'] },
     },
     'methods': {
         'dragon heart': {
@@ -111,11 +111,11 @@ assert_eq({
     'code': ret_code.OK,
     'action': 'use',
     'card': {
-        0: { 'type': 'forbid' },
-        1: { 'type': 'forbid' },
-        2: { 'type': 'forbid' },
-        8: { 'type': 'forbid' },
-        9: { 'type': 'forbid' },
+        0: { 'require': ['forbid'] },
+        1: { 'require': ['forbid'] },
+        2: { 'require': ['forbid'] },
+        8: { 'require': ['forbid'] },
+        9: { 'require': ['forbid'] },
     },
     'abort': 'allow',
     'players': [players[0].player_id],

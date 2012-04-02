@@ -251,3 +251,16 @@ assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': ret_code.BR_PLAYER_FORBID,
           }, result)
+
+# players count
+try:
+    gc = game_init.statuses_mode(range(1))
+    assert False
+except ValueError, e:
+    assert_eq('too few players, need at least 2', e.message)
+
+try:
+    gc = game_init.statuses_mode(range(9))
+    assert False
+except ValueError, e:
+    assert_eq('too much players, need at most 8', e.message)

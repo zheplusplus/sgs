@@ -14,6 +14,10 @@ def forbid_target_no_card_on_hand(target, game_control):
     if not game_control.player_has_cards_at(target, 'onhand'):
         raise ValueError('forbid target no card')
 
+def target_damaged(target):
+    if target.vigor == target.max_vigor:
+        raise ValueError('target not damaged')
+
 def only_one_target(targets):
     if len(targets) != 1:
         raise ValueError('wrong targets count')

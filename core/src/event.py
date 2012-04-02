@@ -264,6 +264,17 @@ class VigorRegain(Event):
             'point': self.point,
         }
 
+class Invocation(Event):
+    def __init__(self, player, action_name):
+        self.player = player
+        self.action_name = action_name
+
+    def _as_log(self):
+        return {
+            'player': self.player.player_id,
+            'invoke': self.action_name,
+        }
+
 class Equip(Event):
     def __init__(self, player, card, region):
         self.player = player

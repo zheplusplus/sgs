@@ -3,7 +3,12 @@ import core.src.ret_code as ret_code
 import ext.src.common_checking as checking
 from ext.src.hint_common import fix_target_action, target_filter
 
-def sabotage(game_control, args):
+def sabotage_action(gc, args):
+    cards = gc.cards_by_ids(args['use'])
+    checking.only_one_card_named_as(cards, 'sabotage')
+    return sabotage_check(gc, args)
+
+def sabotage_check(game_control, args):
     targets_ids = args['targets']
     user = game_control.player_by_token(args['token'])
     cards = game_control.cards_by_ids(args['use'])
@@ -20,10 +25,12 @@ def sabotage(game_control, args):
                                  lambda a: on_message(game_control, target, a)))
     return { 'code': ret_code.OK }
 
-def sabotage_target(gc, user, card):
-    all_players = gc.succeeding_players()
-    targets = filter(lambda p: gc.player_has_cards(p), all_players)
-    return fix_target_action(target_filter('sabotage', user, targets, [card]))
+def sabotage_targets(gc, user):
+    targets = filter(lambda p: gc.player_has_cards(p), gc.succeeding_players())
+    return target_filter('sabotage', user, targets, [])
+
+def sabotage_targets_h(gc, user, cards):
+    return fix_target_action(sabotage_targets(gc, user))
 
 def on_message(game_control, target, args):
     region = args['region']

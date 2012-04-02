@@ -10,6 +10,8 @@ def is_equipment_region(region):
     return region in ('weapon', 'armor', '-1 horse', '+1 horse')
 
 def equip(player, game_control, card):
+    if not card.name() in equipment_dict:
+        raise ValueError('wrong cards')
     equipment_dict[card.name()](player, game_control, card)
 
 def interface(game_control, args):
@@ -29,3 +31,5 @@ import horses
 horses.imported(equipment_dict)
 import rattan_armor
 rattan_armor.imported(equipment_dict)
+import vermilion_feather_fan
+vermilion_feather_fan.imported(equipment_dict)

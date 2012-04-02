@@ -35,32 +35,32 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         1: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0, 1],
         },
         2: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         3: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
@@ -278,22 +278,22 @@ assert_eq({
     'action': 'use',
     'card': {
         1: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0, 1],
         },
         3: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
@@ -541,17 +541,17 @@ assert_eq({
     'action': 'use',
     'card': {
         1: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0, 1],
         },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
@@ -663,3 +663,35 @@ if True: # just indent for a nice appearance
 p1_events = gc.get_events(players[1].token, last_event_id)
 assert_eq(p0_events, p1_events)
 last_event_id += 1
+
+# fake duel
+
+pc = PlayersControl()
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+            test_data.CardInfo('duel', 1, card.SPADE),
+            test_data.CardInfo('dodge', 2, card.HEART),
+            test_data.CardInfo('slash', 3, card.DIAMOND),
+            test_data.CardInfo('duel', 4, card.SPADE),
+
+            test_data.CardInfo('slash', 5, card.CLUB),
+            test_data.CardInfo('arson attack', 6, card.HEART),
+            test_data.CardInfo('dodge', 7, card.DIAMOND),
+            test_data.CardInfo('slash', 8, card.DIAMOND),
+
+            test_data.CardInfo('duel', 9, card.SPADE),
+            test_data.CardInfo('slash', 10, card.SPADE),
+     ])), pc, ActionStack())
+players = [Player(91, 4), Player(1729, 4)]
+map(lambda p: pc.add_player(p), players)
+gc.start()
+
+result = gc.player_act({
+    'token': players[0].token,
+    'action': 'duel',
+    'targets': [players[0].player_id],
+    'use': [1],
+})
+assert_eq({
+    'code': ret_code.BAD_REQUEST,
+    'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
+}, result)

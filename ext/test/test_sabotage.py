@@ -35,32 +35,32 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         1: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         2: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         3: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
@@ -168,27 +168,27 @@ assert_eq({
     'action': 'use',
     'card': {
         1: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         2: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         3: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
@@ -282,22 +282,22 @@ assert_eq({
     'action': 'use',
     'card': {
         2: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         3: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
@@ -577,8 +577,8 @@ assert_eq({
               'code': ret_code.OK,
               'action': 'use',
               'card': {
-                          8: { 'type': 'forbid' },
-                          9: { 'type': 'forbid' },
+                          8: { 'require': ['forbid'] },
+                          9: { 'require': ['forbid'] },
                       },
               'abort': 'allow',
               'players': [players[0].player_id],
@@ -814,3 +814,35 @@ assert_eq({
               'code': ret_code.BAD_REQUEST,
               'reason': ret_code.BR_WRONG_ARG % 'forbid target no card',
           }, result)
+
+# fake sabotage
+
+pc = PlayersControl()
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+            test_data.CardInfo('sabotage', 1, card.SPADE),
+            test_data.CardInfo('sabotage', 2, card.SPADE),
+            test_data.CardInfo('sabotage', 3, card.SPADE),
+            test_data.CardInfo('sabotage', 4, card.SPADE),
+
+            test_data.CardInfo('slash', 5, card.SPADE),
+            test_data.CardInfo('dodge', 6, card.HEART),
+            test_data.CardInfo('slash', 7, card.CLUB),
+            test_data.CardInfo('dodge', 8, card.DIAMOND),
+
+            test_data.CardInfo('dodge', 9, card.HEART),
+            test_data.CardInfo('sabotage', 10, card.CLUB),
+     ])), pc, ActionStack())
+players = [Player(91, 4), Player(1729, 4)]
+map(lambda p: pc.add_player(p), players)
+gc.start()
+
+result = gc.player_act({
+    'token': players[0].token,
+    'action': 'sabotage',
+    'targets': [players[1].player_id],
+    'use': [8],
+})
+assert_eq({
+    'code': ret_code.BAD_REQUEST,
+    'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
+}, result)

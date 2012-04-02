@@ -25,7 +25,7 @@ class Player(CorePlayer):
         self.card_name_equip = lambda card: card.base_name
         self.card_name_char = lambda card: self.card_name_equip(card)
         self.targeted_equip = lambda source, me, action, cards: True
-        self.targeted_char = lambda s, t, a, c: self.targeted_equip(s, t, a, c)
+        self.targeted_char = lambda source, me, action, cards: True
 
         self.using_hint_dict = dict()
         self.using_interfaces = dict()
@@ -72,9 +72,8 @@ class Player(CorePlayer):
         else:
             game_control.next_round()
 
-    def on_using_hint_built(self, hint, game_control):
-        for h in self.using_hint_char + self.using_hint_equip:
-            h(hint, game_control, self)
+    def using_hint(self):
+        return self.using_hint_char + self.using_hint_equip
 
     def range(self, action):
         return self.range_char(action)

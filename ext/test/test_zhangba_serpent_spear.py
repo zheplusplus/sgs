@@ -35,23 +35,23 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
-        1: { 'type': 'implicit target' },
+        1: { 'require': ['implicit target'] },
         2: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
-        3: { 'type': 'forbid' },
+        3: { 'require': ['forbid'] },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
-        9: { 'type': 'implicit target' },
+        9: { 'require': ['implicit target'] },
     },
     'abort': 'allow',
     'players': [players[0].player_id],
@@ -601,15 +601,15 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1, 3],
         },
-        1: { 'type': 'implicit target' },
-        2: { 'type': 'forbid' },
-        3: { 'type': 'forbid' },
-        16: { 'type': 'forbid' },
-        17: { 'type': 'forbid' },
+        1: { 'require': ['implicit target'] },
+        2: { 'require': ['forbid'] },
+        3: { 'require': ['forbid'] },
+        16: { 'require': ['forbid'] },
+        17: { 'require': ['forbid'] },
     },
     'abort': 'allow',
     'players': [players[0].player_id],
@@ -638,15 +638,14 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1, 2, 3],
         },
-        1: { 'type': 'forbid' },
-        2: { 'type': 'forbid' },
-        3: { 'type': 'forbid' },
-        16: { 'type': 'forbid' },
-        17: { 'type': 'forbid' },
+        2: { 'require': ['forbid'] },
+        3: { 'require': ['forbid'] },
+        16: { 'require': ['forbid'] },
+        17: { 'require': ['forbid'] },
     },
     'methods': {
         'zhangba serpent spear': {
@@ -680,11 +679,10 @@ assert_eq({
     'code': ret_code.OK,
     'action': 'use',
     'card': {
-        1: { 'type': 'forbid' },
-        2: { 'type': 'forbid' },
-        3: { 'type': 'forbid' },
-        16: { 'type': 'forbid' },
-        17: { 'type': 'forbid' },
+        2: { 'require': ['forbid'] },
+        3: { 'require': ['forbid'] },
+        16: { 'require': ['forbid'] },
+        17: { 'require': ['forbid'] },
     },
     'abort': 'allow',
     'players': [players[0].player_id],
@@ -734,15 +732,14 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
-        1: { 'type': 'forbid' },
-        2: { 'type': 'forbid' },
-        3: { 'type': 'forbid' },
-        8: { 'type': 'forbid' },
-        9: { 'type': 'forbid' },
+        2: { 'require': ['forbid'] },
+        3: { 'require': ['forbid'] },
+        8: { 'require': ['forbid'] },
+        9: { 'require': ['forbid'] },
     },
     'methods': {
         'zhangba serpent spear': {
@@ -775,13 +772,13 @@ result = gc.player_act({
 assert_eq(ret_code.OK, result['code'])
 
 p0_events = gc.get_events(players[0].token, last_event_id)
-assert_eq(2, len(p0_events))
+assert_eq(3, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['user'])
     assert_eq(1, len(event['targets']))
     assert_eq(players[1].player_id, event['targets'][0])
-    assert_eq('zhangba serpent spear', event['action'])
+    assert_eq('slash', event['action'])
     assert_eq(2, len(event['use']))
     c = event['use'][0]
     assert_eq('dodge', c['name'])
@@ -794,19 +791,23 @@ if True: # just indent for a nice appearance
     assert_eq(card.HEART, c['suit'])
     assert_eq(3, c['id'])
     event = p0_events[1]
+    assert_eq('Invocation', event['type'])
+    assert_eq(players[0].player_id, event['player'])
+    assert_eq('zhangba serpent spear', event['invoke'])
+    event = p0_events[2]
     assert_eq(players[1].player_id, event['player'])
     assert_eq(1, len(event['play']))
     assert_eq('dodge', event['play'][0]['name'])
     assert_eq(5, event['play'][0]['rank'])
     assert_eq(card.HEART, event['play'][0]['suit'])
 p1_events = gc.get_events(players[1].token, last_event_id)
-assert_eq(2, len(p1_events))
+assert_eq(3, len(p1_events))
 if True: # just indent for a nice appearance
     event = p1_events[0]
     assert_eq(players[0].player_id, event['user'])
     assert_eq(1, len(event['targets']))
     assert_eq(players[1].player_id, event['targets'][0])
-    assert_eq('zhangba serpent spear', event['action'])
+    assert_eq('slash', event['action'])
     assert_eq(2, len(event['use']))
     c = event['use'][0]
     assert_eq('dodge', c['name'])
@@ -816,7 +817,8 @@ if True: # just indent for a nice appearance
     assert_eq('dodge', c['name'])
     assert_eq(4, c['rank'])
     assert_eq(card.HEART, c['suit'])
-    event = p1_events[1]
+    assert_eq(p0_events[1], p1_events[1])
+    event = p1_events[2]
     assert_eq(players[1].player_id, event['player'])
     assert_eq(1, len(event['play']))
     assert_eq('dodge', event['play'][0]['name'])
@@ -845,3 +847,86 @@ assert_eq({
     'code': ret_code.BAD_REQUEST,
     'reason': ret_code.BR_INCORRECT_INTERFACE,
 }, result)
+
+# unequip
+
+pc = PlayersControl()
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+    test_data.CardInfo('slash', 1, card.SPADE),
+    test_data.CardInfo('zhangba serpent spear', 12, card.SPADE),
+    test_data.CardInfo('dodge', 3, card.DIAMOND),
+    test_data.CardInfo('dodge', 4, card.HEART),
+
+    test_data.CardInfo('+jueying', 5, card.SPADE),
+    test_data.CardInfo('sabotage', 6, card.SPADE),
+    test_data.CardInfo('dodge', 7, card.DIAMOND),
+    test_data.CardInfo('dodge', 8, card.DIAMOND),
+
+    test_data.CardInfo('dodge', 9, card.HEART),
+    test_data.CardInfo('dodge', 10, card.HEART),
+
+    test_data.CardInfo('dodge', 11, card.HEART),
+    test_data.CardInfo('dodge', 12, card.HEART),
+
+    test_data.CardInfo('dodge', 13, card.HEART),
+    test_data.CardInfo('dodge', 1, card.HEART),
+])), pc, ActionStack())
+players = [Player(2, 8), Player(19, 8)]
+map(lambda p: pc.add_player(p), players)
+gc.start()
+
+result = gc.player_act({
+    'token': players[0].token,
+    'action': 'card',
+    'use': [1],
+})
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+    'token': players[0].token,
+    'action': 'abort',
+})
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+    'token': players[1].token,
+    'action': 'card',
+    'use': [4],
+})
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+    'token': players[1].token,
+    'action': 'card',
+    'use': [5],
+    'targets': [players[0].player_id],
+})
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+    'token': players[1].token,
+    'region': 'weapon',
+})
+assert_eq(ret_code.OK, result['code'])
+
+result = gc.player_act({
+    'token': players[1].token,
+    'action': 'abort',
+})
+assert_eq(ret_code.OK, result['code'])
+
+assert_eq({
+    'code': ret_code.OK,
+    'action': 'use',
+    'card': {
+        0: { 'require': ['forbid'] },
+        2: { 'require': ['forbid'] },
+        3: { 'require': ['forbid'] },
+        8: { 'require': ['forbid'] },
+        9: { 'require': ['forbid'] },
+        12: { 'require': ['forbid'] },
+        13: { 'require': ['forbid'] },
+    },
+    'abort': 'allow',
+    'players': [players[0].player_id],
+}, gc.hint(players[0].token))

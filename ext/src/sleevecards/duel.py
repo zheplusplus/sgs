@@ -4,7 +4,12 @@ import ext.src.damage as damage
 import ext.src.common_checking as checking
 from ext.src.hint_common import fix_target_action, target_filter
 
-def duel(game_control, args):
+def duel_action(gc, args):
+    cards = gc.cards_by_ids(args['use'])
+    checking.only_one_card_named_as(cards, 'duel')
+    return duel_check(gc, args)
+
+def duel_check(game_control, args):
     targets_ids = args['targets']
     user = game_control.player_by_token(args['token'])
     cards = game_control.cards_by_ids(args['use'])

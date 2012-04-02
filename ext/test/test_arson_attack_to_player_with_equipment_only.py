@@ -114,12 +114,12 @@ assert_eq({
     'action': 'use',
     'card': {
         4: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         11: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0],
         },

@@ -83,7 +83,7 @@ result = gc.player_act({
 assert_eq(ret_code.OK, result['code'])
 
 p0_events = gc.get_events(players[0].token, last_event_id)
-assert_eq(3, len(p0_events))
+assert_eq(4, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(players[0].player_id, event['player'])
@@ -94,10 +94,14 @@ if True: # just indent for a nice appearance
     assert_eq('onhand', event['discard'][0]['region'])
     assert_eq(0, event['discard'][0]['id'])
     event = p0_events[1]
+    assert_eq('Invocation', event['type'])
+    assert_eq(players[0].player_id, event['player'])
+    assert_eq('rattan armor', event['invoke'])
+    event = p0_events[2]
     assert_eq(players[0].player_id, event['victim'])
     assert_eq(2, event['damage'])
     assert_eq('fire', event['category'])
-    event = p0_events[2]
+    event = p0_events[3]
     assert_eq(players[0].player_id, event['player'])
     assert_eq(2, len(event['draw']))
     assert_eq(11, event['draw'][0]['rank'])
@@ -109,7 +113,7 @@ if True: # just indent for a nice appearance
     assert_eq('dodge', event['draw'][1]['name'])
     assert_eq(11, event['draw'][1]['id'])
 p1_events = gc.get_events(players[1].token, last_event_id)
-assert_eq(3, len(p1_events))
+assert_eq(4, len(p1_events))
 if True: # just indent for a nice appearance
     event = p1_events[0]
     assert_eq(players[0].player_id, event['player'])
@@ -118,21 +122,18 @@ if True: # just indent for a nice appearance
     assert_eq(card.SPADE, event['discard'][0]['suit'])
     assert_eq('slash', event['discard'][0]['name'])
     assert_eq('onhand', event['discard'][0]['region'])
-    event = p1_events[1]
-    assert_eq(players[0].player_id, event['victim'])
-    assert_eq(2, event['damage'])
-    assert_eq('fire', event['category'])
-    event = p1_events[2]
+    assert_eq(p0_events[1], p1_events[1])
+    assert_eq(p0_events[2], p1_events[2])
+    event = p1_events[3]
     assert_eq(players[0].player_id, event['player'])
     assert_eq(2, event['draw'])
-last_event_id += 3
 
 assert_eq({
     'code': ret_code.OK,
     'action': 'use',
     'methods': {
         'bequeathed strategy': {
-            'require': ['fix target', 'min card count'],
+            'require': ['min card count', 'fix target'],
             'target count': 1,
             'targets': [players[1].player_id],
             'cards': [10, 11],
@@ -148,10 +149,12 @@ assert_eq({
     'players': [players[0].player_id],
 }, gc.hint(players[1].token))
 
+last_event_id = len(gc.get_events(players[0].token, 0)) # until abort
+
 result = gc.player_act({
-                           'token': players[0].token,
-                           'action': 'abort',
-                       })
+    'token': players[0].token,
+    'action': 'abort',
+})
 assert_eq(ret_code.OK, result['code'])
 
 p0_events = gc.get_events(players[0].token, last_event_id)
@@ -181,7 +184,7 @@ assert_eq({
     'action': 'use',
     'methods': {
         'bequeathed strategy': {
-            'require': ['fix target', 'min card count'],
+            'require': ['min card count', 'fix target'],
             'target count': 1,
             'targets': [players[1].player_id],
             'cards': [12, 13],
@@ -210,7 +213,7 @@ assert_eq({
     'action': 'use',
     'methods': {
         'bequeathed strategy': {
-            'require': ['fix target', 'min card count'],
+            'require': ['min card count', 'fix target'],
             'target count': 1,
             'targets': [players[1].player_id],
             'cards': [12],

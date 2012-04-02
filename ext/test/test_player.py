@@ -50,28 +50,28 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         1: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0, 1],
         },
-        2: { 'type': 'forbid' },
+        2: { 'require': ['forbid'] },
         3: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0, 1],
         },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
