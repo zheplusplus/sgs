@@ -16,7 +16,7 @@ def peach_check(game_control, args):
     game_control.vigor_regain(user, 1)
     return { 'code': ret_code.OK }
 
-def peach_h(gc, user, c):
+def peach_h(gc, user):
     if user.vigor == user.max_vigor:
         return forbid()
     return implicit_target()

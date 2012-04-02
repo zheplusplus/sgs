@@ -6,7 +6,7 @@ class FrameBase:
         self.game_control = game_control
 
     def event(self, action, **kwargs):
-        return False
+        pass
 
     def done(self, result):
         self.game_control.pop_frame(result)

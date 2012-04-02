@@ -15,16 +15,16 @@ def duel_check(game_control, args):
     cards = game_control.cards_by_ids(args['use'])
     checking.only_one_target(targets_ids)
     target = game_control.player_by_id(targets_ids[0])
-    checking.valid_target(user, target, 'duel', cards)
+    checking.valid_target(user, target, 'duel')
     checking.forbid_target_self(user, target)
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     game_control.push_frame(_Duel(game_control, user, target, cards))
     return { 'code': ret_code.OK }
 
-def duel_target(game_control, user, card):
+def duel_target(game_control, user):
     targets = game_control.succeeding_players()
-    return fix_target_action(target_filter('duel', user, targets, [card]))
+    return fix_target_action(target_filter('duel', user, targets))
 
 class _Duel(frames.FrameBase):
     def __init__(self, game_control, user, target, cards):
@@ -59,4 +59,4 @@ class _Duel(frames.FrameBase):
         damage.Damage(self.game_control, source, target, 'duel', self.cards,
                       'normal', 1
                       ).add_cleaner(lambda d, gc: self.done(None)
-                      ).operate(self.game_control)
+                      ).resume()

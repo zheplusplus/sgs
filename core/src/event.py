@@ -265,14 +265,16 @@ class VigorRegain(Event):
         }
 
 class Invocation(Event):
-    def __init__(self, player, action_name):
+    def __init__(self, player, action_name, targets):
         self.player = player
         self.action_name = action_name
+        self.targets = targets
 
     def _as_log(self):
         return {
             'player': self.player.player_id,
             'invoke': self.action_name,
+            'targets': map(lambda p: p.player_id, self.targets),
         }
 
 class Equip(Event):

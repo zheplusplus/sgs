@@ -1,4 +1,5 @@
 import core.src.action_frames as core
+import core.src.action_flow as flow
 import common_checking as checking
 import hint_common as hints
 from category_hierarchy import is_slash
@@ -36,6 +37,20 @@ def _hint_dict():
     }
 
 class UseCards(core.UseCards):
+    class CardsUsedFlow(flow.ActionFlow):
+        def __init__(self, game_control, action, interfaces, hints, **kwargs):
+            players = game_control.players_from_current()
+            flow.ActionFlow.__init__(
+                    self, game_control, 
+                    flow.map_action(lambda p: p.cards_used_char, players) +
+                      flow.map_action(lambda p: p.cards_used_equip, players))
+            self.user = kwargs['user']
+            self.cards = kwargs['cards']
+            self.targets_ids = kwargs['targets_ids']
+            self.action = action
+            self.interfaces = interfaces
+            self.hints = hints
+
     def __init__(self, game_control, player):
         core.UseCards.__init__(self, game_control, player, _using_cards_map())
         self.hint_dict = _hint_dict()
@@ -50,8 +65,8 @@ class UseCards(core.UseCards):
             del self.hint_dict['thunder slash']
             del self.interface_map['fire slash']
             del self.hint_dict['fire slash']
-            return True
-        return False
+        UseCards.CardsUsedFlow(self.game_control, action, self.interface_map,
+                               self.hint_dict, **kwargs).resume()
 
     def react(self, args):
         if args['action'] == 'card':
@@ -94,7 +109,7 @@ class UseCards(core.UseCards):
     def _card_target_info(self, c):
         card_name = c.name()
         if card_name in self.hint_dict:
-            return self.hint_dict[card_name](self.game_control, self.player, c)
+            return self.hint_dict[card_name](self.game_control, self.player)
         return hints.forbid()
 
     def add_card_hint(self, card, target_info):
@@ -113,15 +128,9 @@ class DiscardCards(core.DiscardCards):
 
     def _hint_detail(self):
         cards = self.game_control.player_cards_at(self.player, 'onhand')
-        return {
-            'methods': {
-                'discard': {
-                    'require': ['fix card count'],
-                    'card count': self.need_discard,
-                    'cards': map(lambda c: c.card_id, cards),
-                }
-            }
-        }
+        return hints.filter_empty(hints.add_method_to(
+                            hints.basic_cards_hint(), 'discard',
+                            hints.fixed_card_count(cards, self.need_discard)))
 
     def _check(self, cards_ids):
         if len(cards_ids) != self.need_discard:

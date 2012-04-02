@@ -249,7 +249,7 @@ result = gc.player_act({
 assert_eq(ret_code.OK, result['code'])
 
 p0_events = gc.get_events(players[0].token, last_event_id)
-assert_eq(3, len(p0_events))
+assert_eq(4, len(p0_events))
 if True: # just indent for a nice appearance
     event = p0_events[0]
     assert_eq(1, len(event['discard']))
@@ -258,13 +258,18 @@ if True: # just indent for a nice appearance
     assert_eq(card.SPADE, event['discard'][0]['suit'])
     assert_eq(8, event['discard'][0]['id'])
     event = p0_events[1]
+    assert_eq('Invocation', event['type'])
+    assert_eq(players[0].player_id, event['player'])
+    assert_eq('heavenly scent', event['invoke'])
+    assert_eq([players[1].player_id], event['targets'])
+    event = p0_events[2]
     assert_eq(players[1].player_id, event['victim'])
     assert_eq(1, event['damage'])
     assert_eq('fire', event['category'])
-    event = p0_events[2]
+    event = p0_events[3]
     assert_eq(1, event['draw'])
 p1_events = gc.get_events(players[1].token, last_event_id)
-assert_eq(3, len(p1_events))
+assert_eq(4, len(p1_events))
 if True: # just indent for a nice appearance
     event = p1_events[0]
     assert_eq(1, len(event['discard']))
@@ -272,7 +277,8 @@ if True: # just indent for a nice appearance
     assert_eq(9, event['discard'][0]['rank'])
     assert_eq(card.SPADE, event['discard'][0]['suit'])
     assert_eq(p0_events[1], p1_events[1])
-    event = p1_events[2]
+    assert_eq(p0_events[2], p1_events[2])
+    event = p1_events[3]
     assert_eq(1, len(event['draw']))
     assert_eq(13, event['draw'][0]['rank'])
     assert_eq(card.CLUB, event['draw'][0]['suit'])

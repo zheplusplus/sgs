@@ -8,4 +8,4 @@ def is_time_sleevecards(name):
     return False
 
 def is_imm_sleevecards(name):
-    return name in ['steal', 'sabotage', 'dual', 'arson attack']
+    return name in ['steal', 'sabotage', 'duel', 'arson attack']

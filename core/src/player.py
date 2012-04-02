@@ -1,31 +1,22 @@
 class Player:
-    def __init__(self, token, responses_dict):
+    def __init__(self, token):
         self.token = token
         self.alive = True
-        self.responses = responses_dict
         self.equipment = dict()
         self.cw_positive_dist_mod = 0
         self.ccw_positive_dist_mod = 0
         self.cw_passive_dist_mod = 0
         self.ccw_passive_dist_mod = 0
 
-    def draw_cards(self, game_control, cnt):
-        game_control.deal_cards(self, cnt)
-
-    def response_frame(self, action, game_control):
-        return self.responses[action].response(game_control, self)
-
-    def equip(self, game_control, card, region, on_remove):
+    def equip(self, game_control, region, equipment):
         if region in self.equipment:
             unequipped = self.unequip(game_control, region)
             unequipped.set_region('unequipped')
             game_control.recycle_cards([unequipped])
-        card.set_region(region)
-        def rm_func():
-            on_remove(game_control, self, card)
-            return card
-        self.equipment[region] = rm_func
-        game_control.equip(self, card, region)
+        equipment.card.set_region(region)
+        self.equipment[region] = equipment
+        game_control.equip(self, equipment.card, region)
+        equipment.on()
 
     def unequip_check(self, game_control, region):
         if not region in self.equipment:
@@ -33,11 +24,13 @@ class Player:
         return self.unequip(game_control, region)
 
     def unequip(self, game_control, region):
-        card = game_control.unequip(self, self.equipment[region](), region)
+        card = game_control.unequip(self, self.equipment[region].lost(), region)
         del self.equipment[region]
         return card
 
-    def all_regions(self):
-        regions = ['onhand']
+    def all_regions(self, game_control):
+        regions = []
+        if game_control.player_has_cards_at(self, 'onhand'):
+            regions = ['onhand']
         regions.extend(list(self.equipment))
         return regions

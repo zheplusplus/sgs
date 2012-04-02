@@ -18,8 +18,7 @@ class ActionStack:
 
     def event(self, action, **kwargs):
         for f in reversed(self.frames):
-            if f.event(action, **kwargs):
-                return
+            f.event(action, **kwargs)
 
     def allowed_players(self):
         return self.frames[-1].allowed_players()

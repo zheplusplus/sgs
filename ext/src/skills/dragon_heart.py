@@ -1,5 +1,6 @@
 import ext.src.common_checking as checking
 import ext.src.hint_common as hints
+import ext.src.category_hierarchy as category
 from ext.src.basiccards import slash
 from ext.src.wrappers import invoke_on_success
 
@@ -36,7 +37,7 @@ def dodge_as_slash_using_hint(hint, game_control, user, interfaces):
 
 def slash_as_dodge(cards):
     checking.cards_region(cards, 'onhand')
-    checking.only_one_card_named_as(cards, 'slash')
+    checking.only_one_card_of_category(cards, category.is_slash)
 
 def hint_s(game_control, player):
     return hints.one_card_filter(game_control, player, SKILL,
@@ -44,4 +45,4 @@ def hint_s(game_control, player):
 
 def hint_d(game_control, player):
     return hints.one_card_filter(game_control, player, SKILL,
-                                 lambda c: c.name() == 'slash')
+                                 lambda c: category.is_slash(c.name()))

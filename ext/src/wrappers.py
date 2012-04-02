@@ -15,12 +15,12 @@ def as_target(f):
 def alive(f):
     return lambda p, *args, **kwargs: f(p, *args, **kwargs) if p.alive else None
 
-def invoke_on_success(player, skill):
+def invoke_on_success(player, skill, targets=[]):
     def wrapper(f):
         def invoke(gc, args):
             result = f(gc, args)
             if result['code'] == ret_code.OK:
-                gc.invoke(player, skill)
+                gc.invoke(player, skill, targets)
             return result
         return invoke
     return wrapper

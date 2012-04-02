@@ -10,6 +10,7 @@ class Response:
 
     def __init__(self):
         self.abort = 'disallow'
+        self.methods = dict()
 
     def add_method(self, method_name, method, hint):
         self.methods[method_name] = Response.Method(method, hint)
@@ -28,20 +29,36 @@ class Response:
     def allow_aborting(self):
         self.abort = 'allow'
 
-class ToCertainCard(Response):
-    def __init__(self, card_name):
+class _BaseResponse(Response):
+    def __init__(self, name):
         Response.__init__(self)
-        self.card_name = card_name
+        self.name = name
+        self.add_method(name, self.check, self.hint)
+
+class ToCertainCard(_BaseResponse):
+    def __init__(self, card_name):
+        _BaseResponse.__init__(self, card_name)
         self.allow_aborting()
-        self.methods = dict()
-        self.add_method(card_name, self._one_card_check, self._one_card_hint)
 
-    def _one_card_check(self, cards):
-        checking.only_one_card_named_as(cards, self.card_name)
+    def check(self, cards):
+        checking.only_one_card_named_as(cards, self.name)
 
-    def _one_card_hint(self, game_control, player):
-        return hint_common.one_card_filter(game_control, player, self.card_name,
-                                           lambda c: c.name() == self.card_name)
+    def hint(self, gc, player):
+        return hint_common.one_card_filter(gc, player, self.name,
+                                           lambda c: c.name() == self.name)
+
+class ToCardCategory(_BaseResponse):
+    def __init__(self, name, category):
+        _BaseResponse.__init__(self, name)
+        self.category = category
+        self.allow_aborting()
+
+    def check(self, cards):
+        checking.only_one_card_of_category(cards, self.category)
+
+    def hint(self, gc, player):
+        return hint_common.one_card_filter(gc, player, self.name,
+                                           lambda c: self.category(c.name()))
 
 class _PlayFrame(frames.PlayCards):
     def __init__(self, gc, player, methods, hints, abort):

@@ -12,19 +12,19 @@ import test_data
 
 pc = PlayersControl()
 gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
-            test_data.CardInfo('slash', 1, card.SPADE),
-            test_data.CardInfo('dodge', 2, card.HEART),
-            test_data.CardInfo('slash', 3, card.CLUB),
-            test_data.CardInfo('dodge', 4, card.DIAMOND),
+    test_data.CardInfo('slash', 1, card.SPADE),
+    test_data.CardInfo('dodge', 2, card.HEART),
+    test_data.CardInfo('slash', 3, card.CLUB),
+    test_data.CardInfo('dodge', 4, card.DIAMOND),
 
-            test_data.CardInfo('slash', 5, card.CLUB),
-            test_data.CardInfo('dodge', 6, card.HEART),
-            test_data.CardInfo('dodge', 7, card.DIAMOND),
-            test_data.CardInfo('slash', 8, card.DIAMOND),
+    test_data.CardInfo('thunder slash', 5, card.CLUB),
+    test_data.CardInfo('fire slash', 6, card.HEART),
+    test_data.CardInfo('dodge', 7, card.DIAMOND),
+    test_data.CardInfo('slash', 8, card.DIAMOND),
 
-            test_data.CardInfo('dodge', 9, card.HEART),
-            test_data.CardInfo('dodge', 10, card.HEART),
-     ])), pc, ActionStack())
+    test_data.CardInfo('dodge', 9, card.HEART),
+    test_data.CardInfo('dodge', 10, card.HEART),
+])), pc, ActionStack())
 players = [Player(91, 4), Player(1729, 4)]
 map(lambda p: pc.add_player(p), players)
 dragon_heart.add_to(players[0])
@@ -88,12 +88,12 @@ assert_eq({
         'dodge': {
             'require': ['fix card count'],
             'card count': 1,
-            'cards': [5, 6],
+            'cards': [6],
         },
         'dragon heart': {
             'require': ['fix card count'],
             'card count': 1,
-            'cards': [4, 7],
+            'cards': [4, 5, 7],
         },
     },
     'abort': 'allow',

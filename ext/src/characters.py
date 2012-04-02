@@ -1,6 +1,7 @@
 from ext.src.skills import bequeathed_strategy, merciless, dragon_heart,       \
                            martial_saint, prodigy, horsemanship, fury_pith,    \
-                           heavenly_scent, youth_beauty, surprise_raid
+                           heavenly_scent, youth_beauty, surprise_raid,        \
+                           intellect_gathering
 
 class Character:
     def __init__(self, name, vigor, character_skills):
@@ -20,7 +21,7 @@ ALL = (
 
     Character('Zhao Yun', 4, [dragon_heart]),
     Character('Guan Yu', 4, [martial_saint]),
-    Character('Huang Yueying', 3, [prodigy]),
+    Character('Huang Yueying', 3, [prodigy, intellect_gathering]),
     Character('Ma Chao', 4, [horsemanship]),
     Character('Wei Yan', 4, [fury_pith]),
 
