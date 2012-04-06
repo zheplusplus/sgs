@@ -142,16 +142,13 @@ assert_eq({
 assert_eq({
     'code': ret_code.OK,
     'action': 'use',
-    'card': {
-        0: {
-            'type': 'fix target',
+    'methods': {
+        'heavenly scent': {
+            'require': ['fix card count', 'fix target'],
             'target count': 1,
-            'targets': [1],
-        },
-        8: {
-            'type': 'fix target',
-            'target count': 1,
-            'targets': [1],
+            'targets': [players[1].player_id],
+            'cards': [0, 8],
+            'card count': 1,
         },
     },
     'abort': 'allow',

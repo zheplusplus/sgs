@@ -70,6 +70,10 @@ function SGS_InitPlayer(me, id) {
         }).length);
     };
 
+    me.hasFreeOnHandCards = function() {
+        return cards_count != 0;
+    };
+
     me.eventCharSelected = function(new_name, new_max_vigor) {
         char_name = new_name;
         me.onCharNameChanged(char_name);
@@ -158,6 +162,13 @@ function SGS_InitMe(me, id, game, players) {
     };
     me.selected = function() {
         return selected;
+    };
+
+    me.hasFreeOnHandCards = function() {
+        for (var c in cards) {
+            if (!cards[c].selected) return true;
+        }
+        return false;
     };
 
     function appendCards(new_cards) {

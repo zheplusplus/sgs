@@ -261,10 +261,13 @@ function InitPlayerCanvas(me, game, x, y, w, h, p) {
     me.updateSelected(false);
 
     var content = document.createElement('table');
+
     var nameRow = content.insertRow(-1);
-    var nameCell = nameRow.insertCell();
-    nameCell.colSpan = 2;
+    var nameCell = nameRow.insertCell(-1);
     nameCell.innerHTML = '&nbsp;';
+    var invokingCell = nameRow.insertCell(-1);
+    invokingCell.style.opacity = 0;
+
     var statusRow = content.insertRow(-1);
     var vigorCell = statusRow.insertCell();
     vigorCell.style.textAlign = 'right';
@@ -283,6 +286,12 @@ function InitPlayerCanvas(me, game, x, y, w, h, p) {
     me.onCharNameChanged = function(name) {
         nameCell.innerHTML = SGS_STR_CharName(name);
     };
+    me.onInvokingSkill = function(name) {
+        invokingCell.innerHTML = SGS_STR_Action(name);
+        $(invokingCell).fadeTo(1600, 1.0, function() {
+            $(invokingCell).fadeTo(1600, 0.0);
+        });
+    };
     me.paintCardsCountChanged = function(count) {
         cardsCountCell.innerHTML = count;
     };
@@ -300,7 +309,7 @@ function InitPlayerCanvas(me, game, x, y, w, h, p) {
         equipCells[EQUIP_OFFSET[region]].innerHTML = '&nbsp;';
     };
     canvas.appendChild(content);
-    nameCell.style.width = w + 'px';
+    content.style.width = w + 'px';
 }
 
 function InitMeCanvas(me, game, x, y, leftW, midW, rightW, h, p) {
@@ -356,6 +365,16 @@ function InitMeCanvas(me, game, x, y, leftW, midW, rightW, h, p) {
     };
     me.paintKilled = function() {
         nameCell.innerHTML += (' (' + SGS_STR_DEATH + ')');
+    };
+
+    var invokingCell = left.insertRow(-1).insertCell();
+    invokingCell.innerHTML = '&nbsp;';
+    invokingCell.style.opacity = 0;
+    me.onInvokingSkill = function(name) {
+        invokingCell.innerHTML = SGS_STR_Action(name);
+        $(invokingCell).fadeTo(400, 1.0, function() {
+            setTimeout(function() { $(invokingCell).fadeTo(400, 0.0); }, 1600);
+        });
     };
 
     var equipCells = [];

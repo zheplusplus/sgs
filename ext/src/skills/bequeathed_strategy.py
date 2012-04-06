@@ -29,7 +29,6 @@ class _BequeathedStrategyTransferCards(CardsTargetFrame):
         CardsTargetFrame.__init__(self, game_control, source)
         self.cards = cards
         for c in self.cards: c.set_region('bequeathed strategy')
-        self._update_hint()
 
     def react(self, args):
         if args['action'] == 'abort':
@@ -46,7 +45,6 @@ class _BequeathedStrategyTransferCards(CardsTargetFrame):
         for c in cards: c.set_region('onhand')
         self.game_control.private_cards_transfer(self.player, target, cards)
         self.cards = [c for c in self.cards if c not in cards]
-        self._update_hint()
         if len(self.cards) == 0:
             return self.done(None)
         return { 'code': ret_code.OK }
@@ -54,21 +52,14 @@ class _BequeathedStrategyTransferCards(CardsTargetFrame):
     def destructed(self):
         for c in self.cards: c.set_region('onhand')
 
-    def _update_hint(self):
-        self.clear_hint()
+    def _hint_detail(self):
         targets = self.game_control.players_from_current()
         targets.remove(self.player)
-        hint = {
-            'bequeathed strategy': {
-                'require': ['fix target', 'min card count'],
-                'target count': 1,
-                'targets': map(lambda p: p.player_id, targets),
-                'cards': map(lambda c: c.card_id, self.cards),
-                'card count': 1,
-            }
-        }
-        self.set_hint_category('methods', hint)
-        self.add_abort()
+        import ext.src.hint_common as hints
+        return hints.filter_empty(hints.allow_abort(hints.add_method_to(
+                        hints.basic_cards_hint(), 'bequeathed strategy',
+                        hints.join_req(hints.min_card_count(self.cards, 1),
+                                       hints.fixed_target_count(targets, 1)))))
 
     def _hint_action(self, token):
         return 'use'

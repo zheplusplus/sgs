@@ -141,7 +141,10 @@ function SGS_HintParser(game, center) {
         'use': function(result) {
             function CardMethod(cardDesc) {
                 initMethodFiltersValidators(this, null);
-                RESTRICTION_MAPPER[cardDesc['type']](this, cardDesc);
+                var require = cardDesc['require'];
+                for (var r in require) {
+                    RESTRICTION_MAPPER[require[r]](this, cardDesc);
+                }
             }
             function CardMethodsWrapper(methodsDetail) {
                 initMethod(this, 'card');

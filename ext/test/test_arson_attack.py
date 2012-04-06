@@ -38,28 +38,28 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         1: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0, 1],
         },
-        2: { 'type': 'forbid' },
+        2: { 'require': ['forbid'] },
         3: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0, 1],
         },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
@@ -94,6 +94,7 @@ result = gc.player_act({
         'use': [1],
     })
 assert_eq(ret_code.OK, result['code'])
+
 p0_events = gc.get_events(players[0].token, last_event_id)
 assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance
@@ -254,22 +255,22 @@ assert_eq({
     'action': 'use',
     'card': {
         0: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         3: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0, 1],
         },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
@@ -669,24 +670,24 @@ assert_eq({
     'action': 'use',
     'card': {
         4: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0],
         },
         5: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [1],
         },
-        6: { 'type': 'forbid' },
-        7: { 'type': 'forbid' },
+        6: { 'require': ['forbid'] },
+        7: { 'require': ['forbid'] },
         8: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0],
         },
         9: {
-            'type': 'fix target',
+            'require': ['fix target'],
             'target count': 1,
             'targets': [0],
         },
@@ -984,3 +985,35 @@ result = gc.player_act({
                            'use': [2],
                        })
 assert_eq(ret_code.OK, result['code'])
+
+# fake arson attack
+
+pc = PlayersControl()
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+            test_data.CardInfo('slash', 1, card.SPADE),
+            test_data.CardInfo('arson attack', 2, card.HEART),
+            test_data.CardInfo('dodge', 3, card.DIAMOND),
+            test_data.CardInfo('arson attack', 4, card.HEART),
+
+            test_data.CardInfo('slash', 5, card.CLUB),
+            test_data.CardInfo('arson attack', 6, card.HEART),
+            test_data.CardInfo('dodge', 7, card.DIAMOND),
+            test_data.CardInfo('dodge', 8, card.DIAMOND),
+
+            test_data.CardInfo('slash', 9, card.SPADE),
+            test_data.CardInfo('slash', 10, card.SPADE),
+     ])), pc, ActionStack())
+players = [Player(91, 4), Player(1729, 4)]
+map(lambda p: pc.add_player(p), players)
+gc.start()
+
+result = gc.player_act({
+                           'token': players[0].token,
+                           'action': 'arson attack',
+                           'targets': [players[0].player_id],
+                           'use': [0],
+                       })
+assert_eq({
+              'code': ret_code.BAD_REQUEST,
+              'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
+          }, result)

@@ -125,6 +125,7 @@ function PlayerView(id, game, pc, coord, center) {
     this.paintShowCards = function(c) {
         paintCardsDropped(c);
     };
+    this.paintInvokingSkill = function(n) {};
 
     var me = this;
     this.enableAnimation = function() {
@@ -136,6 +137,7 @@ function PlayerView(id, game, pc, coord, center) {
             movingCards.moveCards(me.centerCoord(), center.centerCoord(),
                                   c, function() { center.addCards(c); });
         };
+        this.paintInvokingSkill = this.onInvokingSkill;
     };
 }
 
@@ -168,6 +170,7 @@ function MeView(id, game, pc, coord, center, players) {
     this.paintShowCards = function(c) {
         paintCardsDropped(c);
     };
+    this.paintInvokingSkill = function(n) {};
 
     var me = this;
     this.enableAnimation = function() {
@@ -180,5 +183,6 @@ function MeView(id, game, pc, coord, center, players) {
                                   function() { center.addCards(c); });
         };
         this.paintDamage = this.animeDamaged;
+        this.paintInvokingSkill = this.onInvokingSkill;
     };
 }

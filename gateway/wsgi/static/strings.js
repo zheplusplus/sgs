@@ -22,6 +22,7 @@ function SGS_STR_CharName(id) {
         'Wei Yan': '魏延',
 
         'Junior Qiao': '小喬',
+        'Gan Ning': '甘宁',
 
         'Ma Chao SP': 'SP 馬超',
         'Pang De': '龐德',
@@ -31,6 +32,8 @@ function SGS_STR_CharName(id) {
 function SGS_STR_Card(id) {
     return SGS_InternalNameLookup({
         'slash': '殺',
+        'thunder slash': '雷殺',
+        'fire slash': '火殺',
         'dodge': '閃',
         'peach': '桃',
 
@@ -40,6 +43,7 @@ function SGS_STR_Card(id) {
         'steal': '順手牽羊',
 
         'zhangba serpent spear': '丈八蛇矛',
+        'vermilion feather fan': '朱雀羽扇',
         'rattan armor': '藤甲',
         '-chitu': '赤兔 (-1)',
         '-dawan': '大宛 (-1)',
@@ -65,8 +69,12 @@ function SGS_STR_Action(id) {
         'bequeathed strategy': '遗计',
         'dragon heart': '龙胆',
         'martial saint': '武圣',
+        'heavenly scent': '天香',
+        'surprise raid': '奇袭',
 
         'zhangba serpent spear': '丈八蛇矛',
+        'vermilion feather fan': '朱雀羽扇',
+        'rattan armor': '藤甲',
     }, id);
 }
 

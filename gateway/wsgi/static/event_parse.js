@@ -121,6 +121,13 @@ function SGS_EventParser() {
                 game.player(player).eventVigorRegain(point);
             };
         },
+        'Invocation': function(detail) {
+            var player = detail['player'];
+            var invoke = detail['invoke'];
+            this.exhibit = function(game) {
+                game.player(player).paintInvokingSkill(invoke);
+            };
+        },
         'PlayerKilled': function(detail) {
             var player = detail['player'];
             this.exhibit = function(game) {

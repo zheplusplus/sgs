@@ -22,7 +22,7 @@ class Response:
         hints = reduce(lambda h, pair: dict(h.items() +
                                             pair[1].hint(game_control, player)
                                                    .items()),
-                       self.methods.items(), {})
+                       self.methods.items(), dict())
         return _PlayFrame(game_control, player, methods, hints, self.abort)
 
     def allow_aborting(self):

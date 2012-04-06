@@ -1,39 +1,57 @@
 import core.src.action_frames as core
-from equipment import equip
 import common_checking as checking
-from basiccards.slash import slash_target, slash
-from sleevecards.arson_attack import arson_attack_target, arson_attack
-from sleevecards.duel import duel_target, duel
-from sleevecards.sabotage import sabotage_target, sabotage
-from sleevecards.steal import steal_target, steal
+import hint_common as hints
+from category_hierarchy import is_slash
+from basiccards.slash import slash_targets_h, slash_action
+from basiccards.peach import peach_h, peach_action
 from equipment import equip
+from sleevecards.arson_attack import arson_attack_target, arson_attack_action
+from sleevecards.duel import duel_target, duel_action
+from sleevecards.sabotage import sabotage_targets_h, sabotage_action
+from sleevecards.steal import steal_target, steal_action
 
 def _using_cards_map():
     return {
-        'slash': slash,
-        'arson attack': arson_attack,
-        'duel': duel,
-        'sabotage': sabotage,
-        'steal': steal,
+        'slash': slash_action,
+        'thunder slash': slash_action,
+        'fire slash': slash_action,
+        'peach': peach_action,
+        'arson attack': arson_attack_action,
+        'duel': duel_action,
+        'sabotage': sabotage_action,
+        'steal': steal_action,
         'equip': equip.interface,
     }
 
 def _hint_dict():
     return {
-        'slash': slash_target,
+        'slash': slash_targets_h,
+        'thunder slash': slash_targets_h,
+        'fire slash': slash_targets_h,
+        'peach': peach_h,
         'arson attack': arson_attack_target,
         'duel': duel_target,
-        'sabotage': sabotage_target,
+        'sabotage': sabotage_targets_h,
         'steal': steal_target,
     }
 
 class UseCards(core.UseCards):
     def __init__(self, game_control, player):
         core.UseCards.__init__(self, game_control, player, _using_cards_map())
-        self.player.using_interfaces = self.interface_map
         self.hint_dict = _hint_dict()
-        self.player.using_hint_dict = self.hint_dict
+        self.hint_cache = hints.basic_cards_hint()
         self._update_hint()
+
+    def event(self, action, **kwargs):
+        if is_slash(action) and kwargs['user'] == self.player:
+            del self.interface_map['slash']
+            del self.hint_dict['slash']
+            del self.interface_map['thunder slash']
+            del self.hint_dict['thunder slash']
+            del self.interface_map['fire slash']
+            del self.hint_dict['fire slash']
+            return True
+        return False
 
     def react(self, args):
         if args['action'] == 'card':
@@ -53,34 +71,37 @@ class UseCards(core.UseCards):
         core.UseCards.resume(self, result)
 
     def destructed(self):
-        self.player.using_hint_dict = dict()
-        self.player.using_interfaces = dict()
         self.player.discarding_cards_stage(self.game_control)
 
-    def _target_info(self, c):
+    def _update_hint(self):
+        self.hint_cache = hints.allow_abort(hints.basic_cards_hint())
+        self._build_card_hint()
+        for h in self.player.using_hint():
+            h(self.hint_cache, self.game_control, self.player,
+              self.interface_map)
+        if len(self.hint_cache['methods']) == 0:
+            del self.hint_cache['methods']
+
+    def _build_card_hint(self):
+        cards = self.game_control.player_cards_at(self.player, 'onhand')
+        equips = equip.hint(cards)
+        for c in cards:
+            if c.card_id in equips:
+                self.add_card_hint(c, hints.implicit_target())
+                continue
+            self.add_card_hint(c, self._card_target_info(c))
+
+    def _card_target_info(self, c):
         card_name = c.name()
         if card_name in self.hint_dict:
             return self.hint_dict[card_name](self.game_control, self.player, c)
-        return { 'type': 'forbid' }
+        return hints.forbid()
 
-    def _update_hint(self):
-        self.clear_hint()
-        self.add_abort()
-        self._build_using_card_hint()
-        self._hint_cache['methods'] = dict()
-        self.player.on_using_hint_built(self._hint_cache, self.game_control)
-        if len(self._hint_cache['methods']) == 0:
-            del self._hint_cache['methods']
+    def add_card_hint(self, card, target_info):
+        self.hint_cache['card'][card.card_id] = target_info
 
-    def _build_using_card_hint(self):
-        cards = self.game_control.player_cards_at(self.player, 'all')
-        equips = equip.hint(self.game_control.player_cards_at(self.player,
-                                                              'onhand'))
-        for c in cards:
-            if c.card_id in equips:
-                self.add_hint('card', c, { 'type': 'implicit target' })
-                continue
-            self.add_hint('card', c, self._target_info(c))
+    def _hint_detail(self):
+        return self.hint_cache
 
 class DiscardCards(core.DiscardCards):
     def __init__(self, game_control, player):

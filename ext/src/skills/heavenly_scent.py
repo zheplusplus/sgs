@@ -31,16 +31,11 @@ class _AskHeavenlyScent(DiscardCards):
         cards = filter(lambda c: c.suit() == card.HEART, cards)
         targets = self.game_control.players_from_current()
         targets.remove(self.player)
-        return {
-            'card': {
-                c.card_id: {
-                  'type': 'fix target',
-                  'target count': 1,
-                  'targets': map(lambda p: p.player_id, targets),
-                } for c in cards
-            },
-            'abort': 'allow',
-        }
+        import ext.src.hint_common as hints
+        return hints.filter_empty(hints.allow_abort(hints.add_method_to(
+                        hints.basic_cards_hint(), 'heavenly scent',
+                        hints.join_req(hints.fixed_card_count(cards, 1),
+                                       hints.fixed_target_count(targets, 1)))))
 
     def _hint_action(self, token):
         return 'use'

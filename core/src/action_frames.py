@@ -5,6 +5,9 @@ class FrameBase:
     def __init__(self, game_control):
         self.game_control = game_control
 
+    def event(self, action, **kwargs):
+        return False
+
     def done(self, result):
         self.game_control.pop_frame(result)
         return { 'code': ret_code.OK }
@@ -41,24 +44,9 @@ class OnePlayerFrame(FrameBase):
 class CardsTargetFrame(OnePlayerFrame):
     def __init__(self, game_control, player):
         OnePlayerFrame.__init__(self, game_control, player)
-        self._hint_cache = dict()
-
-    def clear_hint(self):
-        self._hint_cache = dict()
-
-    def add_hint(self, category, card, target_info):
-        if not category in self._hint_cache:
-            self._hint_cache[category] = dict()
-        self._hint_cache[category][card.card_id] = target_info
-
-    def set_hint_category(self, category, hint_info):
-        self._hint_cache[category] = hint_info
-
-    def add_abort(self):
-        self._hint_cache['abort'] = 'allow'
 
     def _hint(self, token):
-        return self._hint_cache if self.player.token == token else dict()
+        return self._hint_detail() if self.player.token == token else dict()
 
     def _hint_action(self, token):
         return 'use'

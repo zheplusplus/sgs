@@ -16,6 +16,11 @@ class ActionStack:
         stack_top.destructed()
         self.frames[-1].resume(result)
 
+    def event(self, action, **kwargs):
+        for f in reversed(self.frames):
+            if f.event(action, **kwargs):
+                return
+
     def allowed_players(self):
         return self.frames[-1].allowed_players()
 

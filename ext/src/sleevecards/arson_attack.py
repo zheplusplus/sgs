@@ -4,7 +4,12 @@ import ext.src.damage as damage
 import ext.src.common_checking as checking
 from ext.src.hint_common import fix_target_action, target_filter
 
-def arson_attack(game_control, args):
+def arson_attack_action(gc, args):
+    cards = gc.cards_by_ids(args['use'])
+    checking.only_one_card_named_as(cards, 'arson attack')
+    return arson_attack_check(gc, args)
+
+def arson_attack_check(game_control, args):
     targets_ids = args['targets']
     cards = game_control.cards_by_ids(args['use'])
     user = game_control.player_by_token(args['token'])
