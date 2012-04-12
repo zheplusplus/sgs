@@ -688,10 +688,91 @@ gc.start()
 result = gc.player_act({
     'token': players[0].token,
     'action': 'duel',
-    'targets': [players[0].player_id],
+    'targets': [players[1].player_id],
     'use': [1],
 })
 assert_eq({
     'code': ret_code.BAD_REQUEST,
     'reason': ret_code.BR_WRONG_ARG % 'wrong cards',
 }, result)
+
+# play elemental slash
+
+pc = PlayersControl()
+gc = GameControl(EventList(), test_data.CardPool(test_data.gen_cards([
+    test_data.CardInfo('duel', 1, card.SPADE),
+    test_data.CardInfo('slash', 2, card.HEART),
+    test_data.CardInfo('slash', 3, card.DIAMOND),
+    test_data.CardInfo('fire slash', 4, card.HEART),
+
+    test_data.CardInfo('slash', 5, card.CLUB),
+    test_data.CardInfo('thunder slash', 6, card.SPADE),
+    test_data.CardInfo('dodge', 7, card.DIAMOND),
+    test_data.CardInfo('slash', 8, card.DIAMOND),
+
+    test_data.CardInfo('thunder slash', 9, card.SPADE),
+    test_data.CardInfo('slash', 10, card.SPADE),
+])), pc, ActionStack())
+players = [Player(91, 4), Player(1729, 4)]
+map(lambda p: pc.add_player(p), players)
+gc.start()
+
+result = gc.player_act({
+    'token': players[0].token,
+    'action': 'card',
+    'targets': [players[1].player_id],
+    'use': [0],
+})
+assert_eq(ret_code.OK, result['code'])
+
+assert_eq({
+    'code': ret_code.OK,
+    'action': 'discard',
+    'players': [players[1].player_id],
+}, gc.hint(players[0].token))
+assert_eq({
+    'code': ret_code.OK,
+    'action': 'discard',
+    'methods': {
+        'slash': {
+            'require': ['fix card count'],
+            'card count': 1,
+            'cards': [4, 5, 7],
+        },
+    },
+    'abort': 'allow',
+    'players': [players[1].player_id],
+}, gc.hint(players[1].token))
+
+result = gc.player_act({
+    'token': players[1].token,
+    'method': 'slash',
+    'discard': [5],
+})
+assert_eq(ret_code.OK, result['code'])
+
+assert_eq({
+    'code': ret_code.OK,
+    'action': 'discard',
+    'methods': {
+        'slash': {
+            'require': ['fix card count'],
+            'card count': 1,
+            'cards': [1, 2, 3, 8, 9],
+        },
+    },
+    'abort': 'allow',
+    'players': [players[0].player_id],
+}, gc.hint(players[0].token))
+assert_eq({
+    'code': ret_code.OK,
+    'action': 'discard',
+    'players': [players[0].player_id],
+}, gc.hint(players[1].token))
+
+result = gc.player_act({
+    'token': players[0].token,
+    'method': 'slash',
+    'discard': [3],
+})
+assert_eq(ret_code.OK, result['code'])

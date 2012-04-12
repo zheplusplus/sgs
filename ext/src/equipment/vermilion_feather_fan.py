@@ -1,17 +1,24 @@
 from core.src.action_frames import AcceptMessage
 import ext.src.wrappers as wrappers
 import ext.src.hint_common as hints
-from equip_lib import change_slash_range
+from equip_lib import change_slash_range, Equipment
 
 EQUIP_NAME = 'vermilion feather fan'
 
-def equip_to(player, game_control, card):
-    player.equip(game_control, card, 'weapon', remove_from)
-    player.range_equip = change_slash_range(player.range_equip, 4)
-    player.slashing_equip = _ask_fan
+class VermilionFeatherFan(Equipment):
+    def __init__(self, player, card):
+        Equipment.__init__(self, player, card)
 
-def remove_from(game_control, player, equipped_card):
-    player.slashing_equip = lambda player, slash, gc: None
+    def on(self):
+        self.player.range_equip = change_slash_range(self.player.range_equip, 4)
+        self.player.slashing_equip = _ask_fan
+
+    def off(self):
+        self.player.range_equip = lambda action: self.player.base_ranges[action]
+        self.player.slashing_equip = lambda player, slash, gc: None
+
+def equip_to(player, game_control, card):
+    player.equip(game_control, 'weapon', VermilionFeatherFan(player, card))
 
 @wrappers.as_user
 def _ask_fan(player, slashing, gc):

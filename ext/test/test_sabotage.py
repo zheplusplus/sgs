@@ -139,6 +139,7 @@ result = gc.player_act({
                            'region': 'onhand',
                        })
 assert_eq(ret_code.OK, result['code'])
+
 p0_events = gc.get_events(players[0].token, last_event_id)
 assert_eq(1, len(p0_events))
 if True: # just indent for a nice appearance

@@ -1,37 +1,50 @@
 import core.src.card as card
+from equip_lib import Equipment
 
-def equip_positive_to(player, game_control, horse_card):
-    player.equip(game_control, horse_card, '-1 horse', remove_positive_from)
-    player.cw_positive_dist_mod += 1
-    player.ccw_positive_dist_mod += 1
+class PositiveHorse(Equipment):
+    def __init__(self, player, card):
+        Equipment.__init__(self, player, card)
 
-def remove_positive_from(game_control, player, equipped_card):
-    player.cw_positive_dist_mod -= 1
-    player.ccw_positive_dist_mod -= 1
+    def on(self):
+        self.player.cw_positive_dist_mod += 1
+        self.player.ccw_positive_dist_mod += 1
 
-def equip_passive_to(player, game_control, horse_card):
-    player.equip(game_control, horse_card, '+1 horse', remove_passive_from)
-    player.cw_passive_dist_mod += 1
-    player.ccw_passive_dist_mod += 1
+    def off(self):
+        self.player.cw_positive_dist_mod -= 1
+        self.player.ccw_positive_dist_mod -= 1
 
-def remove_passive_from(game_control, player, equipped_card):
-    player.cw_passive_dist_mod -= 1
-    player.ccw_passive_dist_mod -= 1
+def equip_positive_to(player, gc, horse_card):
+    player.equip(gc, '-1 horse', PositiveHorse(player, horse_card))
+
+class PassiveHorse(Equipment):
+    def __init__(self, player, card):
+        Equipment.__init__(self, player, card)
+
+    def on(self):
+        self.player.cw_passive_dist_mod += 1
+        self.player.ccw_passive_dist_mod += 1
+
+    def off(self):
+        self.player.cw_passive_dist_mod -= 1
+        self.player.ccw_passive_dist_mod -= 1
+
+def equip_passive_to(player, gc, horse_card):
+    player.equip(gc, '+1 horse', PassiveHorse(player, horse_card))
 
 def imported(equip_dict):
     POSITIVE_HORSE_NAMES = (
-                               '-chitu',
-                               '-dawan',
-                               '-zixing',
-                           )
+        '-chitu',
+        '-dawan',
+        '-zixing',
+    )
     for h in POSITIVE_HORSE_NAMES:
         equip_dict[h] = equip_positive_to
 
     PASSIVE_HORSE_NAMES = (
-                              '+dilu',
-                              '+hualiu',
-                              '+jueying',
-                              '+zhuahuangfeidian',
-                          )
+        '+dilu',
+        '+hualiu',
+        '+jueying',
+        '+zhuahuangfeidian',
+    )
     for h in PASSIVE_HORSE_NAMES:
         equip_dict[h] = equip_passive_to

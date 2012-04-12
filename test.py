@@ -16,11 +16,13 @@ import ext.test.test_martial_saint
 import ext.test.test_zhangba_serpent_spear
 import ext.test.test_vermilion_feather_fan
 import ext.test.test_sabotage
+import ext.test.test_no_onhand_region_if_no_cards
 import ext.test.test_arson_attack_to_player_with_equipment_only
 import ext.test.test_distance_horses
 import ext.test.test_steal
 import ext.test.test_rattan_armor
 import ext.test.test_merciless
+import ext.test.test_intellect_gathering
 import ext.test.test_heavenly_scent
 import ext.test.test_surprise_raid
 import ext.test.test_fury_pith

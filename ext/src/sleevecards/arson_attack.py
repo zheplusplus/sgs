@@ -2,7 +2,7 @@ import core.src.ret_code as ret_code
 import core.src.action_frames as frames
 import ext.src.damage as damage
 import ext.src.common_checking as checking
-from ext.src.hint_common import fix_target_action, target_filter
+import ext.src.hint_common as hints
 
 def arson_attack_action(gc, args):
     cards = gc.cards_by_ids(args['use'])
@@ -15,14 +15,14 @@ def arson_attack_check(game_control, args):
     user = game_control.player_by_token(args['token'])
     checking.only_one_target(targets_ids)
     target = game_control.player_by_id(targets_ids[0])
-    checking.valid_target(user, target, 'arson attack', cards)
+    checking.valid_target(user, target, 'arson attack')
     checking.forbid_target_no_card_on_hand(target, game_control)
 
     game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
     game_control.push_frame(_ArsonAttack(game_control, user, target, cards))
     return { 'code': ret_code.OK }
 
-def arson_attack_target(game_control, user, card):
+def arson_attack_target(game_control, user):
     def check_has_card(target):
         count_cards = game_control.player_cards_count_at(target, 'onhand')
         if user == target:
@@ -30,8 +30,8 @@ def arson_attack_target(game_control, user, card):
         return 0 < count_cards
     all_players = game_control.players_from_current()
     targets = filter(check_has_card, all_players)
-    return fix_target_action(target_filter('arson attack', user, targets,
-                                           [card]))
+    return hints.fix_target_action(hints.target_filter('arson attack', user,
+                                                       targets))
 
 class _ArsonAttack(frames.FrameBase):
     def __init__(self, game_control, user, target, cards):
@@ -56,7 +56,7 @@ class _ArsonAttack(frames.FrameBase):
             damage.Damage(self.game_control, self.user, self.target,
                           'arson attack', self.cards, 'fire', 1
                          ).add_cleaner(lambda dmg, gc: self.done(None)
-                         ).operate(self.game_control)
+                         ).resume()
         else:
             self.done(None)
 
@@ -71,16 +71,8 @@ class _TargetShowCard(frames.ShowCards):
 
     def _hint_detail(self):
         cards = self.game_control.player_cards_at(self.player, 'onhand')
-        return {
-            'methods': {
-                'show': {
-                    'require': ['fix card count'],
-                    'card count': 1,
-                    'cards': map(lambda c: c.card_id, cards),
-                }
-            },
-            'abort': 'disallow',
-        }
+        return hints.filter_empty(hints.add_method_to(
+            hints.basic_cards_hint(), 'show', hints.fixed_card_count(cards, 1)))
 
 class _UserDiscardSameSuit(frames.DiscardCards):
     def __init__(self, game_control, player, suit):
@@ -90,16 +82,9 @@ class _UserDiscardSameSuit(frames.DiscardCards):
     def _hint_detail(self):
         cards = self.game_control.player_cards_at(self.player, 'onhand')
         cards = filter(lambda c: c.suit() == self.suit, cards)
-        return {
-            'methods': {
-                'discard': {
-                    'require': ['fix card count'],
-                    'card count': 1,
-                    'cards': map(lambda c: c.card_id, cards),
-                }
-            },
-            'abort': 'allow',
-        }
+        return hints.filter_empty(hints.allow_abort(hints.add_method_to(
+                                            hints.basic_cards_hint(), 'discard',
+                                            hints.fixed_card_count(cards, 1))))
 
     def react(self, args):
         if args['method'] == 'abort':

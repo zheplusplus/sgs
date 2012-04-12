@@ -2,8 +2,8 @@ def range_filter(gc, user, action, players):
     return filter(lambda p: gc.distance_between(user, p) <= user.range(action),
                   players)
 
-def target_filter(action, user, players, cards):
-    return filter(lambda p: p.targeted(user, action, cards), players)
+def target_filter(action, user, players):
+    return filter(lambda p: p.targeted(user, action), players)
 
 def fix_target_action(targets):
     if 0 < len(targets):

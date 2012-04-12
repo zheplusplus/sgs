@@ -162,6 +162,7 @@ if True: # just indent for a nice appearance
     assert_eq('Invocation', event['type'])
     assert_eq(players[0].player_id, event['player'])
     assert_eq('rattan armor', event['invoke'])
+    assert_eq(0, len(event['targets']))
     event = p0_events[2]
     assert_eq(players[0].player_id, event['victim'])
     assert_eq(2, event['damage'])

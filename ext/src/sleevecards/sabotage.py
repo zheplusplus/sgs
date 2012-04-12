@@ -8,38 +8,37 @@ def sabotage_action(gc, args):
     checking.only_one_card_named_as(cards, 'sabotage')
     return sabotage_check(gc, args)
 
-def sabotage_check(game_control, args):
+def sabotage_check(gc, args):
     targets_ids = args['targets']
-    user = game_control.player_by_token(args['token'])
-    cards = game_control.cards_by_ids(args['use'])
+    user = gc.player_by_token(args['token'])
+    cards = gc.cards_by_ids(args['use'])
     checking.only_one_target(targets_ids)
-    target = game_control.player_by_id(targets_ids[0])
-    checking.valid_target(user, target, 'sabotage', cards)
+    target = gc.player_by_id(targets_ids[0])
+    checking.valid_target(user, target, 'sabotage')
     checking.forbid_target_self(user, target)
-    checking.forbid_target_no_card(target, game_control)
+    checking.forbid_target_no_card(target, gc)
 
-    game_control.use_cards_for_players(user, targets_ids, args['action'], cards)
-    hint = { 'regions': target.all_regions() }
-    game_control.push_frame(
-            frames.AcceptMessage(game_control, [user], 'region', hint,
-                                 lambda a: on_message(game_control, target, a)))
+    gc.use_cards_for_players(user, targets_ids, args['action'], cards)
+    hint = { 'regions': target.all_regions(gc) }
+    gc.push_frame(frames.AcceptMessage(gc, [user], 'region', hint,
+                                       lambda a: on_region(gc, target, a)))
     return { 'code': ret_code.OK }
 
 def sabotage_targets(gc, user):
     targets = filter(lambda p: gc.player_has_cards(p), gc.succeeding_players())
-    return target_filter('sabotage', user, targets, [])
+    return target_filter('sabotage', user, targets)
 
-def sabotage_targets_h(gc, user, cards):
+def sabotage_targets_h(gc, user):
     return fix_target_action(sabotage_targets(gc, user))
 
-def on_message(game_control, target, args):
+def on_region(gc, target, args):
     region = args['region']
     if region == 'onhand':
-        cards = game_control.random_pick_cards(target, 1)
+        cards = gc.random_pick_cards(target, 1)
         if len(cards) == 0:
             raise ValueError('bad region')
-        game_control.discard_cards(target, cards)
+        gc.discard_cards(target, cards)
     else:
-        unequipped = target.unequip_check(game_control, region)
+        unequipped = target.unequip_check(gc, region)
         unequipped.set_region('unequipped')
-        game_control.recycle_cards([unequipped])
+        gc.recycle_cards([unequipped])

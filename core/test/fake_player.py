@@ -20,17 +20,17 @@ class DiscardCardsStage(frames.DiscardCards):
 
 class Player(CorePlayer):
     def __init__(self, token):
-        CorePlayer.__init__(self, token, dict())
+        CorePlayer.__init__(self, token)
 
     def start(self, game_control):
-        self.draw_cards(game_control, STARTDEAL)
+        game_control.deal_cards(self, STARTDEAL)
 
     def round(self, game_control):
         self.drawing_cards_stage(game_control)
         self.using_cards_stage(game_control)
 
     def drawing_cards_stage(self, game_control):
-        self.draw_cards(game_control, ROUNDDEAL)
+        game_control.deal_cards(self, ROUNDDEAL)
 
     def using_cards_stage(self, game_control):
         game_control.push_frame(UseCardsStage(game_control, self, dict()))

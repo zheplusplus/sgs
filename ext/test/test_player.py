@@ -100,6 +100,7 @@ assert_eq({
             'cards': [0, 1, 2, 3, 8, 9],
         },
     },
+    'abort': 'disallow',
     'players': [players[0].player_id],
 }, gc.hint(players[0].token))
 assert_eq({

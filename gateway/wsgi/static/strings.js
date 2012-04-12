@@ -69,6 +69,11 @@ function SGS_STR_Action(id) {
         'bequeathed strategy': '遗计',
         'dragon heart': '龙胆',
         'martial saint': '武圣',
+        'martial saint:onhand': '武圣 (手牌)',
+        'martial saint:weapon': '武圣 (武器)',
+        'martial saint:armor': '武圣 (防具)',
+        'martial saint:-1 horse': '武圣 (进攻马)',
+        'martial saint:+1 horse': '武圣 (防御马)',
         'heavenly scent': '天香',
         'surprise raid': '奇袭',
 

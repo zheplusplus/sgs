@@ -1,7 +1,7 @@
 import random
 
 import core.src.card as card
-from ext.src.equipment.equip import is_equipment_region
+import ext.src.equipment.equip as equip
 
 class CardPool:
     @staticmethod
@@ -17,7 +17,7 @@ class CardPool:
         self.player_id_to_owning_cards = dict()
 
     def _recycle(self, game_control, card):
-        if is_equipment_region(card.region):
+        if equip.is_equipment_region(card.region):
             card.owner_or_nil.unequip(game_control, card.region)
         self.player_id_to_owning_cards[card.owner_or_nil.player_id].remove(card)
         card.reset()
@@ -51,11 +51,13 @@ class CardPool:
 
     @staticmethod
     def _cards_at(region):
-        return {
-            'all': lambda c: True,
-            'onhand': lambda c: c.region == 'onhand',
-            'equipment': lambda c: is_equipment_region(c.region),
-        }[region]
+        if region == 'all':
+            return lambda c: True
+        if region in ['onhand'] + equip.ls_equipment_regions():
+            return lambda c: c.region == region
+        if region == 'equipment':
+            return lambda c: equip.is_equipment_region(c.region)
+        return lambda c: False
 
     def player_cards_at(self, player, region):
         return filter(lambda c: c.available() and CardPool._cards_at(region)(c),

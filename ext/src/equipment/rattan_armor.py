@@ -1,16 +1,23 @@
 import core.src.card as card
 import ext.src.wrappers as wrappers
+from equip_lib import Equipment
 
 EQUIP_NAME = 'rattan armor'
 
-def equip_to(player, game_control, rattan_armor_card):
-    player.equip(game_control, rattan_armor_card, 'armor', remove_from)
-    player.before_damaged_equip = one_more_fire_damage
-    player.slashed_equip = _immunity_to_slash
+class RattanArmor(Equipment):
+    def __init__(self, player, card):
+        Equipment.__init__(self, player, card)
 
-def remove_from(game_control, player, equipped_card):
-    player.before_damaged_equip = lambda p, d, gc: None
-    player.slashed_equip = lambda player, slash, gc: None
+    def on(self):
+        self.player.before_damaged_equip = one_more_fire_damage
+        self.player.slashed_equip = _immunity_to_slash
+
+    def off(self):
+        self.player.before_damaged_equip = lambda p, d, gc: None
+        self.player.slashed_equip = lambda player, slash, gc: None
+
+def equip_to(player, gc, rattan_armor_card):
+    player.equip(gc, 'armor', RattanArmor(player, rattan_armor_card))
 
 @wrappers.alive
 @wrappers.as_damage_victim

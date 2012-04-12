@@ -1,5 +1,5 @@
-def valid_target(source, target, action, cards):
-    if not target.targeted(source, action, cards):
+def valid_target(source, target, action):
+    if not target.targeted(source, action):
         raise ValueError('invalid target')
 
 def forbid_target_self(source, target):
@@ -32,6 +32,10 @@ def only_one_card_of_color(cards, expected_color):
 
 def only_one_card_of_suit(cards, expected_suit):
     if len(cards) != 1 or expected_suit != cards[0].suit():
+        raise ValueError('wrong cards')
+
+def only_one_card_of_category(cards, category):
+    if len(cards) != 1 or not category(cards[0].name()):
         raise ValueError('wrong cards')
 
 def cards_region(cards, expected_region):

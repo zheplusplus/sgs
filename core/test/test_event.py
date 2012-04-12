@@ -291,11 +291,12 @@ assert_eq({
 assert_eq(evt.as_log(), evt.serialize(player0.token))
 assert_eq(evt.as_log(), evt.serialize(player1.token))
 
-evt = event.Invocation(player0, 'dragon heart')
+evt = event.Invocation(player0, 'dragon heart', [])
 assert_eq({
     'type': 'Invocation',
     'player': player0.player_id,
     'invoke': 'dragon heart',
+    'targets': [],
 }, evt.as_log())
 assert_eq(evt.as_log(), evt.serialize(player0.token))
 assert_eq(evt.as_log(), evt.serialize(player1.token))

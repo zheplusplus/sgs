@@ -7,18 +7,21 @@ def is_equipment(card_name):
     return card_name in equipment_dict
 
 def is_equipment_region(region):
-    return region in ('weapon', 'armor', '-1 horse', '+1 horse')
+    return region in ls_equipment_regions()
 
-def equip(player, game_control, card):
+def ls_equipment_regions():
+    return ['weapon', 'armor', '-1 horse', '+1 horse']
+
+def equip(player, gc, card):
     if not card.name() in equipment_dict:
         raise ValueError('wrong cards')
-    equipment_dict[card.name()](player, game_control, card)
+    equipment_dict[card.name()](player, gc, card)
 
-def interface(game_control, args):
-    cards = game_control.cards_by_ids(args['use'])
+def interface(gc, args):
+    cards = gc.cards_by_ids(args['use'])
     checking.cards_region(cards, 'onhand')
-    player = game_control.player_by_token(args['token'])
-    equip(player, game_control, cards[0])
+    player = gc.player_by_token(args['token'])
+    equip(player, gc, cards[0])
     return { 'code': ret_code.OK }
 
 def hint(cards):

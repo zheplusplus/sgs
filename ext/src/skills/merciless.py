@@ -5,7 +5,6 @@ def add_to(player):
 
 @wrappers.alive
 @wrappers.as_damage_source
-def to_vigor_lost(player, damage, game_control):
-    damage.clean(game_control)
-    damage.interrupt(lambda: game_control.vigor_lost(damage.victim,
-                                                     damage.point))
+def to_vigor_lost(player, damage, gc):
+    damage.clean()
+    damage.interrupt(lambda: gc.vigor_lost(damage.victim, damage.point))

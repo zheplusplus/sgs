@@ -34,20 +34,20 @@ class GameControl:
             if not args['token'] in map(lambda p: p.token,
                                         self.action_stack.allowed_players()):
                 return {
-                           'code': ret_code.BAD_REQUEST,
-                           'reason': ret_code.BR_PLAYER_FORBID,
-                       }
+                    'code': ret_code.BAD_REQUEST,
+                    'reason': ret_code.BR_PLAYER_FORBID,
+                }
             return self.action_stack.call(args)
         except KeyError, e:
             return {
-                       'code': ret_code.BAD_REQUEST,
-                       'reason': ret_code.BR_MISSING_ARG % e.message,
-                   }
+                'code': ret_code.BAD_REQUEST,
+                'reason': ret_code.BR_MISSING_ARG % e.message,
+            }
         except ValueError, e:
             return {
-                       'code': ret_code.BAD_REQUEST,
-                       'reason': ret_code.BR_WRONG_ARG % e.message,
-                   }
+                'code': ret_code.BAD_REQUEST,
+                'reason': ret_code.BR_WRONG_ARG % e.message,
+            }
 
     def hint(self, token):
         return self.action_stack.hint(token)
@@ -128,8 +128,8 @@ class GameControl:
             self._add_event(event.VigorRegain(player, point))
             player.vigor += point
 
-    def invoke(self, player, action_name):
-        self._add_event(event.Invocation(player, action_name))
+    def invoke(self, player, action_name, targets=[]):
+        self._add_event(event.Invocation(player, action_name, targets))
 
     def kill(self, player):
         self._add_event(event.PlayerKilled(player))

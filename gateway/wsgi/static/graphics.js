@@ -15,6 +15,7 @@ function createRootCanvas(pane, w, h) {
 }
 
 var movingCards = null;
+var beamCanvas = null;
 
 function createCardView(card) {
     var view = document.createElement('div');
@@ -122,6 +123,37 @@ function initFloatings(pane) {
     var animeQ = new AnimeQueue();
 
     pane.appendChild(movingCards);
+
+    beamCanvas = document.createElement('canvas');
+    beamCanvas.width = parseInt(pane.style.width);
+    beamCanvas.height = parseInt(pane.style.height);
+    beamCanvas.style.position = 'absolute';
+    beamCanvas.style.left = 0;
+    beamCanvas.style.top = 0;
+    beamCanvas.style.zIndex = 257;
+    beamCanvas.style.pointerEvents = 'none';
+
+    beamCanvas.paintLines = function(sourceCoord, targetsCoords) {
+        var c = beamCanvas.getContext('2d');
+        function paintLine(source, target) {
+            c.save();
+            c.fillStyle = 'red';
+            c.beginPath();
+            c.moveTo(source.x, source.y);
+            c.lineTo(target.x, target.y);
+            c.closePath();
+            c.stroke();
+            c.restore();
+        }
+        for (var t in targetsCoords) {
+            paintLine(sourceCoord, targetsCoords[t]);
+        }
+        setTimeout(function() {
+            c.clearRect(0, 0, beamCanvas.width, beamCanvas.height)
+        }, 1000);
+    };
+
+    pane.appendChild(beamCanvas);
 }
 
 function InitCenterCanvas(me, x, y, w, h, p) {

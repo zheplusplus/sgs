@@ -80,7 +80,7 @@ function Game(pane) {
     };
 
     function enableGameAnimation(game, players) {
-        initFloatings(pane);
+        initFloatings(canvas);
         game.paintTransferCount = function(source, target, count, complete) {
             movingCards.moveCount(source.centerCoord(), target.centerCoord(),
                                   count, complete);
@@ -97,6 +97,14 @@ function Game(pane) {
 
 function CenterView(pc, coord) {
     InitCenterCanvas(this, coord.x, coord.y, CENTER_W, CENTER_H, pc);
+}
+
+function animePaintTargetsLines(game, source, targets_ids) {
+    if (targets_ids.length == 0) return;
+    beamCanvas.paintLines(source.centerCoord(),
+                          targets_ids.map(function(target_id) {
+        return game.player(target_id).centerCoord();
+    }));
 }
 
 function PlayerView(id, game, pc, coord, center) {
@@ -125,7 +133,7 @@ function PlayerView(id, game, pc, coord, center) {
     this.paintShowCards = function(c) {
         paintCardsDropped(c);
     };
-    this.paintInvokingSkill = function(n) {};
+    this.paintInvokingSkill = function(n, t) {};
 
     var me = this;
     this.enableAnimation = function() {
@@ -137,7 +145,14 @@ function PlayerView(id, game, pc, coord, center) {
             movingCards.moveCards(me.centerCoord(), center.centerCoord(),
                                   c, function() { center.addCards(c); });
         };
-        this.paintInvokingSkill = this.onInvokingSkill;
+        this.paintUseCards = function(c, targets) {
+            paintCardsDropped(c);
+            animePaintTargetsLines(game, this, targets);
+        };
+        this.paintInvokingSkill = function(name, targets) {
+            this.onInvokingSkill(name);
+            animePaintTargetsLines(game, this, targets);
+        };
     };
 }
 
@@ -170,7 +185,7 @@ function MeView(id, game, pc, coord, center, players) {
     this.paintShowCards = function(c) {
         paintCardsDropped(c);
     };
-    this.paintInvokingSkill = function(n) {};
+    this.paintInvokingSkill = function(n, t) {};
 
     var me = this;
     this.enableAnimation = function() {
@@ -183,6 +198,13 @@ function MeView(id, game, pc, coord, center, players) {
                                   function() { center.addCards(c); });
         };
         this.paintDamage = this.animeDamaged;
-        this.paintInvokingSkill = this.onInvokingSkill;
+        this.paintUseCards = function(c, targets) {
+            paintCardsDropped(c);
+            animePaintTargetsLines(game, this, targets);
+        };
+        this.paintInvokingSkill = function(name, targets) {
+            this.onInvokingSkill(name);
+            animePaintTargetsLines(game, this, targets);
+        };
     };
 }

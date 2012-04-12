@@ -79,7 +79,7 @@ function SGS_EventParser() {
         },
         'UseCardsForPlayers': function(detail) {
             var user = detail['user'];
-            var targets = detail['target'];
+            var targets = detail['targets'];
             var use = detail['use'];
             this.exhibit = function(game) {
                 game.player(user).eventUseCards(buildCards(use), targets);
@@ -124,8 +124,9 @@ function SGS_EventParser() {
         'Invocation': function(detail) {
             var player = detail['player'];
             var invoke = detail['invoke'];
+            var targets = detail['targets'];
             this.exhibit = function(game) {
-                game.player(player).paintInvokingSkill(invoke);
+                game.player(player).paintInvokingSkill(invoke, targets);
             };
         },
         'PlayerKilled': function(detail) {
