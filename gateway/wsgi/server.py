@@ -1,6 +1,6 @@
 import os
+import json
 from wsgiref.simple_server import make_server
-import simplejson
 
 import core.src.ret_code as ret_code
 import game
@@ -30,13 +30,13 @@ def app(env, start_response):
         request_body = env['wsgi.input'].read(request_body_size)
         response = game_response(request_body)
         RESPONSE_MAPPING[response['code']](start_response)
-        return [simplejson.dumps(response)]
+        return [json.dumps(response)]
     RESPONSE_MAPPING[404](start_response)
     return ['']
 
 def game_response(request_body):
     try:
-        request_body = simplejson.loads(request_body)
+        request_body = json.loads(request_body)
         handlers = {
             'ctrl/add': game.game_room.add_player,
             'ctrl/exit': game.game_room.player_exit,
@@ -53,19 +53,14 @@ def game_response(request_body):
         return handlers[path](request_body)
     except ValueError, e:
         return {
-                   'code': ret_code.BAD_REQUEST,
-                   'reason': e.message,
-               }
+            'code': ret_code.BAD_REQUEST,
+            'reason': e.message,
+        }
     except KeyError, e:
         return {
-                   'code': ret_code.BAD_REQUEST,
-                   'reason': ret_code.BR_MISSING_ARG % e.message,
-               }
-    except simplejson.decoder.JSONDecodeError, e:
-        return {
-                   'code': ret_code.BAD_REQUEST,
-                   'reason': 'Syntax error: %s' % e.message,
-               }
+            'code': ret_code.BAD_REQUEST,
+            'reason': ret_code.BR_MISSING_ARG % e.message,
+        }
 
 def read_index():
     path = os.path.join(os.path.dirname(__file__), 'static/index.html')

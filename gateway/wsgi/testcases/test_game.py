@@ -1,4 +1,4 @@
-import simplejson
+import json
 
 from core.src import ret_code
 from test_common import *
@@ -6,7 +6,7 @@ from .. import server
 
 def send_to_server(controller, data):
     data['controller'] = controller
-    return server.game_response(simplejson.dumps(data))
+    return server.game_response(json.dumps(data))
 
 result = send_to_server('info/status', dict())
 assert_eq(ret_code.OK, result['code'])
