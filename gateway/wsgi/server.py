@@ -6,8 +6,8 @@ import core.src.ret_code as ret_code
 import game
 import static_files
 
-def start():
-    make_server('', 8000, app).serve_forever()
+def start(port):
+    make_server('', port, app).serve_forever()
 
 def plain_headers():
     return [('Content-type', 'text/plain')]

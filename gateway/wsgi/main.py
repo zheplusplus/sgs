@@ -1,4 +1,4 @@
 import server
 
-def main():
-    server.start()
+def main(port):
+    server.start(port)
