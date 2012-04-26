@@ -1,6 +1,7 @@
 <html>
-<head><title>SGS</title></head>
-<meta http-equiv='Content-type' content='text/html; charset=UTF-8'>
+<head>
+<meta charset='utf-8'>
+<title>SGS</title>
 <script src='/static/jquery-latest.js'></script>
 <script src='/static/event_parse.js'></script>
 <script src='/static/hint_parse.js'></script>
@@ -10,11 +11,10 @@
 <script src='/static/views.js'></script>
 <script>
 var BEAT_INTERVAL = 2000;
-var status_heartbeat = null;
-var hint_heartbeat = null;
-var events_heartbeat = null;
+var heartbeat = null;
+var getInfo = function() {};
 
-function post_data(data, url, onResult) {
+function sendData(data, url, onResult) {
     data['token'] = token;
     data['controller'] = url;
     var req = null;
@@ -37,16 +37,14 @@ function post_data(data, url, onResult) {
     req.send(JSON.stringify(data));
 }
 
-function post_act(data) {
-    return post_data(data, 'act', function(result) {
+function playerAct(data) {
+    return sendData(data, 'act', function(result) {
         if (result['code'] != 200) {
             crit('SEND:' + JSON.stringify(data));
             crit('REASON:' + result['reason']);
         } else {
-            clearTimeout(events_heartbeat);
-            clearTimeout(hint_heartbeat);
-            getEvents();
-            getHint();
+            clearTimeout(heartbeat);
+            getInfo();
         }
     });
 }
@@ -56,7 +54,7 @@ var game = null;
 var token = localStorage.getItem('token');
 
 function joinGame() {
-    post_data({}, 'ctrl/add', function(result) {
+    sendData({}, 'ctrl/add', function(result) {
         if (result['code'] == 200) {
             token = result['token'];
             localStorage.setItem('token', token);
@@ -75,21 +73,29 @@ function updateRoomPlayers(count, is_host) {
 function enter() {
     joinPane.style.visibility = 'hidden';
     startPane.style.visibility = 'visible';
-    getStatus();
+    getInfo = function() {
+        sendData({}, 'info/status', function(result) {
+            if (result['started'] == 0) {
+                updateRoomPlayers(result['players'], result['host']);
+                heartbeat = setTimeout(getInfo, BEAT_INTERVAL);
+            } else {
+                started();
+            }
+        });
+    };
+    getInfo();
 }
 
 function exitGame() {
     joinPane.style.visibility = 'visible';
     startPane.style.visibility = 'hidden';
-    post_data({}, 'ctrl/exit', function(r) {});
+    sendData({}, 'ctrl/exit', function(r) {});
     token = null;
-    clearTimeout(status_heartbeat);
-    clearTimeout(hint_heartbeat);
-    clearTimeout(events_heartbeat);
+    clearTimeout(heartbeat);
 }
 
 function startGame() {
-    post_data({}, 'ctrl/start', function(result) {
+    sendData({}, 'ctrl/start', function(result) {
         if (result['code'] == 200) {
             started();
         } else {
@@ -98,47 +104,37 @@ function startGame() {
     });
 }
 
-function getStatus() {
-    post_data({}, 'info/status', function(result) {
-        if (result['started'] == 0) {
-            updateRoomPlayers(result['players'], result['host']);
-            status_heartbeat = setTimeout(enter, BEAT_INTERVAL);
-        } else {
-            started();
-        }
-    });
-}
-
-function getEvents() {
-    post_data({ 'previous event id': eventlist.prevId() }, 'info/events',
-              function(result) {
-                  eventlist.append(result, game);
-                  events_heartbeat = setTimeout(getEvents, BEAT_INTERVAL);
-              });
-}
-
-function firstGetEvents() {
-    post_data({ 'previous event id': eventlist.prevId() }, 'info/events',
-              function(result) {
-                  eventlist.append(result, game);
-                  game.enableAnimation();
-                  events_heartbeat = setTimeout(getEvents, BEAT_INTERVAL);
-              });
-}
-
-function getHint() {
-    post_data({}, 'info/hint', function(result) {
-        game.hint(result);
-        hint_heartbeat = setTimeout(getHint, BEAT_INTERVAL);
-    });
-}
-
 function started() {
+    function getEvents() {
+        sendData({ 'previous event id': eventlist.prevId() }, 'info/events',
+                  function(result) {
+                      eventlist.append(result, game);
+                  });
+    }
+
+    function getHint() {
+        sendData({}, 'info/hint', function(result) {
+            game.hint(result);
+        });
+    }
+
+    function firstGetEvents() {
+        sendData({ 'previous event id': eventlist.prevId() }, 'info/events',
+                  function(result) {
+                      eventlist.append(result, game);
+                      game.enableAnimation();
+                      getInfo = function() {
+                          getEvents();
+                          getHint();
+                          heartbeat = setTimeout(getInfo, BEAT_INTERVAL);
+                      };
+                      getInfo();
+                  });
+    }
     startPane.style.visibility = 'hidden';
     gamePane.style.visibility = 'visible';
-    clearTimeout(status_heartbeat);
+    clearTimeout(heartbeat);
     firstGetEvents();
-    getHint();
 }
 
 var joinPane = null;
@@ -157,7 +153,7 @@ function init() {
 
     game = new Game(gamePane);
 
-    post_data({}, 'info/checktoken', function(result) {
+    sendData({}, 'info/checktoken', function(result) {
         if (result['in'] == 1) {
             enter();
         }
@@ -173,6 +169,7 @@ function crit(msg) {
         ('<span style="color: red;">' + msg + '</span><br/>');
 }
 </script>
+</head>
 <body onload='init()'>
 <p><button onclick='joinGame()'>Join</button></p>
 <p>

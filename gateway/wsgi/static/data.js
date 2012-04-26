@@ -368,7 +368,7 @@ function SGS_InitMe(me, id, game, players) {
                 game.clearTargets();
                 me.clearMethods();
                 me.clickOnCard = function(card) { return false; };
-                post_act(data);
+                playerAct(data);
             }
             return false;
         }

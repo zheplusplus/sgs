@@ -232,12 +232,12 @@ function InitCenterCanvas(me, x, y, w, h, p) {
 
     me.selectCharacters = function(candidates) {
         selectFrom(candidates, SGS_STR_CharName, function(value) {
-            post_act({ 'select': value });
+            playerAct({ 'select': value });
         });
     };
     me.selectRegion = function(regions) {
         selectFrom(regions, SGS_STR_Region, function(value) {
-            post_act({ 'region': value });
+            playerAct({ 'region': value });
         });
     };
 }
