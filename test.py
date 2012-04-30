@@ -31,5 +31,5 @@ import ext.test.test_suicide
 import ext.test.test_bequeathed_strategy
 import ext.test.test_youth_beauty
 print 'Kernal test finished.'
-import gateway.wsgi.test
+import gateway.test
 print 'Test finished.'
