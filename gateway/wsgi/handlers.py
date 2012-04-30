@@ -26,10 +26,10 @@ class IncomeHandler(SocketHandlerBase):
 class StatusHandler(IncomeHandler):
     def handlers(self):
         return {
-            'info/status': game.game_room.game_status,
-            'info/events': game.game_room.get_events,
-            'info/hint': game.game_room.get_hint,
-            'info/checktoken': game.game_room.check_token,
+            'status': game.game_room.game_status,
+            'events': game.game_room.get_events,
+            'hint': game.game_room.get_hint,
+            'checktoken': game.game_room.check_token,
         }
 
     def recv(self, message):
@@ -38,9 +38,9 @@ class StatusHandler(IncomeHandler):
 class ActionHandler(IncomeHandler):
     def handlers(self):
         return {
-            'ctrl/add': game.game_room.add_player,
-            'ctrl/exit': game.game_room.player_exit,
-            'ctrl/start': game.game_room.start,
+            'add': game.game_room.add_player,
+            'exit': game.game_room.player_exit,
+            'start': game.game_room.start,
             'act': game.game_room.player_act,
         }
 

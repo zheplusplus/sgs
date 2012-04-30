@@ -3,6 +3,7 @@ import time
 
 import core.src.ret_code as ret_code
 from ext.src import game_init
+
 class GameRoom:
     def __init__(self):
         self.players_tokens = []
@@ -12,9 +13,9 @@ class GameRoom:
     def check_token(self, request_body):
         token = request_body['token']
         return {
-                   'code': ret_code.OK,
-                   'in': 1 if token in self.players_tokens else 0,
-               }
+            'code': ret_code.OK,
+            'in': 1 if token in self.players_tokens else 0,
+        }
 
     def player_exit(self, request_body):
         token = request_body['token']
@@ -36,11 +37,11 @@ class GameRoom:
     def game_status(self, request_body):
         token = request_body['token'] if 'token' in request_body else ''
         return {
-                   'code': ret_code.OK,
-                   'players': len(self.players_tokens),
-                   'started': 1 if self.game_started else 0,
-                   'host': 1 if self.host == token else 0,
-               }
+            'code': ret_code.OK,
+            'players': len(self.players_tokens),
+            'started': 1 if self.game_started else 0,
+            'host': 1 if self.host == token else 0,
+        }
 
     def add_player(self, request_body):
         self._check_game_not_started()
@@ -51,23 +52,23 @@ class GameRoom:
             self.host = token
         self.players_tokens.append(token)
         return {
-                   'code': ret_code.OK,
-                   'token': token,
-               }
+            'code': ret_code.OK,
+            'token': token,
+        }
 
     def start(self, request_body):
         self._check_game_not_started()
         token = request_body['token']
         if len(self.players_tokens) < 2:
             return {
-                       'code': ret_code.BAD_REQUEST,
-                       'reason': 'Need at least 2 players',
-                   }
+                'code': ret_code.BAD_REQUEST,
+                'reason': 'Need at least 2 players',
+            }
         if token != self.host:
             return {
-                       'code': ret_code.BAD_REQUEST,
-                       'reason': 'Not the host',
-                   }
+                'code': ret_code.BAD_REQUEST,
+                'reason': 'Not the host',
+            }
         self.game_started = True
         self.gc = game_init.statuses_mode(self.players_tokens)
         return { 'code': ret_code.OK }
@@ -79,10 +80,10 @@ class GameRoom:
     def get_events(self, args):
         self._check_game_started()
         return {
-                   'code': 200,
-                   'events': self.gc.get_events(args['token'],
-                                                args['previous event id']),
-               }
+            'code': 200,
+            'events': self.gc.get_events(args['token'],
+                                         args['previous event id']),
+        }
 
     def player_act(self, request_body):
         return self.gc.player_act(request_body)

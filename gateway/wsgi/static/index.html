@@ -18,22 +18,21 @@ var token = localStorage.getItem('token');
 var actionSocket = null;
 var statusSocket = null;
 
-function queryStatus(data, url, onResult) {
+function send(socket, data, url, onResult) {
     data['token'] = token;
     data['controller'] = url;
-    statusSocket.onmessage = function(event) {
+    socket.onmessage = function(event) {
         onResult(eval('(' + event.data + ')'));
     };
-    statusSocket.send(JSON.stringify(data));
+    socket.send(JSON.stringify(data));
+}
+
+function queryStatus(data, url, onResult) {
+    send(statusSocket, data, url, onResult);
 }
 
 function sendAction(data, url, onResult) {
-    data['token'] = token;
-    data['controller'] = url;
-    actionSocket.onmessage = function(event) {
-        onResult(eval('(' + event.data + ')'));
-    };
-    actionSocket.send(JSON.stringify(data));
+    send(actionSocket, data, url, onResult);
 }
 
 function playerAct(data) {
@@ -46,7 +45,7 @@ function playerAct(data) {
 }
 
 function joinGame() {
-    sendAction({}, 'ctrl/add', function(result) {
+    sendAction({}, 'add', function(result) {
         if (result['code'] == 200) {
             token = result['token'];
             localStorage.setItem('token', token);
@@ -66,7 +65,7 @@ function enter() {
     joinPane.style.visibility = 'hidden';
     startPane.style.visibility = 'visible';
     getInfo = function() {
-        queryStatus({}, 'info/status', function(result) {
+        queryStatus({}, 'status', function(result) {
             if (result['started'] == 0) {
                 updateRoomPlayers(result['players'], result['host']);
             } else {
@@ -80,12 +79,12 @@ function enter() {
 function exitGame() {
     joinPane.style.visibility = 'visible';
     startPane.style.visibility = 'hidden';
-    sendAction({}, 'ctrl/exit', function(r) {});
+    sendAction({}, 'exit', function(r) {});
     token = null;
 }
 
 function startGame() {
-    sendAction({}, 'ctrl/start', function(result) {
+    sendAction({}, 'start', function(result) {
         if (result['code'] == 200) {
             started();
         } else {
@@ -96,17 +95,17 @@ function startGame() {
 
 function started() {
     function getEventsHints() {
-        queryStatus({ 'previous event id': eventlist.prevId() }, 'info/events',
+        queryStatus({ 'previous event id': eventlist.prevId() }, 'events',
                     function(result) {
                         eventlist.append(result, game);
-                        queryStatus({}, 'info/hint', function(result) {
+                        queryStatus({}, 'hint', function(result) {
                             game.hint(result);
                         });
                     });
     }
 
     function firstGetEvents() {
-        queryStatus({ 'previous event id': eventlist.prevId() }, 'info/events',
+        queryStatus({ 'previous event id': eventlist.prevId() }, 'events',
                     function(result) {
                         eventlist.append(result, game);
                         game.enableAnimation();
@@ -139,7 +138,7 @@ function init() {
 
     statusSocket = new WebSocket('ws://localhost:8000/status');
     statusSocket.onopen = function() {
-        queryStatus({}, 'info/checktoken', function(result) {
+        queryStatus({}, 'checktoken', function(result) {
             if (result['in'] == 1) {
                 enter();
             }
