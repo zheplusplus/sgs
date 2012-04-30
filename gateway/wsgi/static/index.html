@@ -10,51 +10,43 @@
 <script src='/static/data.js'></script>
 <script src='/static/views.js'></script>
 <script>
-var BEAT_INTERVAL = 2000;
-var heartbeat = null;
 var getInfo = function() {};
-
-function sendData(data, url, onResult) {
-    data['token'] = token;
-    data['controller'] = url;
-    var req = null;
-    try {
-        if (window.XMLHttpRequest) {
-            req = new XMLHttpRequest();
-        } else {
-            req = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    } catch (e) {
-        alert('Browser not support AJAX!');
-        return;
-    }
-    req.open('POST', '/action', true);
-    req.onreadystatechange = function() {
-        if (req.readyState == 4) {
-            onResult(eval('(' + req.responseText + ')'));
-        }
-    };
-    req.send(JSON.stringify(data));
-}
-
-function playerAct(data) {
-    return sendData(data, 'act', function(result) {
-        if (result['code'] != 200) {
-            crit('SEND:' + JSON.stringify(data));
-            crit('REASON:' + result['reason']);
-        } else {
-            clearTimeout(heartbeat);
-            getInfo();
-        }
-    });
-}
-
 var eventlist = new SGS_EventParser();
 var game = null;
 var token = localStorage.getItem('token');
 
+var actionSocket = null;
+var statusSocket = null;
+
+function queryStatus(data, url, onResult) {
+    data['token'] = token;
+    data['controller'] = url;
+    statusSocket.onmessage = function(event) {
+        onResult(eval('(' + event.data + ')'));
+    };
+    statusSocket.send(JSON.stringify(data));
+}
+
+function sendAction(data, url, onResult) {
+    data['token'] = token;
+    data['controller'] = url;
+    actionSocket.onmessage = function(event) {
+        onResult(eval('(' + event.data + ')'));
+    };
+    actionSocket.send(JSON.stringify(data));
+}
+
+function playerAct(data) {
+    return sendAction(data, 'act', function(result) {
+        if (result['code'] != 200) {
+            console.error('SEND: ' + JSON.stringify(data));
+            console.error('REASON: ' + result['reason']);
+        }
+    });
+}
+
 function joinGame() {
-    sendData({}, 'ctrl/add', function(result) {
+    sendAction({}, 'ctrl/add', function(result) {
         if (result['code'] == 200) {
             token = result['token'];
             localStorage.setItem('token', token);
@@ -74,10 +66,9 @@ function enter() {
     joinPane.style.visibility = 'hidden';
     startPane.style.visibility = 'visible';
     getInfo = function() {
-        sendData({}, 'info/status', function(result) {
+        queryStatus({}, 'info/status', function(result) {
             if (result['started'] == 0) {
                 updateRoomPlayers(result['players'], result['host']);
-                heartbeat = setTimeout(getInfo, BEAT_INTERVAL);
             } else {
                 started();
             }
@@ -89,13 +80,12 @@ function enter() {
 function exitGame() {
     joinPane.style.visibility = 'visible';
     startPane.style.visibility = 'hidden';
-    sendData({}, 'ctrl/exit', function(r) {});
+    sendAction({}, 'ctrl/exit', function(r) {});
     token = null;
-    clearTimeout(heartbeat);
 }
 
 function startGame() {
-    sendData({}, 'ctrl/start', function(result) {
+    sendAction({}, 'ctrl/start', function(result) {
         if (result['code'] == 200) {
             started();
         } else {
@@ -105,35 +95,27 @@ function startGame() {
 }
 
 function started() {
-    function getEvents() {
-        sendData({ 'previous event id': eventlist.prevId() }, 'info/events',
-                  function(result) {
-                      eventlist.append(result, game);
-                  });
-    }
-
-    function getHint() {
-        sendData({}, 'info/hint', function(result) {
-            game.hint(result);
-        });
+    function getEventsHints() {
+        queryStatus({ 'previous event id': eventlist.prevId() }, 'info/events',
+                    function(result) {
+                        eventlist.append(result, game);
+                        queryStatus({}, 'info/hint', function(result) {
+                            game.hint(result);
+                        });
+                    });
     }
 
     function firstGetEvents() {
-        sendData({ 'previous event id': eventlist.prevId() }, 'info/events',
-                  function(result) {
-                      eventlist.append(result, game);
-                      game.enableAnimation();
-                      getInfo = function() {
-                          getEvents();
-                          getHint();
-                          heartbeat = setTimeout(getInfo, BEAT_INTERVAL);
-                      };
-                      getInfo();
-                  });
+        queryStatus({ 'previous event id': eventlist.prevId() }, 'info/events',
+                    function(result) {
+                        eventlist.append(result, game);
+                        game.enableAnimation();
+                        getInfo = getEventsHints;
+                        getInfo();
+                    });
     }
     startPane.style.visibility = 'hidden';
     gamePane.style.visibility = 'visible';
-    clearTimeout(heartbeat);
     firstGetEvents();
 }
 
@@ -153,20 +135,26 @@ function init() {
 
     game = new Game(gamePane);
 
-    sendData({}, 'info/checktoken', function(result) {
-        if (result['in'] == 1) {
-            enter();
-        }
-    });
-}
+    actionSocket = new WebSocket('ws://localhost:8000/action');
 
-function log(msg) {
-    document.getElementById('log').innerHTML += (msg + '<br/>');
-}
+    statusSocket = new WebSocket('ws://localhost:8000/status');
+    statusSocket.onopen = function() {
+        queryStatus({}, 'info/checktoken', function(result) {
+            if (result['in'] == 1) {
+                enter();
+            }
+        });
+    };
 
-function crit(msg) {
-    document.getElementById('log').innerHTML +=
-        ('<span style="color: red;">' + msg + '</span><br/>');
+    var cmdSocket = new WebSocket('ws://localhost:8000/cmd');
+    cmdSocket.onmessage = function(event) {
+        var message = eval('(' + event.data + ')');
+        ({
+            'update': function() {
+                getInfo();
+            },
+        })[message['action']]();
+    };
 }
 </script>
 </head>
@@ -179,4 +167,3 @@ function crit(msg) {
 </p>
 <p></p>
 <p></p>
-<p id='log' style='position: absolute; top: 540px;'></p>

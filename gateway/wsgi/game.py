@@ -3,7 +3,6 @@ import time
 
 import core.src.ret_code as ret_code
 from ext.src import game_init
-
 class GameRoom:
     def __init__(self):
         self.players_tokens = []
