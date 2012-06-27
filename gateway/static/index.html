@@ -134,9 +134,9 @@ function init() {
 
     game = new Game(gamePane);
 
-    actionSocket = new WebSocket('ws://localhost:8000/action');
-
-    statusSocket = new WebSocket('ws://localhost:8000/status');
+    var protocol = 'ws://';
+    actionSocket = new WebSocket(protocol + window.location.host + '/action');
+    statusSocket = new WebSocket(protocol + window.location.host + '/status');
     statusSocket.onopen = function() {
         queryStatus({}, 'checktoken', function(result) {
             if (result['in'] == 1) {
